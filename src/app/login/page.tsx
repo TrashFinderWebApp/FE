@@ -2,9 +2,12 @@
 
 import { useEffect } from "react";
 
-const LoginPage = () => {
+function LoginPage(): JSX.Element {
   useEffect(() => {
     if (window.kakao) {
+      window.kakao.maps.load(() => {
+        console.log("Kakao Map Loaded");
+      });
     }
   }, []);
   return (
@@ -17,6 +20,6 @@ const LoginPage = () => {
       </form>
     </div>
   );
-};
+}
 
 export default LoginPage;
