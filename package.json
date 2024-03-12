@@ -7,19 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "husky install",
-    "format": "prettier --cache --write ."
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm test"
-    }
+    "format": "prettier --cache --write .",
+    "prepare": "husky install",
+    "postinstall": "husky install"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "prettier --write"
+    "*.{ts,tsx}": [
+      "eslint",
+      "prettier --list-different"
     ]
   },
   "dependencies": {
@@ -53,6 +48,8 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.34.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.2",
     "postcss": "^8",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
