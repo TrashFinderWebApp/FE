@@ -1,4 +1,4 @@
-export default function LoginLayout({
+export default function LocationLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

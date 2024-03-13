@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useReducer } from "react";
+import { useEffect, useRef } from "react";
 
 const randomLatLng = () =>
   // 서울의 위도 경도 범위
@@ -13,7 +13,7 @@ const randomLatLng = () =>
       return new window.kakao.maps.LatLng(lat, lng);
     });
 
-function LocationPage() {
+export default function LocationPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (window.kakao) {
@@ -23,7 +23,12 @@ function LocationPage() {
           level: 3,
         };
 
-        mapRef.current = new window.kakao.maps.Map(mapRef.current, options);
+        const map = new window.kakao.maps.Map(mapRef.current, options);
+
+        map.setCopyrightPosition(
+          window.kakao.maps.CopyrightPosition.BOTTOMRIGHT,
+          true,
+        );
 
         const clusterer = new window.kakao.maps.MarkerClusterer({
           map: mapRef.current,
@@ -50,5 +55,3 @@ function LocationPage() {
     </div>
   );
 }
-
-export default LocationPage;

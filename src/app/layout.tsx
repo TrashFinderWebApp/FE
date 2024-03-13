@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Script from "next/script";
 import Providers from "@/hooks/useReactQuery";
+import AuthProvider from "@/components/Auth/AuthProvider";
 
 export const metadata: Metadata = {
   title: "쓰파인더",
@@ -16,7 +17,7 @@ declare global {
   }
 }
 
-function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -30,10 +31,10 @@ function RootLayout({
         />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <AuthProvider>
+          <Providers>{children}</Providers>
+        </AuthProvider>
       </body>
     </html>
   );
 }
-
-export default RootLayout;

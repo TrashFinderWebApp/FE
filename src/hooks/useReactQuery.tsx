@@ -41,7 +41,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   //       suspend because React will throw away the client on the initial
   //       render if it suspends and there is no boundary
   const queryClient = getQueryClient();
-
   return (
     <QueryClientProvider client={queryClient}>
       {process.env.NODE_ENV === "development" ? <ReactQueryDevtools /> : null}
