@@ -3,6 +3,7 @@ import "./globals.css";
 import Script from "next/script";
 import Providers from "@/hooks/useReactQuery";
 import AuthProvider from "@/components/Auth/AuthProvider";
+import Sidebar from "@/components/Sidebar";
 
 export const metadata: Metadata = {
   title: "쓰파인더",
@@ -30,7 +31,8 @@ export default function RootLayout({
           src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false&libraries=services,clusterer,drawing`}
         />
       </head>
-      <body>
+      <body className="flex flex-row">
+        <Sidebar />
         <AuthProvider>
           <Providers>{children}</Providers>
         </AuthProvider>
