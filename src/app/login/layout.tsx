@@ -1,10 +1,10 @@
 import Script from "next/script";
 
-const LoginLayout = ({
+function LoginLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) => {
+}>) {
   return (
     <div>
       <Script
@@ -14,6 +14,6 @@ const LoginLayout = ({
       {children}
     </div>
   );
-};
+}
 
 export default LoginLayout;

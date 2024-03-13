@@ -1,20 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useReducer } from "react";
 
-const randomLatLng = () => {
+const randomLatLng = () =>
   // 서울의 위도 경도 범위
-  return Array(1000)
+  Array(1000)
     .fill(0)
     .map(() => {
       const lat = Math.random() * (37.7 - 37.4) + 37.4;
       const lng = Math.random() * (127.2 - 126.8) + 126.8;
       return new window.kakao.maps.LatLng(lat, lng);
     });
-};
 
-const LocationPage = () => {
+function LocationPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (window.kakao) {
@@ -46,10 +45,10 @@ const LocationPage = () => {
 
   return (
     <div className="flex flex-col">
-      <div ref={mapRef} style={{ width: "100%", height: "90vh" }}></div>
-      <Link href={"/login"}>로그인</Link>
+      <div ref={mapRef} style={{ width: "100%", height: "90vh" }} />
+      <Link href="/login">로그인</Link>
     </div>
   );
-};
+}
 
 export default LocationPage;
