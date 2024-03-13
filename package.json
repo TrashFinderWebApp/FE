@@ -1,5 +1,5 @@
 {
-  "name": "ttrader",
+  "name": "tfinder",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.26.3",
     "babel-eslint": "^10.1.0",
+    "dotenv": "^16.4.5",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-import": "^2.29.1",

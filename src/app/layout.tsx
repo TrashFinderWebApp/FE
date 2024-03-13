@@ -1,25 +1,38 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import ReactQueryProviders from "@/hooks/useReactQuery";
-
-const inter = Inter({ subsets: ["latin"] });
+import Providers from "@/hooks/useReactQuery";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "쓰파인더",
   description: "쓰레기통 위치를 찾아주는 서비스입니다.",
 };
 
-export default function RootLayout({
+declare global {
+  interface Window {
+    kakao: any;
+    Kakao: any;
+  }
+}
+
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   return (
     <html lang="ko">
+      <head>
+        <Script
+          strategy="beforeInteractive"
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false&libraries=services,clusterer,drawing`}
+        ></Script>
+      </head>
       <body>
-        <ReactQueryProviders>{children}</ReactQueryProviders>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
