@@ -56,14 +56,15 @@ export default function LocationPage() {
         style={{ width: "100%", height: "100vh" }}
       />
       <Accordion>
-        {Array(10)
+        {Array(30)
           .fill(0)
-          .map((_, index) => (
+          .map((_, idx) => idx + 1)
+          .map((idx) => (
             <div
-              key={`${_} A`}
+              key={`${idx}`}
               className="h-20 bg-white border-2 border-dark-blue p-4"
             >
-              {index}
+              {idx}
             </div>
           ))}
       </Accordion>
