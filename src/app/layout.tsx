@@ -32,6 +32,7 @@ export default function RootLayout({
         />
       </head>
       <body className="flex flex-row">
+        <div id="modal-root" />
         <Sidebar />
         <AuthProvider>
           <Providers>{children}</Providers>
