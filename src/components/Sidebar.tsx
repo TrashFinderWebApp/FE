@@ -1,6 +1,4 @@
-import React from "react";
-
-function Sidebar() {
+export default function SideBar() {
   return (
     <header className="flex flex-col w-[4.25rem] h-lvh bg-dark-blue">
       <h1 className="aspect-[3/5] w-full">쓰파인더</h1>
@@ -13,5 +11,3 @@ function Sidebar() {
     </header>
   );
 }
-
-export default Sidebar;
