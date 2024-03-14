@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Accordion from "@/components/accordion/accordion";
 import { useEffect, useRef } from "react";
 
 const randomLatLng = () =>
@@ -49,9 +49,24 @@ export default function LocationPage() {
   }, []);
 
   return (
-    <div className="flex flex-col">
-      <div ref={mapRef} style={{ width: "100%", height: "90vh" }} />
-      <Link href="/login">로그인</Link>
+    <div className="relative">
+      <div
+        ref={mapRef}
+        className="fixed z-0"
+        style={{ width: "100%", height: "100vh" }}
+      />
+      <Accordion>
+        {Array(10)
+          .fill(0)
+          .map((_, index) => (
+            <div
+              key={`${_} A`}
+              className="h-20 bg-white border-2 border-dark-blue p-4"
+            >
+              {index}
+            </div>
+          ))}
+      </Accordion>
     </div>
   );
 }

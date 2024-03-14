@@ -1,8 +1,8 @@
 "use client";
 
-import KakaoLoginIMG from "public/img/KakaoLoginIMG.png";
-import GoogleLoginSVG from "public/svg/GoogleLoginSVG.svg";
-import NaverLoginIMG from "public/img/NaverLoginIMG.png";
+import KakaoLoginIMG from "public/img/KakaoLogin.png";
+import GoogleLoginSVG from "public/svg/GoogleLogin.svg";
+import NaverLoginIMG from "public/img/NaverLogin.png";
 import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 
