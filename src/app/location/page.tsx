@@ -26,7 +26,9 @@ const createNewMarker = (
   setSelectedMarker: React.Dispatch<React.SetStateAction<TrashCan | null>>,
 ) => {
   const icon =
-    status === "added" ? "/img/TrashCanIMG.png" : "/img/TrashCanIMG.png";
+    status === "added"
+      ? "/img/TrashcanIconIMG.png"
+      : "/img/TrashcanIconIMG.png";
   const markerImage = new window.kakao.maps.MarkerImage(
     icon,
     new window.kakao.maps.Size(30, 30),
