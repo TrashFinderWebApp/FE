@@ -16,7 +16,7 @@ export default function Accordion({ children }: { children: React.ReactNode }) {
       }
       onTransitionEnd={handleAnimationEnd}
     >
-      <section className="w-80 px-3 h-screen bg-white border-2 border-dark-blue shadow-lg drop-shadow-lg ">
+      <section className="w-80 px-3 h-screen bg-white border-2 border-dark-blue shadow-lg drop-shadow-lg overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]">
         {children}
       </section>
       <button
