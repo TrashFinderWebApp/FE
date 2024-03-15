@@ -1,10 +1,12 @@
 "use client";
 
 import Accordion from "@/components/accordion/accordion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function LocationPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+
   useEffect(() => {
     if (window.kakao) {
       window.kakao.maps.load(() => {
@@ -37,9 +39,16 @@ export default function LocationPage() {
   }, []);
 
   return (
-    <div className="relative">
-      <div ref={mapRef} className="fixed z-0 h-screen flex-grow" />
-      <Accordion>
+    <>
+      <div
+        ref={mapRef}
+        className={
+          isAccordionOpen
+            ? "absolute z-0 h-screen duration-300 w-[calc(100%-20rem)] translate-x-80 box-content"
+            : "absolute z-0 h-screen duration-300 w-full box-content"
+        }
+      />
+      <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
         {Array(30)
           .fill(0)
           .map((_, idx) => idx + 1)
@@ -52,6 +61,6 @@ export default function LocationPage() {
             </div>
           ))}
       </Accordion>
-    </div>
+    </>
   );
 }

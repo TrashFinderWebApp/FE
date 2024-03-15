@@ -4,8 +4,15 @@ import LeftArrowSvg from "public/svg/LeftArrow.svg";
 import ScrollToTopSvg from "public/svg/ScrollToTop.svg";
 import { useEffect, useRef, useState } from "react";
 
-export default function Accordion({ children }: { children: React.ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Accordion({
+  children,
+  isOpen,
+  setIsOpen,
+}: {
+  children: React.ReactNode;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const { render, animation, handleAnimationEnd } = useAnimation(isOpen);
   const [scrollToTop, setScrollToTop] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
