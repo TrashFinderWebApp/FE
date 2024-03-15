@@ -3,7 +3,7 @@ import "./globals.css";
 import Script from "next/script";
 import Providers from "@/hooks/useReactQuery";
 import AuthProvider from "@/components/Auth/AuthProvider";
-import Sidebar from "@/components/Sidebar";
+import Navigator from "@/components/sidebar/Navigator";
 
 export const metadata: Metadata = {
   title: "쓰파인더",
@@ -33,7 +33,7 @@ export default function RootLayout({
       </head>
       <body className="flex flex-row">
         <div id="modal-root" />
-        <Sidebar />
+        <Navigator />
         <AuthProvider>
           <Providers>{children}</Providers>
         </AuthProvider>

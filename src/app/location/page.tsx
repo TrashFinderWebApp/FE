@@ -1,17 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef } from "react";
-
-const randomLatLng = () =>
-  // 서울의 위도 경도 범위
-  Array(1000)
-    .fill(0)
-    .map(() => {
-      const lat = Math.random() * (37.7 - 37.4) + 37.4;
-      const lng = Math.random() * (127.2 - 126.8) + 126.8;
-      return new window.kakao.maps.LatLng(lat, lng);
-    });
 
 export default function LocationPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -30,28 +19,21 @@ export default function LocationPage() {
           true,
         );
 
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          map.setCenter(new window.kakao.maps.LatLng(latitude, longitude));
+        });
+
         const clusterer = new window.kakao.maps.MarkerClusterer({
           map: mapRef.current,
           averageCenter: true,
           minLevel: 7,
         });
 
-        const positions = randomLatLng().map(
-          (position) =>
-            new window.kakao.maps.Marker({
-              position,
-            }),
-        );
-
-        clusterer.addMarkers(positions);
+        clusterer.addMarkers([]);
       });
     }
   }, []);
 
-  return (
-    <div className="flex flex-col">
-      <div ref={mapRef} style={{ width: "100%", height: "90vh" }} />
-      <Link href="/login">로그인</Link>
-    </div>
-  );
+  return <div ref={mapRef} className="w-screen h-screen" />;
 }

@@ -15,6 +15,11 @@ const config: Config = {
         "light-green": "#02C39A",
         "light-yellow": "#F0F3BD",
       },
+      fontSize: {
+        sm: "0.75rem", // 12px
+        base: "0.875rem", // 14px
+        xl: "1rem", // 16px
+      },
     },
   },
   plugins: [],
