@@ -31,7 +31,7 @@ export default function Accordion({ children }: { children: React.ReactNode }) {
     <div
       className={
         animation
-          ? "relative flex flex-row items-center h-screen duration-300"
+          ? "relative flex flex-row items-center h-screen duration-300 -translate-x-1"
           : "relative flex flex-row items-center h-screen duration-300 -translate-x-80"
       }
       onTransitionEnd={handleAnimationEnd}

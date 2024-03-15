@@ -3,16 +3,6 @@
 import Accordion from "@/components/accordion/accordion";
 import { useEffect, useRef } from "react";
 
-const randomLatLng = () =>
-  // 서울의 위도 경도 범위
-  Array(1000)
-    .fill(0)
-    .map(() => {
-      const lat = Math.random() * (37.7 - 37.4) + 37.4;
-      const lng = Math.random() * (127.2 - 126.8) + 126.8;
-      return new window.kakao.maps.LatLng(lat, lng);
-    });
-
 export default function LocationPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -30,31 +20,25 @@ export default function LocationPage() {
           true,
         );
 
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          map.setCenter(new window.kakao.maps.LatLng(latitude, longitude));
+        });
+
         const clusterer = new window.kakao.maps.MarkerClusterer({
           map: mapRef.current,
           averageCenter: true,
           minLevel: 7,
         });
 
-        const positions = randomLatLng().map(
-          (position) =>
-            new window.kakao.maps.Marker({
-              position,
-            }),
-        );
-
-        clusterer.addMarkers(positions);
+        clusterer.addMarkers([]);
       });
     }
   }, []);
 
   return (
     <div className="relative">
-      <div
-        ref={mapRef}
-        className="fixed z-0"
-        style={{ width: "100%", height: "100vh" }}
-      />
+      <div ref={mapRef} className="fixed z-0 h-screen flex-grow" />
       <Accordion>
         {Array(30)
           .fill(0)
