@@ -40,14 +40,6 @@ export default function LocationPage() {
 
   return (
     <>
-      <div
-        ref={mapRef}
-        className={
-          isAccordionOpen
-            ? "absolute z-0 h-screen duration-300 w-[calc(100%-20rem)] translate-x-80 box-content"
-            : "absolute z-0 h-screen duration-300 w-full box-content"
-        }
-      />
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
         {Array(30)
           .fill(0)
@@ -61,6 +53,14 @@ export default function LocationPage() {
             </div>
           ))}
       </Accordion>
+      <div
+        ref={mapRef}
+        className={
+          isAccordionOpen
+            ? "absolute z-0 top-0 h-screen duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"
+            : "absolute z-0 top-0 h-screen duration-300 w-full box-content"
+        }
+      />
     </>
   );
 }
