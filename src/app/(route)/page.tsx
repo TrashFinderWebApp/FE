@@ -5,7 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { TrashCan } from "@/types/TrashInfo";
 import createNewMarker from "./_components/createnewmarker";
-import SearchBar from "./_components/searchbar";
+import SearchBar from "../../components/searchbar/searchbar";
+import FindTrashCan from "./_components/findtrashcan/findtrashcan";
 
 const randomLatLng = () =>
   // 서울의 위도 경도 범위
@@ -45,17 +46,9 @@ export default function MainPage() {
     <>
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
         <SearchBar placeholder="장소, 도로, 건물 검색" />
-        {Array(30)
-          .fill(0)
-          .map((_, idx) => idx + 1)
-          .map((idx) => (
-            <div
-              key={`${idx}`}
-              className="h-20 bg-white border-2 border-dark-blue p-4"
-            >
-              {idx}
-            </div>
-          ))}
+        <section className="my-5">
+          <FindTrashCan />
+        </section>
       </Accordion>
       <div
         ref={mapRef}
