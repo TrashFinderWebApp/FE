@@ -3,5 +3,5 @@ export default function LocationLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div>{children}</div>;
+  return <main className="relative flex-grow">{children}</main>;
 }
