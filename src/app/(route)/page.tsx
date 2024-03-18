@@ -4,15 +4,8 @@ import useMap from "@/hooks/useMap";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
+import { TrashCan } from "@/types/TrashInfo";
 import createNewMarker from "./_components/createnewmarker";
-
-interface TrashCan {
-  lat: number;
-  lng: number;
-  status: "added" | "waiting" | "removed";
-  image?: string;
-  description?: string;
-}
 
 const randomLatLng = () =>
   // 서울의 위도 경도 범위
