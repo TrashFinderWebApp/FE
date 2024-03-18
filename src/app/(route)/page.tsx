@@ -33,7 +33,7 @@ export default function MainPage() {
           lat: position.lat,
           lng: position.lng,
           status: "added",
-          image: "/img/TEST.jpg",
+          imageList: ["/img/TEST.jpg"],
         },
         setSelectedMarker,
       ),
