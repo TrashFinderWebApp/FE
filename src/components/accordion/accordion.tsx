@@ -45,7 +45,7 @@ export default function Accordion({
     >
       <section
         ref={scrollRef}
-        className="relative w-80 px-3 h-screen pointer-events-auto bg-white border-2 border-dark-blue shadow-lg drop-shadow-lg overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
+        className="relative w-80 px-3 py-[5.75rem] h-screen pointer-events-auto bg-white border-2 border-dark-blue shadow-lg drop-shadow-lg overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
       >
         {children}
       </section>
