@@ -1,11 +1,11 @@
 "use client";
 
 import useMap from "@/hooks/useMap";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { TrashCan } from "@/types/TrashInfo";
 import createNewMarker from "./_components/createnewmarker";
+import SearchBar from "./_components/searchbar";
 
 const randomLatLng = () =>
   // 서울의 위도 경도 범위
@@ -19,7 +19,7 @@ const randomLatLng = () =>
 
 export default function MainPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const [selectedMarker, setSelectedMarker] = useState<TrashCan | null>(null);
+  const [, setSelectedMarker] = useState<TrashCan | null>(null);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
   const info = useMap(mapRef);
@@ -44,6 +44,7 @@ export default function MainPage() {
   return (
     <>
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
+        <SearchBar placeholder="장소, 도로, 건물 검색" />
         {Array(30)
           .fill(0)
           .map((_, idx) => idx + 1)
@@ -56,13 +57,6 @@ export default function MainPage() {
             </div>
           ))}
       </Accordion>
-      <Image
-        className="absolute left-0 top-0 z-50"
-        width={500}
-        height={300}
-        src={selectedMarker?.image ?? ""}
-        alt=""
-      />
       <div
         ref={mapRef}
         className={
