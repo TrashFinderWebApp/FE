@@ -7,7 +7,7 @@ export default function SearchBar({
 }: SearchBarProps) {
   return (
     <input
-      className="flex-grow outline-none border-2 border-dark-green rounded-md p-2 w-full pl-10"
+      className="flex-grow outline-none border-2 border-light-green rounded-md p-2 w-full pl-10"
       placeholder={placeholder}
       style={{
         backgroundImage: "url(/svg/searchIcon.svg)",
