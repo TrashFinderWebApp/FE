@@ -6,7 +6,7 @@ import NaverLoginIMG from "public/img/NaverLogin.png";
 import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 import useModal from "@/hooks/useModal";
-import Modal from "@/components/Util/modal";
+import Modal from "@/components/modal/modal";
 
 const onLogin = (provider: string) => async () => {
   await signIn(provider, {
