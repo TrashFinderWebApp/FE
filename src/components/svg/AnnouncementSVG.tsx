@@ -1,4 +1,6 @@
-export default function AnnouncementSVG() {
+import { SVGProps } from "@/types/svgprops";
+
+export default function AnnouncementSVG({ color }: SVGProps) {
   return (
     <svg
       width="50"
@@ -25,7 +27,7 @@ export default function AnnouncementSVG() {
           <rect x="10" width="30" height="30" fill="url(#pattern5)" />
         </mask>
         <g mask="url(#mask0_240_83)">
-          <rect x="-4" y="-5" width="53" height="57" fill="#184E77" />
+          <rect x="-4" y="-5" width="53" height="57" fill={color} />
         </g>
       </g>
       <defs>

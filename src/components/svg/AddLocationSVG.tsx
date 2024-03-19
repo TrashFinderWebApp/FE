@@ -1,4 +1,6 @@
-export default function AddLocationSVG() {
+import { SVGProps } from "@/types/svgprops";
+
+export default function AddLocationSVG({ color }: SVGProps) {
   return (
     <svg
       width="45"
@@ -24,7 +26,7 @@ export default function AddLocationSVG() {
         />
       </mask>
       <g mask="url(#mask0_240_104)">
-        <rect x="-3" y="-3" width="48" height="49" fill="#184E77" />
+        <rect x="-3" y="-3" width="48" height="49" fill={color} />
       </g>
       <defs>
         <pattern

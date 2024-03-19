@@ -1,4 +1,6 @@
-export default function RankingSVG() {
+import { SVGProps } from "@/types/svgprops";
+
+export default function RankingSVG({ color }: SVGProps) {
   return (
     <svg
       width="32"
@@ -24,7 +26,7 @@ export default function RankingSVG() {
         />
       </mask>
       <g mask="url(#mask0_237_842)">
-        <rect width="33" height="46" fill="#184E77" />
+        <rect width="33" height="46" fill={color} />
       </g>
       <defs>
         <pattern

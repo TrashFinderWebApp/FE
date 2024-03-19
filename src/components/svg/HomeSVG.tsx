@@ -1,4 +1,6 @@
-export default function HomeSVG() {
+import { SVGProps } from "@/types/svgprops";
+
+export default function HomeSVG({ color }: SVGProps) {
   return (
     <svg
       width="32"
@@ -33,14 +35,7 @@ export default function HomeSVG() {
           </g>
         </mask>
         <g mask="url(#mask0_237_831)">
-          <rect
-            id="LOGO"
-            x="-15"
-            y="-22"
-            width="62"
-            height="76"
-            fill="#184E77"
-          />
+          <rect id="LOGO" x="-15" y="-22" width="62" height="76" fill={color} />
         </g>
       </g>
       <defs>
