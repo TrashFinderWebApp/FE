@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import HomeSVG from "../svg/HomeSVG";
 import AddLocationSVG from "../svg/AddLocationSVG";
 import RankingSVG from "../svg/RankingSVG";
@@ -11,7 +12,7 @@ import ConfigSVG from "../svg/ConfigSVG";
 import LoginSVG from "../svg/LoginSVG";
 
 export default function Navigator() {
-  const [clicked, setClicked] = useState("");
+  const [clicked, setClicked] = useState<string>("");
 
   const handleOnClick = (props: string) => {
     setClicked(props);
@@ -22,12 +23,12 @@ export default function Navigator() {
       <h1 className="aspect-[3/5] w-full">쓰파인더</h1>
       <nav className=" w-full flex flex-col justify-between flex-grow rounded-tr-lg bg-white ">
         <ul className="flex flex-col items-center  space-y-2 py-2">
-          <li>
+          <li className="w-full">
             <button
               type="button"
               aria-label="Home"
               id="Home"
-              className=" rounded-lg"
+              className="rounded-lg w-full flex justify-center items-center aspect-square"
               style={{
                 backgroundColor: clicked === "Home" ? "#02C39A" : "#FFFFFF",
               }}
@@ -126,7 +127,9 @@ export default function Navigator() {
             <ConfigSVG />
           </li>
           <li>
-            <LoginSVG />
+            <Link href="/login">
+              <LoginSVG />
+            </Link>
           </li>
         </ul>
       </nav>

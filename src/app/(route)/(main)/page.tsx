@@ -4,7 +4,7 @@ import useMap from "@/hooks/useMap";
 import { useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { TrashCan } from "@/types/TrashInfo";
-import SearchBar from "../../../components/searchbar/searchbar";
+import SearchBar from "@/components/searchbar/searchbar";
 import createNewMarker from "./_components/createnewmarker";
 import FindTrashCan from "./_components/findtrashcan/findtrashcan";
 
