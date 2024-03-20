@@ -1,4 +1,9 @@
-export default function NavigationIconSVG() {
+import { SVGProps } from "@/types/svgprops";
+
+export default function NavigationIconSVG({
+  className,
+  fill = "#02C39A",
+}: SVGProps) {
   return (
     <svg
       width="24"
@@ -7,6 +12,7 @@ export default function NavigationIconSVG() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
+      className={className}
     >
       <mask
         id="mask0_137_268"
@@ -20,7 +26,7 @@ export default function NavigationIconSVG() {
         <rect width="24" height="24" fill="url(#navigationicon)" />
       </mask>
       <g mask="url(#mask0_137_268)">
-        <rect width="24" height="24" fill="#02C39A" />
+        <rect width="24" height="24" fill={fill} />
       </g>
       <defs>
         <pattern

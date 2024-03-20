@@ -5,4 +5,4 @@ export interface Coordinate {
   endY: number;
 }
 
-export type Transportation = "pedestrian" | "car" | "public";
+export type Transportation = "walk" | "car" | "public";

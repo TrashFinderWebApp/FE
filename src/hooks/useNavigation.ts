@@ -7,16 +7,16 @@ const QUERY_KEY = {
 };
 
 const url = {
-  pedestrian: "https://apis.openapi.sk.com/tmap/routes/pedestrian",
+  walk: "https://apis.openapi.sk.com/tmap/routes/pedestrian",
   car: "https://apis-navi.kakaomobility.com/v1/directions",
   public: "https://apis.openapi.sk.com/transit/routes",
 };
 
 const getFetchInfo = (type: Transportation, payload: Coordinate) => {
   switch (type) {
-    case "pedestrian":
+    case "walk":
       return [
-        url.pedestrian,
+        url.walk,
         {
           method: "POST",
           headers: {
