@@ -39,13 +39,13 @@ export default function Accordion({
       className={
         animation
           ? "relative z-40 flex flex-row w-fit items-center h-screen duration-300 -translate-x-1 pointer-events-none"
-          : "relative z-40 flex flex-row w-fit items-center h-screen duration-300 -translate-x-80 pointer-events-none"
+          : "relative z-40 flex flex-row w-fit items-center h-screen duration-300 -translate-x-96 pointer-events-none"
       }
       onTransitionEnd={handleAnimationEnd}
     >
       <section
         ref={scrollRef}
-        className="relative w-80 px-3 h-screen pointer-events-auto bg-white border-2 border-dark-blue shadow-lg drop-shadow-lg overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
+        className="relative w-96 px-3 py-[5.75rem] h-screen pointer-events-auto bg-white border-2 border-dark-blue shadow-lg drop-shadow-lg overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
       >
         {children}
       </section>
@@ -63,7 +63,7 @@ export default function Accordion({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="px-[0.625rem] py-5 w-fit h-fit  bg-white border-y-dark-blue border-y-2 border-r-dark-blue border-r-2 rounded-r-md shadow-lg drop-shadow-lg pointer-events-auto"
+        className="px-[0.625rem] py-5 w-fit h-fit bg-white border-y-dark-blue border-y-2 border-r-dark-blue border-r-2 rounded-r-md shadow-lg drop-shadow-lg pointer-events-auto"
       >
         <Image
           src={LeftArrowSvg}

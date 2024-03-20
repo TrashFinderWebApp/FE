@@ -1,11 +1,11 @@
 import { TrashCan } from "@/types/TrashInfo";
 
 export default function createNewMarker(
-  { lat, lng, status, image, description }: TrashCan,
+  { lat, lng, status, imageList, description }: TrashCan,
   setSelectedMarker: React.Dispatch<React.SetStateAction<TrashCan | null>>,
 ) {
   if (!window.kakao)
-    return { lat, lng, status, marker: null, image, description };
+    return { lat, lng, status, marker: null, imageList, description };
   const icon =
     status === "added"
       ? "/img/TrashcanIconIMG.png"
@@ -23,8 +23,8 @@ export default function createNewMarker(
   });
 
   window.kakao.maps.event.addListener(marker, "click", () => {
-    setSelectedMarker({ lat, lng, status, image, description });
+    setSelectedMarker({ lat, lng, status, imageList, description });
   });
 
-  return { lat, lng, status, marker, image, description };
+  return { lat, lng, status, marker, imageList, description };
 }
