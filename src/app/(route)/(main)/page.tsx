@@ -20,7 +20,8 @@ const randomLatLng = () =>
 
 export default function MainPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const [, setSelectedMarker] = useState<TrashCan | null>(null);
+  // eslint-disable-next-line no-unused-vars
+  const [selectedMarker, setSelectedMarker] = useState<TrashCan | null>(null);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
   const info = useMap(mapRef);
