@@ -1,3 +1,3 @@
 export interface SVGProps {
-  color: string;
+  color?: string;
 }
