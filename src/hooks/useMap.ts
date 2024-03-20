@@ -54,5 +54,5 @@ export default function useMap(ref: React.RefObject<HTMLDivElement>) {
     }
   }, []);
 
-  return mapProps;
+  return { ...mapProps };
 }
