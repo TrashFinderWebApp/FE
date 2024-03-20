@@ -26,7 +26,7 @@ export default function ConfigSVG() {
           width="32"
           height="32"
           transform="rotate(90 31.998 0)"
-          fill="url(#pattern6)"
+          fill="url(#configsvg)"
         />
       </mask>
       <g mask="url(#mask0_237_847)">
@@ -34,7 +34,7 @@ export default function ConfigSVG() {
       </g>
       <defs>
         <pattern
-          id="pattern6"
+          id="configsvg"
           patternContentUnits="objectBoundingBox"
           width="1"
           height="1"

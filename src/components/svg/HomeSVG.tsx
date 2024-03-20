@@ -30,7 +30,7 @@ export default function HomeSVG({ color }: SVGProps) {
               id="Worldwide Location"
               width="32"
               height="32"
-              fill="url(#pattern0)"
+              fill="url(#homesvg)"
             />
           </g>
         </mask>
@@ -40,7 +40,7 @@ export default function HomeSVG({ color }: SVGProps) {
       </g>
       <defs>
         <pattern
-          id="pattern0"
+          id="homesvg"
           patternContentUnits="objectBoundingBox"
           width="1"
           height="1"

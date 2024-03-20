@@ -26,7 +26,7 @@ export default function GetDirectionSVG({ color }: SVGProps) {
               x="1"
               width="30"
               height="30"
-              fill="url(#pattern2)"
+              fill="url(#getdirectionsvg)"
             />
           </mask>
           <g mask="url(#mask0_240_78)">
@@ -47,7 +47,7 @@ export default function GetDirectionSVG({ color }: SVGProps) {
       </g>
       <defs>
         <pattern
-          id="pattern2"
+          id="getdirectionsvg"
           patternContentUnits="objectBoundingBox"
           width="1"
           height="1"
