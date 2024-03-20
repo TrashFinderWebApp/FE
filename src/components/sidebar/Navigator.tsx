@@ -11,30 +11,10 @@ import ConfigSVG from "../svg/ConfigSVG";
 import LoginSVG from "../svg/LoginSVG";
 
 export default function Navigator() {
-  const [iconColors, setIconColors] = useState({
-    Home: { color: "#184E77", background: "#FFFFFF" },
-    FindLocation: { color: "#184E77", background: "#FFFFFF" },
-    GetDirection: { color: "#184E77", background: "#FFFFFF" },
-    AddLocation: { color: "#184E77", background: "#FFFFFF" },
-    Ranking: { color: "#184E77", background: "#FFFFFF" },
-    Announcement: { color: "#184E77", background: "#FFFFFF" },
-  });
+  const [clicked, setClicked] = useState("");
 
-  interface IconColorsProps {
-    iconName: string;
-    newColor: string;
-    newBackground: string;
-  }
-
-  const handleIconClick = ({
-    iconName,
-    newColor,
-    newBackground,
-  }: IconColorsProps) => {
-    setIconColors({
-      ...iconColors,
-      [iconName]: { color: newColor, background: newBackground },
-    });
+  const handleOnClick = (props: string) => {
+    setClicked(props);
   };
 
   return (
@@ -48,16 +28,12 @@ export default function Navigator() {
               aria-label="Home"
               id="Home"
               className=" rounded-lg"
-              style={{ backgroundColor: iconColors.Home.background }}
-              onClick={() =>
-                handleIconClick({
-                  iconName: "Home",
-                  newColor: "#ffffff",
-                  newBackground: "#02C39A",
-                })
-              }
+              style={{
+                backgroundColor: clicked === "Home" ? "#02C39A" : "#FFFFFF",
+              }}
+              onClick={() => handleOnClick("Home")}
             >
-              <HomeSVG color={iconColors.Home.color} />
+              <HomeSVG color={clicked === "Home" ? "#FFFFFF" : "#184E77"} />
             </button>
           </li>
           <li>
@@ -66,16 +42,15 @@ export default function Navigator() {
               aria-label="FindLocation"
               id="FindLocation"
               className="  rounded-lg"
-              style={{ backgroundColor: iconColors.FindLocation.background }}
-              onClick={() =>
-                handleIconClick({
-                  iconName: "FindLocation",
-                  newColor: "#ffffff",
-                  newBackground: "#02C39A",
-                })
-              }
+              style={{
+                backgroundColor:
+                  clicked === "FindLocation" ? "#02C39A" : "#FFFFFF",
+              }}
+              onClick={() => handleOnClick("FindLocation")}
             >
-              <FindLocationSVG color={iconColors.FindLocation.color} />
+              <FindLocationSVG
+                color={clicked === "FindLocation" ? "#FFFFFF" : "#184E77"}
+              />
             </button>
           </li>
           <li>
@@ -84,16 +59,15 @@ export default function Navigator() {
               aria-label="GetDirection"
               id="GetDirection"
               className="  rounded-lg"
-              style={{ backgroundColor: iconColors.GetDirection.background }}
-              onClick={() =>
-                handleIconClick({
-                  iconName: "GetDirection",
-                  newColor: "#ffffff",
-                  newBackground: "#02C39A",
-                })
-              }
+              style={{
+                backgroundColor:
+                  clicked === "GetDirection" ? "#02C39A" : "#FFFFFF",
+              }}
+              onClick={() => handleOnClick("GetDirection")}
             >
-              <GetDirectionSVG color={iconColors.GetDirection.color} />
+              <GetDirectionSVG
+                color={clicked === "GetDirection" ? "#FFFFFF" : "#184E77"}
+              />
             </button>
           </li>
           <li>
@@ -102,16 +76,15 @@ export default function Navigator() {
               aria-label="AddLocation"
               id="AddLocation"
               className="  rounded-lg"
-              style={{ backgroundColor: iconColors.AddLocation.background }}
-              onClick={() =>
-                handleIconClick({
-                  iconName: "AddLocation",
-                  newColor: "#ffffff",
-                  newBackground: "#02C39A",
-                })
-              }
+              style={{
+                backgroundColor:
+                  clicked === "AddLocation" ? "#02C39A" : "#FFFFFF",
+              }}
+              onClick={() => handleOnClick("AddLocation")}
             >
-              <AddLocationSVG color={iconColors.AddLocation.color} />
+              <AddLocationSVG
+                color={clicked === "AddLocation" ? "#FFFFFF" : "#184E77"}
+              />
             </button>
           </li>
           <li>
@@ -120,16 +93,14 @@ export default function Navigator() {
               aria-label="Ranking"
               id="Ranking"
               className=" rounded-lg"
-              style={{ backgroundColor: iconColors.Ranking.background }}
-              onClick={() =>
-                handleIconClick({
-                  iconName: "Ranking",
-                  newColor: "#ffffff",
-                  newBackground: "#02C39A",
-                })
-              }
+              style={{
+                backgroundColor: clicked === "Ranking" ? "#02C39A" : "#FFFFFF",
+              }}
+              onClick={() => handleOnClick("Ranking")}
             >
-              <RankingSVG color={iconColors.Ranking.color} />
+              <RankingSVG
+                color={clicked === "Ranking" ? "#FFFFFF" : "#184E77"}
+              />
             </button>
           </li>
           <li>
@@ -138,20 +109,19 @@ export default function Navigator() {
               aria-label="Announcement"
               id="Announcement"
               className=" rounded-lg"
-              style={{ backgroundColor: iconColors.Announcement.background }}
-              onClick={() =>
-                handleIconClick({
-                  iconName: "Announcement",
-                  newColor: "#ffffff",
-                  newBackground: "#02C39A",
-                })
-              }
+              style={{
+                backgroundColor:
+                  clicked === "Announcement" ? "#02C39A" : "#FFFFFF",
+              }}
+              onClick={() => handleOnClick("Announcement")}
             >
-              <AnnouncementSVG color={iconColors.Announcement.color} />
+              <AnnouncementSVG
+                color={clicked === "Announcement" ? "#FFFFFF" : "#184E77"}
+              />
             </button>
           </li>
         </ul>
-        <ul>
+        <ul className="flex flex-col items-center  space-y-2 py-2">
           <li>
             <ConfigSVG />
           </li>
