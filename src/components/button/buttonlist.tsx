@@ -1,25 +1,24 @@
-import { Transportation } from "@/types/navigate";
 import { ButtonProps } from "@/types/button";
 import Button from "./button";
 
-interface ButtonListProps {
-  selectedStatus: string;
-  setselectedStatus: React.Dispatch<React.SetStateAction<Transportation>>;
-  buttonInfo: ButtonProps[];
+interface ButtonListProps<T> {
+  selectedStatus: T;
+  setselectedStatus: React.Dispatch<React.SetStateAction<T>>;
+  buttonInfo: ButtonProps<T>[];
 }
 
-export default function ButtonList({
+export default function ButtonList<T>({
   selectedStatus,
   setselectedStatus,
   buttonInfo,
-}: ButtonListProps) {
+}: ButtonListProps<T>) {
   return (
     <div className="flex flex-row">
       {buttonInfo.map((item, idx) => (
         <Button
           key={item.content}
           onClick={() => {
-            setselectedStatus(item.type as Transportation);
+            setselectedStatus(item.type);
           }}
           content={item.content}
           className="text-black flex-grow border-[#aaaaaa]"

@@ -1,8 +1,6 @@
-import { Transportation } from "./navigate";
-
-export interface ButtonProps {
+export interface ButtonProps<T> {
   content: string;
-  type: Transportation;
+  type: T;
   icon?: string;
   // eslint-disable-next-line no-unused-vars
   iconComponent?: (...args: any[]) => JSX.Element;
