@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 "use client";
 
 import useMap from "@/hooks/useMap";
@@ -7,6 +9,7 @@ import { TrashCan } from "@/types/TrashInfo";
 import SearchBar from "../../../components/searchbar/searchbar";
 import createNewMarker from "./_components/createnewmarker";
 import FindTrashCan from "./_components/findtrashcan/findtrashcan";
+import Navigation from "./_components/navigation/navigation";
 
 const randomLatLng = () =>
   // 서울의 위도 경도 범위
@@ -48,7 +51,7 @@ export default function MainPage() {
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
         <SearchBar placeholder="장소, 도로, 건물 검색" />
         <section className="my-5">
-          <FindTrashCan />
+          <Navigation />
         </section>
       </Accordion>
       <div
