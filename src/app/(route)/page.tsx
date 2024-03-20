@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { TrashCan } from "@/types/TrashInfo";
+import { useNavigation } from "@/hooks/useNavigation";
 import createNewMarker from "./_components/createnewmarker";
 
 const randomLatLng = () =>
@@ -23,7 +24,14 @@ export default function MainPage() {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
   const info = useMap(mapRef);
+  const { navigate } = useNavigation("car", {
+    startX: 127.11015314141542,
+    startY: 37.39472714688412,
+    endX: 127.10824367964793,
+    endY: 37.401937080111644,
+  });
 
+  console.log(navigate);
   useEffect(() => {
     if (!info.map || !info.clusterer) return;
     const positions = randomLatLng().map((position) =>
