@@ -7,6 +7,15 @@ interface ButtonListProps<T extends unknown> {
   buttonInfo: ButtonProps<T>[];
 }
 
+const buttontTailwindConfig = {
+  selected:
+    "flex-grow rounded-md border-2 border-0 shadow-md bg-light-green text-white scale-105",
+  unselected:
+    "flex-grow rounded-none border-2 border-[#aaaaaa] bg-white text-[#0a0a0a] border-l-0",
+  startIcon: "rounded-l-md border-l-2",
+  endIcon: "rounded-r-md ",
+};
+
 export default function ButtonList<T>({
   selectedStatus,
   setselectedStatus,
@@ -21,43 +30,11 @@ export default function ButtonList<T>({
             setselectedStatus(item.type);
           }}
           content={item.content}
-          className="text-black flex-grow border-[#aaaaaa]"
-          style={{
-            backgroundColor: item.type === selectedStatus ? "#02C39A" : "white",
-            color: item.type === selectedStatus ? "white" : "black",
-            fontWeight: item.type === selectedStatus ? "bold" : "normal",
-            borderColor: item.type === selectedStatus ? "#02C39A" : "#aaaaaa",
-            borderRight: idx === 0 ? "none" : "",
-            borderLeft: idx === buttonInfo.length - 1 ? "none" : "",
-            borderTopLeftRadius:
-              item.type === selectedStatus
-                ? "0.375rem"
-                : idx === 0
-                  ? "0.375rem"
-                  : "0",
-            borderBottomLeftRadius:
-              item.type === selectedStatus
-                ? "0.375rem"
-                : idx === 0
-                  ? "0.375rem"
-                  : "0",
-            borderTopRightRadius:
-              item.type === selectedStatus
-                ? "0.375rem"
-                : idx === buttonInfo.length - 1
-                  ? "0.375rem"
-                  : "0",
-            borderBottomRightRadius:
-              item.type === selectedStatus
-                ? "0.375rem"
-                : idx === buttonInfo.length - 1
-                  ? "0.375rem"
-                  : "0",
-            zIndex: item.type === selectedStatus ? "1" : "0",
-
-            boxShadow:
-              item.type === selectedStatus ? "0 0 0 0.125rem #02C39A" : "",
-          }}
+          className={`${
+            item.type === selectedStatus
+              ? buttontTailwindConfig.selected
+              : buttontTailwindConfig.unselected
+          } ${idx === 0 ? buttontTailwindConfig.startIcon : ""} ${idx === buttonInfo.length - 1 ? buttontTailwindConfig.endIcon : ""}`}
           icon={item.icon}
           iconComponent={item.iconComponent?.({
             fill: item.type === selectedStatus ? "white" : "black",
