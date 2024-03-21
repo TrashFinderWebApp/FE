@@ -12,6 +12,7 @@ interface Coordinate {
   y: number;
 }
 
+// 카카오맵 길찾기 API 응답
 interface RouteSummary {
   origin: Coordinate;
   destination: Coordinate;
@@ -74,4 +75,61 @@ interface RouteResult {
 export interface NavigationResponse {
   trans_id: string;
   routes: RouteResult[];
+}
+
+// SK 길찾기 API 응답
+export interface PointFeatureProperties {
+  index: number;
+  pointIndex?: number;
+  name: string;
+  description: string;
+  direction: string;
+  nearPoiName: string;
+  nearPoiX: string;
+  nearPoiY: string;
+  intersectionName: string;
+  facilityType: string;
+  facilityName: string;
+  turnType: number;
+  pointType: string;
+  totalDistance?: number;
+  totalTime?: number;
+}
+
+export interface LineStringFeatureProperties {
+  index: number;
+  lineIndex: number;
+  name: string;
+  description: string;
+  distance: number;
+  time: number;
+  roadType: number;
+  categoryRoadType: number;
+  facilityType: string;
+  facilityName: string;
+}
+
+export interface PointFeature {
+  type: "Feature";
+  geometry: {
+    type: "Point";
+    coordinates: [number, number];
+  };
+  properties: PointFeatureProperties;
+}
+
+interface LineStringFeature {
+  type: "Feature";
+  geometry: {
+    type: "LineString";
+    coordinates: [number, number][];
+  };
+  properties: LineStringFeatureProperties;
+}
+
+type Feature = PointFeature | LineStringFeature;
+
+export interface FeatureCollection {
+  type: "FeatureCollection";
+  features: Feature[];
 }

@@ -29,6 +29,7 @@ const getFetchInfo = (type: Transportation, payload: NavigationCoordinate) => {
             endName: "도착지",
             format: "json",
             count: 10,
+            speed: 4,
           }),
         },
       ];

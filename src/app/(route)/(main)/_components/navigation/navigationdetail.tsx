@@ -1,7 +1,18 @@
-import { RouteSection } from "@/types/navigate";
+interface Detail {
+  name: string;
+  guidance: string;
+  distance: number;
+  duration: number;
+}
+
+interface PathInfo {
+  duration: number;
+  distance: number;
+  guides: Detail[];
+}
 
 interface NavigationDetailProps {
-  details: RouteSection;
+  details: PathInfo;
   onClick: () => void;
   isSelected: boolean;
 }
@@ -34,7 +45,7 @@ export default function NavigationDetail({
               : `${details.distance}m`}
           </div>
         </div>
-        <div className="px-4 flex flex-col text-start ">
+        <div className="px-4 flex flex-col text-start w-full ">
           {details.guides
             .slice(1, details.guides.length)
             .map((guide, idx, org) => (
@@ -48,10 +59,21 @@ export default function NavigationDetail({
                 <div className="flex-grow basis-0">
                   {`${idx !== org.length - 1 ? `${guide.name} ` : ""}${guide.guidance}`}
                 </div>
-                <div className="text-[#666666]">
+                <div className="text-[#666666] flex gap-2">
+                  {guide.duration > 0 && (
+                    <div className="text-md text-[#AAAAAA] whitespace-nowrap">
+                      {`${
+                        guide.duration > 3600
+                          ? `${(guide.duration / 3600).toFixed(0)}시간`
+                          : ""
+                      }${Math.ceil((guide.duration % 3600) / 60)}분`}
+                    </div>
+                  )}
                   {guide.distance > 1000
                     ? `${(guide.distance / 1000).toFixed(1)}km`
-                    : `${guide.distance}m`}
+                    : guide.distance > 0
+                      ? `${guide.distance}m`
+                      : ""}
                 </div>
               </ol>
             ))}

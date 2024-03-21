@@ -6,14 +6,16 @@ import NavigationIconSVG from "@/components/svg/NavigationIconSVG";
 import WalkerIconSVG from "@/components/svg/WalkerIconSVG";
 import { ButtonProps } from "@/types/button";
 import {
+  FeatureCollection,
   NavigationCoordinate,
   NavigationResponse,
+  PointFeatureProperties,
   RouteSection,
   Transportation,
 } from "@/types/navigate";
 import { useEffect, useState } from "react";
 import useNavigation from "@/hooks/useNavigation";
-import { drawKakaoNavigation } from "./kakaoNavigation";
+import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 
 interface NavigationProps {
@@ -96,24 +98,41 @@ export default function Navigation({ map }: NavigationProps) {
   const [isSettingMarker, setIsSettingMarker] = useState(false);
 
   const [selectedRoute, setSelectedRoute] = useState<number | null>(null);
-  const [section, setSection] = useState<RouteSection[]>([]);
+
+  const [carRoute, setCarRoute] = useState<RouteSection[]>([]);
+  const [walkRoute, setWalkRoute] = useState<FeatureCollection>({
+    type: "FeatureCollection",
+    features: [],
+  });
 
   const path = useNavigation(selectedTransport, navgiateCoordinate);
 
   useEffect(() => {
-    // 카카오맵일때
+    // 카카오 길찾기 일때
 
     if (path.navigate?.trans_id && path.navigate?.routes[0].result_code === 0) {
       const navigate = path.navigate as NavigationResponse;
 
       const { trans_id, routes } = navigate;
       if (navigate && trans_id && routes) {
-        setSection(routes.map((route) => route.sections[0]));
+        setCarRoute(routes.map((route) => route.sections[0]));
+        setSelectedRoute(0);
       }
     }
 
     if (path.navigate?.trans_id && path.navigate?.routes[0].result_code !== 0) {
       alert(path.navigate?.routes[0].result_msg);
+    }
+
+    // SK길찾기일때
+
+    if (path.navigate?.type === "FeatureCollection") {
+      setWalkRoute(path.navigate);
+      setSelectedRoute(0);
+    }
+
+    if (path.navigate?.error && path.navigate?.error.message) {
+      alert(path.navigate?.error.message);
     }
   }, [path.navigate]);
 
@@ -121,13 +140,23 @@ export default function Navigation({ map }: NavigationProps) {
 
   useEffect(() => {
     let erase: () => void;
-    if (selectedRoute !== null && section.length > 0) {
-      if (section[selectedRoute]) {
-        erase = drawKakaoNavigation(section[selectedRoute], map);
-      }
+    if (
+      selectedRoute !== null &&
+      carRoute.length > 0 &&
+      selectedTransport === "car" &&
+      carRoute[selectedRoute]
+    ) {
+      erase = drawKakaoNavigation(carRoute[selectedRoute], map);
+    }
+    if (
+      selectedRoute !== null &&
+      walkRoute.features.length > 0 &&
+      selectedTransport === "walk"
+    ) {
+      erase = drawSKNavigation(walkRoute, map);
     }
     return () => erase?.();
-  }, [selectedRoute]);
+  }, [selectedRoute, selectedTransport, path]);
 
   useEffect(() => {
     if (navgiateCoordinate.startX && navgiateCoordinate.startY) {
@@ -231,14 +260,41 @@ export default function Navigation({ map }: NavigationProps) {
         도착 위치
       </button>
       <ul>
-        {section.map((route, index) => (
+        {selectedTransport === "car" &&
+          carRoute.map((route, index) => (
+            <NavigationDetail
+              key={route.distance + route.duration}
+              details={route}
+              onClick={() => setSelectedRoute(index)}
+              isSelected={selectedRoute === index}
+            />
+          ))}
+        {selectedTransport === "walk" && walkRoute.features.length > 0 && (
           <NavigationDetail
-            key={route.distance + route.duration}
-            details={route}
-            onClick={() => setSelectedRoute(index)}
-            isSelected={selectedRoute === index}
+            details={{
+              distance:
+                (walkRoute.features[0].properties as PointFeatureProperties)
+                  .totalDistance || 0,
+              duration:
+                (walkRoute.features[0].properties as PointFeatureProperties)
+                  .totalTime || 0,
+              guides: walkRoute.features
+                .filter((feature) => feature.geometry.type === "Point")
+                .map((feature) => feature.properties as PointFeatureProperties)
+                .map((property) => {
+                  return {
+                    name: property.name,
+                    guidance: property.description,
+                    distance: 0,
+                    duration: 0,
+                    description: property.description,
+                  };
+                }),
+            }}
+            onClick={() => setSelectedRoute(0)}
+            isSelected
           />
-        ))}
+        )}
       </ul>
     </div>
   );

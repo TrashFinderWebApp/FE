@@ -1,7 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable camelcase */
 
-import { NavigationResponse, RouteSection } from "@/types/navigate";
+import {
+  Feature,
+  FeatureCollection,
+  NavigationResponse,
+  RouteSection,
+} from "@/types/navigate";
 
 const colorByTrafficState = [
   "#1E7EFA",
@@ -71,6 +76,54 @@ export const drawKakaoNavigation = (section: RouteSection, map: any) => {
     });
     guidepoints.forEach((guidepoint) => {
       guidepoint.setMap(null);
+    });
+  };
+};
+
+export const drawSKNavigation = (
+  featureCollection: FeatureCollection,
+  map: any,
+) => {
+  const mapObjects = featureCollection.features.reduce(
+    (acc, feature: Feature) => {
+      if (feature.geometry.type === "LineString") {
+        const polyline = new window.kakao.maps.Polyline({
+          path: feature.geometry.coordinates.map(
+            (coordinate) =>
+              new window.kakao.maps.LatLng(coordinate[1], coordinate[0]),
+          ),
+          strokeWeight: 5,
+          strokeColor: "#1E7EFA",
+          strokeOpacity: 1,
+          strokeStyle: "solid",
+        });
+
+        polyline.setMap(map);
+        acc.push(polyline);
+      } else {
+        const circle = new window.kakao.maps.Circle({
+          center: new window.kakao.maps.LatLng(
+            feature.geometry.coordinates[1],
+            feature.geometry.coordinates[0],
+          ),
+          radius: 3,
+          strokeWeight: 1,
+          strokeColor: "black",
+          strokeOpacity: 1,
+          fillColor: "white",
+          fillOpacity: 1,
+        });
+
+        circle.setMap(map);
+        acc.push(circle);
+      }
+      return acc;
+    },
+    [] as any[],
+  );
+  return () => {
+    mapObjects.forEach((obj) => {
+      obj.setMap(null);
     });
   };
 };
