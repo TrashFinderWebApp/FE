@@ -51,7 +51,7 @@ export default function MainPage() {
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
         <SearchBar placeholder="장소, 도로, 건물 검색" />
         <section className="my-5">
-          <Navigation />
+          <Navigation map={info.map} />
         </section>
       </Accordion>
       <div

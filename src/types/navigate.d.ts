@@ -1,8 +1,8 @@
 export interface Coordinate {
-  startX: number;
-  startY: number;
-  endX: number;
-  endY: number;
+  startX: number | null;
+  startY: number | null;
+  endX: number | null;
+  endY: number | null;
 }
 
 export type Transportation = "walk" | "car" | "public";

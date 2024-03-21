@@ -52,17 +52,22 @@ const getFetchInfo = (type: Transportation, payload: Coordinate) => {
 };
 
 export const useNavigation = (type: Transportation, payload: Coordinate) => {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [QUERY_KEY.navigation, payload, type],
     queryFn: async () =>
       fetch(...(getFetchInfo(type, payload) as [string, {}])).then((res) =>
         res.json(),
       ),
+    enabled: (Object.keys(payload) as Array<keyof Coordinate>).every(
+      (key) => payload[key] !== null,
+    ),
+    refetchOnWindowFocus: false,
   });
 
   return {
     navigate: data,
     isLoading,
     isError,
+    refetch,
   };
 };
