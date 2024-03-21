@@ -38,7 +38,7 @@ export default function Navigation() {
         <p>길찾기</p>
       </h2>
       <div className="w-full border " />
-      <ButtonList<Transportation>
+      <ButtonList
         selectedStatus={selectedTransport}
         setselectedStatus={setSelectedTransport}
         buttonInfo={trasnportInfo}

@@ -1,7 +1,7 @@
 import { ButtonProps } from "@/types/button";
 import Button from "./button";
 
-interface ButtonListProps<T> {
+interface ButtonListProps<T extends unknown> {
   selectedStatus: T;
   setselectedStatus: React.Dispatch<React.SetStateAction<T>>;
   buttonInfo: ButtonProps<T>[];
