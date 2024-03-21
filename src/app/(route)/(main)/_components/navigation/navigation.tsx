@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import useNavigation from "@/hooks/useNavigation";
 import { drawKakaoNavigation } from "./kakaoNavigation";
+import NavigationDetail from "./navigationdetail";
 
 interface NavigationProps {
   map: any;
@@ -116,9 +117,11 @@ export default function Navigation({ map }: NavigationProps) {
     }
   }, [path.navigate]);
 
+  console.log(path.navigate);
+
   useEffect(() => {
     let erase: () => void;
-    if (selectedRoute !== null) {
+    if (selectedRoute !== null && section.length > 0) {
       if (section[selectedRoute]) {
         erase = drawKakaoNavigation(section[selectedRoute], map);
       }
@@ -227,15 +230,16 @@ export default function Navigation({ map }: NavigationProps) {
       >
         도착 위치
       </button>
-      {section.map((route, index) => (
-        <button
-          type="button"
-          key={route.duration}
-          onClick={() => setSelectedRoute(index)}
-        >
-          {index}
-        </button>
-      ))}
+      <ul>
+        {section.map((route, index) => (
+          <NavigationDetail
+            key={route.distance + route.duration}
+            details={route}
+            onClick={() => setSelectedRoute(index)}
+            isSelected={selectedRoute === index}
+          />
+        ))}
+      </ul>
     </div>
   );
 }
