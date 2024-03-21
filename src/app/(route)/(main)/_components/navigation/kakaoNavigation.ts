@@ -1,94 +1,91 @@
+/* eslint-disable import/prefer-default-export */
 /* eslint-disable camelcase */
-interface Coordinate {
-  x: number;
-  y: number;
-}
 
-interface RouteSummary {
-  origin: Coordinate;
-  destination: Coordinate;
-  waypoints: unknown[]; // 결과를 몰라 unknown으로 둠
-  priority: string;
-  bound: {
-    min_x: number;
-    min_y: number;
-    max_x: number;
-    max_y: number;
+import { NavigationResponse, RouteSection } from "@/types/navigate";
+
+const colorByTrafficState = [
+  "#1E7EFA",
+  "#E60023",
+  "#FF4545",
+  "#02C39A",
+  "#1E7EFA",
+  "#E60023",
+];
+
+export const drawKakaoNavigation = (section: RouteSection, map: any) => {
+  const points = section.roads.map((road) => {
+    const zipped: number[][] = [[]];
+
+    road.vertexes.forEach((vertex) => {
+      if (zipped[zipped.length - 1].length === 2) {
+        zipped.push([]);
+      }
+      zipped[zipped.length - 1].push(vertex);
+    });
+
+    return {
+      point: zipped.map((vertex) => {
+        const [x, y] = vertex;
+        return new window.kakao.maps.LatLng(y, x);
+      }),
+      distance: road.distance,
+      duration: road.duration,
+      traffic_state: road.traffic_state,
+    };
+  });
+
+  const lines = points.map((point) => {
+    const polyline = new window.kakao.maps.Polyline({
+      path: point.point,
+      strokeWeight: 5,
+      strokeColor: colorByTrafficState[point.traffic_state],
+      strokeOpacity: 1,
+      strokeStyle: "solid",
+    });
+
+    polyline.setMap(map);
+
+    return polyline;
+  });
+
+  const guidepoints = section.guides.map((guide) => {
+    const circle = new window.kakao.maps.Circle({
+      center: new window.kakao.maps.LatLng(guide.y, guide.x),
+      radius: 3,
+      strokeWeight: 1,
+      strokeColor: "black",
+      strokeOpacity: 1,
+      fillColor: "white",
+      fillOpacity: 1,
+    });
+
+    circle.setMap(map);
+
+    return circle;
+  });
+
+  // 기존의 선과 점을 지도에서 제거
+  return () => {
+    lines.forEach((line) => {
+      line.setMap(null);
+    });
+    guidepoints.forEach((guidepoint) => {
+      guidepoint.setMap(null);
+    });
   };
-  fare: {
-    taxi: number;
-    toll: number;
-  };
-  distance: number;
-  duration: number;
-}
+};
 
-interface RoadSegment {
-  name: string;
-  distance: number;
-  duration: number;
-  traffic_speed: number;
-  traffic_state: number;
-  vertexes: number[];
-}
-
-interface RouteGuide {
-  name: string;
-  x: number;
-  y: number;
-  distance: number;
-  duration: number;
-  type: number;
-  guidance: string;
-  road_index: number;
-}
-
-interface RouteSection {
-  distance: number;
-  duration: number;
-  bound: {
-    min_x: number;
-    min_y: number;
-    max_x: number;
-    max_y: number;
-  };
-  roads: RoadSegment[];
-  guides: RouteGuide[];
-}
-
-interface RouteResult {
-  result_code: number;
-  result_msg: string;
-  summary: RouteSummary;
-  sections: RouteSection[];
-}
-
-interface NavigationResponse {
-  trans_id: string;
-  routes: RouteResult[];
-}
-
-export default function KakaoNavigation(
+export const KakaoNavigation = (
   navigate: NavigationResponse,
   map: any,
-) {
+  sections: RouteSection[],
+  selectedRoute: number | null = null,
+) => {
   const { trans_id, routes } = navigate;
-  if (!navigate || !trans_id || !routes) return null;
-  routes.forEach((route) => {
-    route.sections.forEach((section) => {
-      const points = section.guides.map((guide) => {
-        return new window.kakao.maps.LatLng(guide.y, guide.x);
-      });
+  if (!navigate || !trans_id || !routes) return false;
 
-      const polyline = new window.kakao.maps.Polyline({
-        path: points,
-        strokeWeight: 5,
-        strokeColor: "#FF0000",
-        strokeOpacity: 0.7,
-        strokeStyle: "solid",
-      });
-
-      polyline.setMap(map);
-    });
-  });
-}
+  if (selectedRoute !== null && sections[selectedRoute]) {
+    drawKakaoNavigation(sections[selectedRoute], map);
+  }
+  return true;
+};

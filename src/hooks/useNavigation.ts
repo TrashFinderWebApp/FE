@@ -1,4 +1,4 @@
-import { Coordinate, Transportation } from "@/types/navigate";
+import { NavigationCoordinate, Transportation } from "@/types/navigate";
 import { useQuery } from "@tanstack/react-query";
 
 /* eslint-disable import/prefer-default-export */
@@ -12,7 +12,7 @@ const url = {
   public: "https://apis.openapi.sk.com/transit/routes",
 };
 
-const getFetchInfo = (type: Transportation, payload: Coordinate) => {
+const getFetchInfo = (type: Transportation, payload: NavigationCoordinate) => {
   switch (type) {
     case "walk":
       return [
@@ -37,6 +37,7 @@ const getFetchInfo = (type: Transportation, payload: Coordinate) => {
         `${url.car}?${new URLSearchParams({
           origin: `${payload.startX},${payload.startY}`,
           destination: `${payload.endX},${payload.endY}`,
+          alternatives: "true",
         }).toString()}`,
         {
           method: "GET",
@@ -51,14 +52,17 @@ const getFetchInfo = (type: Transportation, payload: Coordinate) => {
   }
 };
 
-export const useNavigation = (type: Transportation, payload: Coordinate) => {
+export default function useNavigation(
+  type: Transportation,
+  payload: NavigationCoordinate,
+) {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [QUERY_KEY.navigation, payload, type],
     queryFn: async () =>
       fetch(...(getFetchInfo(type, payload) as [string, {}])).then((res) =>
         res.json(),
       ),
-    enabled: (Object.keys(payload) as Array<keyof Coordinate>).every(
+    enabled: (Object.keys(payload) as Array<keyof NavigationCoordinate>).every(
       (key) => payload[key] !== null,
     ),
     refetchOnWindowFocus: false,
@@ -70,4 +74,4 @@ export const useNavigation = (type: Transportation, payload: Coordinate) => {
     isError,
     refetch,
   };
-};
+}

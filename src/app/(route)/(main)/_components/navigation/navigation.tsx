@@ -1,13 +1,19 @@
+/* eslint-disable camelcase */
 import ButtonList from "@/components/button/buttonlist";
 import BusIconSVG from "@/components/svg/BusIconSvg";
 import CarIconSVG from "@/components/svg/CarIconSVG";
 import NavigationIconSVG from "@/components/svg/NavigationIconSVG";
 import WalkerIconSVG from "@/components/svg/WalkerIconSVG";
-import { useNavigation } from "@/hooks/useNavigation";
 import { ButtonProps } from "@/types/button";
-import { Coordinate, Transportation } from "@/types/navigate";
+import {
+  NavigationCoordinate,
+  NavigationResponse,
+  RouteSection,
+  Transportation,
+} from "@/types/navigate";
 import { useEffect, useState } from "react";
-import KakaoNavigation from "./kakaoNavigation";
+import useNavigation from "@/hooks/useNavigation";
+import { drawKakaoNavigation } from "./kakaoNavigation";
 
 interface NavigationProps {
   map: any;
@@ -41,7 +47,9 @@ const trasnportInfo: ButtonProps<Transportation>[] = [
 const hangleTargetCoordinate = (
   type: TargetType,
   map: any,
-  setNavigateCoordinate: React.Dispatch<React.SetStateAction<Coordinate>>,
+  setNavigateCoordinate: React.Dispatch<
+    React.SetStateAction<NavigationCoordinate>
+  >,
   setIsSettingMarker: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   setIsSettingMarker(true);
@@ -71,12 +79,13 @@ export default function Navigation({ map }: NavigationProps) {
   const [selectedTransport, setSelectedTransport] =
     useState<Transportation>("car");
 
-  const [navgiateCoordinate, setNavigateCoordinate] = useState<Coordinate>({
-    startX: null,
-    startY: null,
-    endX: null,
-    endY: null,
-  });
+  const [navgiateCoordinate, setNavigateCoordinate] =
+    useState<NavigationCoordinate>({
+      startX: null,
+      startY: null,
+      endX: null,
+      endY: null,
+    });
 
   const [marker, setMarker] = useState<MarkerType>({
     startMarker: null,
@@ -84,14 +93,38 @@ export default function Navigation({ map }: NavigationProps) {
   });
 
   const [isSettingMarker, setIsSettingMarker] = useState(false);
+
+  const [selectedRoute, setSelectedRoute] = useState<number | null>(null);
+  const [section, setSection] = useState<RouteSection[]>([]);
+
   const path = useNavigation(selectedTransport, navgiateCoordinate);
 
   useEffect(() => {
-    console.log(path);
-    if (path.navigate) {
-      KakaoNavigation(path.navigate, map);
+    // 카카오맵일때
+
+    if (path.navigate?.trans_id && path.navigate?.routes[0].result_code === 0) {
+      const navigate = path.navigate as NavigationResponse;
+
+      const { trans_id, routes } = navigate;
+      if (navigate && trans_id && routes) {
+        setSection(routes.map((route) => route.sections[0]));
+      }
     }
-  }, [path]);
+
+    if (path.navigate?.trans_id && path.navigate?.routes[0].result_code !== 0) {
+      alert(path.navigate?.routes[0].result_msg);
+    }
+  }, [path.navigate]);
+
+  useEffect(() => {
+    let erase: () => void;
+    if (selectedRoute !== null) {
+      if (section[selectedRoute]) {
+        erase = drawKakaoNavigation(section[selectedRoute], map);
+      }
+    }
+    return () => erase?.();
+  }, [selectedRoute]);
 
   useEffect(() => {
     if (navgiateCoordinate.startX && navgiateCoordinate.startY) {
@@ -194,9 +227,15 @@ export default function Navigation({ map }: NavigationProps) {
       >
         도착 위치
       </button>
-      <button type="button" onClick={() => console.log(navgiateCoordinate)}>
-        좌표값 보기
-      </button>
+      {section.map((route, index) => (
+        <button
+          type="button"
+          key={route.duration}
+          onClick={() => setSelectedRoute(index)}
+        >
+          {index}
+        </button>
+      ))}
     </div>
   );
 }
