@@ -13,16 +13,30 @@ import ConfigSVG from "../svg/ConfigSVG";
 import LogoutSVG from "../svg/LogoutSVG";
 import LoginSVG from "../svg/LoginSVG";
 
+type NavigatorBarType =
+  | ""
+  | "Home"
+  | "FindLocation"
+  | "AddLocation"
+  | "Ranking"
+  | "Announcement"
+  | "GetDirection";
+
 export default function Navigator() {
-  const [clicked, setClicked] = useState<string>("");
+  const [clicked, setClicked] = useState<NavigatorBarType>("");
 
   const session = useSession();
 
-  const handleOnClick = (props: string) => {
+  const handleOnClick = (props: NavigatorBarType) => {
     setClicked(props);
   };
 
-  const menuItems = [
+  interface MenuItemType {
+    id: string;
+    icon: JSX.Element;
+  }
+
+  const menuItems: MenuItemType[] = [
     {
       id: "Home",
       icon: <HomeSVG color={clicked === "Home" ? "#ffffff" : "#184E77"} />,
@@ -81,7 +95,7 @@ export default function Navigator() {
                 style={{
                   backgroundColor: clicked === item.id ? "#02C39A" : "#FFFFFF",
                 }}
-                onClick={() => handleOnClick(item.id)}
+                onClick={() => handleOnClick(item.id as NavigatorBarType)}
               >
                 {item.icon}
               </button>
