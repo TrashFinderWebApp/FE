@@ -4,10 +4,11 @@ import {
   FeatureCollection,
   MarkerType,
   NavigationCoordinate,
+  Transportation,
 } from "@/types/navigate";
 
 interface NavigationState {
-  selectedTransport: string;
+  selectedTransport: Transportation;
   navgiateCoordinate: NavigationCoordinate;
   marker: MarkerType;
   isSettingMarker: boolean;
@@ -16,8 +17,15 @@ interface NavigationState {
   walkRoute: FeatureCollection;
 }
 
+interface SetAction {
+  type: "SET";
+  payload: Partial<NavigationState>;
+}
+
+type Action = SetAction;
+
 // 초기 상태
-export const initialState: NavigationState = {
+export const initialNavigationState: NavigationState = {
   selectedTransport: "car",
   navgiateCoordinate: {},
   marker: {},
@@ -30,14 +38,14 @@ export const initialState: NavigationState = {
   },
 };
 
-interface Action {
-  type: string;
-  payload: any;
-}
-
 // 리듀서 함수
-export const reducer = (state: NavigationState, action: Action) => {
+export const navigationReducer = (state: NavigationState, action: Action) => {
   switch (action.type) {
+    case "SET":
+      return {
+        ...state,
+        ...action.payload,
+      };
     default:
       return state;
   }

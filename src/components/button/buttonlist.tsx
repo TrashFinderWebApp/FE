@@ -3,7 +3,8 @@ import Button from "./button";
 
 interface ButtonListProps<T extends unknown> {
   selectedStatus: T;
-  setselectedStatus: React.Dispatch<React.SetStateAction<T>>;
+  // eslint-disable-next-line no-unused-vars
+  setselectedStatus: (status: T) => void;
   buttonInfo: ButtonProps<T>[];
 }
 

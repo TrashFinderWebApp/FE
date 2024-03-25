@@ -13,11 +13,12 @@ import {
   RouteSection,
   Transportation,
 } from "@/types/navigate";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import useNavigation from "@/hooks/useNavigation";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 import handleTargetCoordinate from "./handleTargetCoordinate";
+import { initialNavigationState, navigationReducer } from "./navigationReducer";
 
 interface NavigationProps {
   map: any;
@@ -42,8 +43,13 @@ const trasnportInfo: ButtonProps<Transportation>[] = [
 ];
 
 export default function Navigation({ map }: NavigationProps) {
-  const [selectedTransport, setSelectedTransport] =
-    useState<Transportation>("car");
+  const [{ selectedTransport }, dispatch] = useReducer(
+    navigationReducer,
+    initialNavigationState,
+  );
+
+  const setSelectedTransport = (type: Transportation) =>
+    dispatch({ type: "SET", payload: { selectedTransport: type } });
 
   const [navigateCoordinate, setNavigateCoordinate] =
     useState<NavigationCoordinate>({});
