@@ -6,14 +6,11 @@ import NavigationIconSVG from "@/components/svg/NavigationIconSVG";
 import WalkerIconSVG from "@/components/svg/WalkerIconSVG";
 import { ButtonProps } from "@/types/button";
 import {
-  FeatureCollection,
-  NavigationCoordinate,
   NavigationResponse,
   PointFeatureProperties,
-  RouteSection,
   Transportation,
 } from "@/types/navigate";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import useNavigation from "@/hooks/useNavigation";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
@@ -22,11 +19,6 @@ import { initialNavigationState, navigationReducer } from "./navigationReducer";
 
 interface NavigationProps {
   map: any;
-}
-
-interface MarkerType {
-  startMarker?: any;
-  endMarker?: any;
 }
 
 const trasnportInfo: ButtonProps<Transportation>[] = [
@@ -43,28 +35,18 @@ const trasnportInfo: ButtonProps<Transportation>[] = [
 ];
 
 export default function Navigation({ map }: NavigationProps) {
-  const [{ selectedTransport }, dispatch] = useReducer(
-    navigationReducer,
-    initialNavigationState,
-  );
-
-  const setSelectedTransport = (type: Transportation) =>
-    dispatch({ type: "SET", payload: { selectedTransport: type } });
-
-  const [navigateCoordinate, setNavigateCoordinate] =
-    useState<NavigationCoordinate>({});
-
-  const [marker, setMarker] = useState<MarkerType>({});
-
-  const [isSettingMarker, setIsSettingMarker] = useState(false);
-
-  const [selectedRoute, setSelectedRoute] = useState<number | null>(null);
-
-  const [carRoute, setCarRoute] = useState<RouteSection[]>([]);
-  const [walkRoute, setWalkRoute] = useState<FeatureCollection>({
-    type: "FeatureCollection",
-    features: [],
-  });
+  const [
+    {
+      selectedTransport,
+      navigateCoordinate,
+      isSettingMarker,
+      marker,
+      selectedRoute,
+      carRoute,
+      walkRoute,
+    },
+    dispatch,
+  ] = useReducer(navigationReducer, initialNavigationState);
 
   const path = useNavigation(selectedTransport, navigateCoordinate);
 
@@ -76,8 +58,11 @@ export default function Navigation({ map }: NavigationProps) {
 
       const { trans_id, routes } = navigate;
       if (navigate && trans_id && routes) {
-        setCarRoute(routes.map((route) => route.sections[0]));
-        setSelectedRoute(0);
+        dispatch({
+          type: "SET_CAR_ROUTE",
+          payload: routes.map((route) => route.sections[0]),
+        });
+        dispatch({ type: "SET", payload: { selectedRoute: 0 } });
       }
     }
 
@@ -88,8 +73,8 @@ export default function Navigation({ map }: NavigationProps) {
     // SK길찾기일때
 
     if (path.navigate?.type === "FeatureCollection") {
-      setWalkRoute(path.navigate);
-      setSelectedRoute(0);
+      dispatch({ type: "SET_WALK_ROUTE", payload: path.navigate });
+      dispatch({ type: "SET", payload: { selectedRoute: 0 } });
     }
 
     if (path.navigate?.error && path.navigate?.error.message) {
@@ -127,15 +112,17 @@ export default function Navigation({ map }: NavigationProps) {
           ),
         );
       } else {
-        setMarker((prev) => ({
-          ...prev,
-          startMarker: new window.kakao.maps.Marker({
-            position: new window.kakao.maps.LatLng(
-              navigateCoordinate.startY,
-              navigateCoordinate.startX,
-            ),
-          }),
-        }));
+        dispatch({
+          type: "SET_NAV_MARKER",
+          payload: {
+            startMarker: new window.kakao.maps.Marker({
+              position: new window.kakao.maps.LatLng(
+                navigateCoordinate.startY,
+                navigateCoordinate.startX,
+              ),
+            }),
+          },
+        });
       }
     }
     if (navigateCoordinate.endX && navigateCoordinate.endY) {
@@ -147,15 +134,17 @@ export default function Navigation({ map }: NavigationProps) {
           ),
         );
       } else {
-        setMarker((prev) => ({
-          ...prev,
-          endMarker: new window.kakao.maps.Marker({
-            position: new window.kakao.maps.LatLng(
-              navigateCoordinate.endY,
-              navigateCoordinate.endX,
-            ),
-          }),
-        }));
+        dispatch({
+          type: "SET_NAV_MARKER",
+          payload: {
+            endMarker: new window.kakao.maps.Marker({
+              position: new window.kakao.maps.LatLng(
+                navigateCoordinate.endY,
+                navigateCoordinate.endX,
+              ),
+            }),
+          },
+        });
       }
     }
   }, [navigateCoordinate]);
@@ -180,7 +169,9 @@ export default function Navigation({ map }: NavigationProps) {
       <div className="w-full border " />
       <ButtonList
         selectedStatus={selectedTransport}
-        setselectedStatus={setSelectedTransport}
+        setselectedStatus={(status) =>
+          dispatch({ type: "SET_TRANSPORT", payload: status })
+        }
         buttonInfo={trasnportInfo}
       />
       <form className="flex flex-col gap-0">
@@ -194,12 +185,7 @@ export default function Navigation({ map }: NavigationProps) {
         type="button"
         onClick={() =>
           isSettingMarker ||
-          handleTargetCoordinate(
-            "start",
-            map,
-            setNavigateCoordinate,
-            setIsSettingMarker,
-          )
+          handleTargetCoordinate(map, dispatch, "SET_DEPARTURE")
         }
       >
         시작 위치
@@ -208,12 +194,7 @@ export default function Navigation({ map }: NavigationProps) {
         type="button"
         onClick={() =>
           isSettingMarker ||
-          handleTargetCoordinate(
-            "end",
-            map,
-            setNavigateCoordinate,
-            setIsSettingMarker,
-          )
+          handleTargetCoordinate(map, dispatch, "SET_ARRIVAL")
         }
       >
         도착 위치
@@ -224,7 +205,9 @@ export default function Navigation({ map }: NavigationProps) {
             <NavigationDetail
               key={route.distance + route.duration}
               details={route}
-              onClick={() => setSelectedRoute(index)}
+              onClick={() =>
+                dispatch({ type: "SET_SELECTED_ROUTE", payload: index })
+              }
               isSelected={selectedRoute === index}
             />
           ))}
@@ -250,7 +233,7 @@ export default function Navigation({ map }: NavigationProps) {
                   };
                 }),
             }}
-            onClick={() => setSelectedRoute(0)}
+            onClick={() => dispatch({ type: "SET_SELECTED_ROUTE", payload: 0 })}
             isSelected
           />
         )}
