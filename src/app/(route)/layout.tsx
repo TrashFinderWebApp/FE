@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "./(main)/globals.css";
 import Providers from "@/hooks/useReactQuery";
 import Navigator from "@/components/sidebar/Navigator";
-import AuthProvider from "@/components/auth/authprovider";
+import AuthProvider from "@/components/Auth/AuthProvider";
 
 export const metadata: Metadata = {
   title: "쓰파인더",
@@ -26,8 +26,8 @@ export default function RootLayout({
     <html lang="ko">
       <head />
       <body className="flex flex-row w-screen h-[100svh] font-pretendard ">
-        <Navigator />
         <AuthProvider>
+          <Navigator />
           <Providers>{children}</Providers>
         </AuthProvider>
       </body>
