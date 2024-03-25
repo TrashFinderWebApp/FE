@@ -45,7 +45,7 @@ export default function Navigation({ map }: NavigationProps) {
       walkRoute,
     },
     dispatch,
-  ] = useReducer(navigationReducer, { ...initialNavigationState, map });
+  ] = useReducer(navigationReducer, initialNavigationState);
 
   const path = useNavigation(selectedTransport, navigateCoordinate);
 
