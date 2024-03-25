@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
+
 import ButtonList from "@/components/button/buttonlist";
-import BusIconSVG from "@/components/svg/BusIconSvg";
 import CarIconSVG from "@/components/svg/CarIconSVG";
 import NavigationIconSVG from "@/components/svg/NavigationIconSVG";
 import WalkerIconSVG from "@/components/svg/WalkerIconSVG";
@@ -17,24 +17,18 @@ import { useEffect, useState } from "react";
 import useNavigation from "@/hooks/useNavigation";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
+import handleTargetCoordinate from "./handleTargetCoordinate";
 
 interface NavigationProps {
   map: any;
 }
 
 interface MarkerType {
-  startMarker: any;
-  endMarker: any;
+  startMarker?: any;
+  endMarker?: any;
 }
 
-type TargetType = "start" | "end";
-
 const trasnportInfo: ButtonProps<Transportation>[] = [
-  {
-    content: "대중교통",
-    type: "public",
-    iconComponent: BusIconSVG,
-  },
   {
     content: "자동차",
     type: "car",
@@ -47,53 +41,14 @@ const trasnportInfo: ButtonProps<Transportation>[] = [
   },
 ];
 
-const hangleTargetCoordinate = (
-  type: TargetType,
-  map: any,
-  setNavigateCoordinate: React.Dispatch<
-    React.SetStateAction<NavigationCoordinate>
-  >,
-  setIsSettingMarker: React.Dispatch<React.SetStateAction<boolean>>,
-) => {
-  setIsSettingMarker(true);
-
-  const handleClick = (mouseEvent: any) => {
-    if (type === "start") {
-      setNavigateCoordinate((prev) => ({
-        ...prev,
-        startY: mouseEvent.latLng.getLat(),
-        startX: mouseEvent.latLng.getLng(),
-      }));
-    } else {
-      setNavigateCoordinate((prev) => ({
-        ...prev,
-        endY: mouseEvent.latLng.getLat(),
-        endX: mouseEvent.latLng.getLng(),
-      }));
-    }
-    setIsSettingMarker(false);
-    window.kakao.maps.event.removeListener(map, "click", handleClick);
-  };
-
-  window.kakao.maps.event.addListener(map, "click", handleClick);
-};
-
 export default function Navigation({ map }: NavigationProps) {
   const [selectedTransport, setSelectedTransport] =
     useState<Transportation>("car");
 
-  const [navgiateCoordinate, setNavigateCoordinate] =
-    useState<NavigationCoordinate>({
-      startX: null,
-      startY: null,
-      endX: null,
-      endY: null,
-    });
+  const [navigateCoordinate, setNavigateCoordinate] =
+    useState<NavigationCoordinate>({});
 
-  const [marker, setMarker] = useState<MarkerType>({
-    startMarker: null,
-    endMarker: null,
-  });
+  const [marker, setMarker] = useState<MarkerType>({});
 
   const [isSettingMarker, setIsSettingMarker] = useState(false);
 
@@ -105,7 +60,7 @@ export default function Navigation({ map }: NavigationProps) {
     features: [],
   });
 
-  const path = useNavigation(selectedTransport, navgiateCoordinate);
+  const path = useNavigation(selectedTransport, navigateCoordinate);
 
   useEffect(() => {
     // 카카오 길찾기 일때
@@ -136,8 +91,6 @@ export default function Navigation({ map }: NavigationProps) {
     }
   }, [path.navigate]);
 
-  console.log(path.navigate);
-
   useEffect(() => {
     let erase: () => void;
     if (
@@ -159,12 +112,12 @@ export default function Navigation({ map }: NavigationProps) {
   }, [selectedRoute, selectedTransport, path]);
 
   useEffect(() => {
-    if (navgiateCoordinate.startX && navgiateCoordinate.startY) {
+    if (navigateCoordinate.startX && navigateCoordinate.startY) {
       if (marker.startMarker) {
         marker.startMarker.setPosition(
           new window.kakao.maps.LatLng(
-            navgiateCoordinate.startY,
-            navgiateCoordinate.startX,
+            navigateCoordinate.startY,
+            navigateCoordinate.startX,
           ),
         );
       } else {
@@ -172,19 +125,19 @@ export default function Navigation({ map }: NavigationProps) {
           ...prev,
           startMarker: new window.kakao.maps.Marker({
             position: new window.kakao.maps.LatLng(
-              navgiateCoordinate.startY,
-              navgiateCoordinate.startX,
+              navigateCoordinate.startY,
+              navigateCoordinate.startX,
             ),
           }),
         }));
       }
     }
-    if (navgiateCoordinate.endX && navgiateCoordinate.endY) {
+    if (navigateCoordinate.endX && navigateCoordinate.endY) {
       if (marker.endMarker) {
         marker.endMarker.setPosition(
           new window.kakao.maps.LatLng(
-            navgiateCoordinate.endY,
-            navgiateCoordinate.endX,
+            navigateCoordinate.endY,
+            navigateCoordinate.endX,
           ),
         );
       } else {
@@ -192,14 +145,14 @@ export default function Navigation({ map }: NavigationProps) {
           ...prev,
           endMarker: new window.kakao.maps.Marker({
             position: new window.kakao.maps.LatLng(
-              navgiateCoordinate.endY,
-              navgiateCoordinate.endX,
+              navigateCoordinate.endY,
+              navigateCoordinate.endX,
             ),
           }),
         }));
       }
     }
-  }, [navgiateCoordinate]);
+  }, [navigateCoordinate]);
 
   useEffect(() => {
     if (marker.startMarker) {
@@ -235,7 +188,7 @@ export default function Navigation({ map }: NavigationProps) {
         type="button"
         onClick={() =>
           isSettingMarker ||
-          hangleTargetCoordinate(
+          handleTargetCoordinate(
             "start",
             map,
             setNavigateCoordinate,
@@ -249,7 +202,7 @@ export default function Navigation({ map }: NavigationProps) {
         type="button"
         onClick={() =>
           isSettingMarker ||
-          hangleTargetCoordinate(
+          handleTargetCoordinate(
             "end",
             map,
             setNavigateCoordinate,

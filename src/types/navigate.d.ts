@@ -1,8 +1,8 @@
 export interface NavigationCoordinate {
-  startX: number | null;
-  startY: number | null;
-  endX: number | null;
-  endY: number | null;
+  startX?: number;
+  startY?: number;
+  endX?: number;
+  endY?: number;
 }
 
 export type Transportation = "walk" | "car" | "public";
@@ -132,4 +132,9 @@ type Feature = PointFeature | LineStringFeature;
 export interface FeatureCollection {
   type: "FeatureCollection";
   features: Feature[];
+}
+
+export interface MarkerType {
+  startMarker?: any;
+  endMarker?: any;
 }

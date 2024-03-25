@@ -47,7 +47,7 @@ export default function useMap(ref: React.RefObject<HTMLDivElement>) {
       const script = document.createElement("script");
 
       script.async = true;
-      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false&libraries=services,clusterer,drawing`;
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&libraries=services,clusterer,drawing`;
 
       document.head.appendChild(script);
       script.addEventListener("load", onLoadKakaoMap);
