@@ -5,12 +5,21 @@ import React from "react";
 import navericon from "public/svg/NaverIcon.svg";
 import kakaoicon from "public/svg/KakaoIcon.svg";
 import googleicon from "public/svg/GoogleIcon.svg";
+import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
+  const handleLogin = (provider: string) => async () => {
+    await signIn(provider, {
+      callbackUrl: "/",
+    });
+  };
+
   return (
     <div className="flex flex-col items-center justify-center w-full bg-white">
-      <div className="bg-white p-8 w-[28rem]">
-        <h1 className="text-3xl font-bold mb-6 text-center">로그인</h1>
+      <div className="bg-white shadow-lg p-8 w-[20rem] md:w-[33.5rem]">
+        <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">
+          로그인
+        </h1>
         <div className="mb-4">
           <input
             type="text"
@@ -33,13 +42,40 @@ export default function LoginForm() {
         >
           로그인
         </button>
-        <p className="text-sm text-center text-gray-600 ">
+        <p className="text-sm md:text-base lg:text-lg text-center text-gray-600 ">
           소셜 계정으로 회원가입 및 로그인
         </p>
-        <div className="flex justify-center mt-4 space-x-4 h-12">
-          <Image src={navericon} alt="navericon" />
-          <Image src={kakaoicon} alt="navericon" />
-          <Image src={googleicon} alt="navericon" />
+        <div className="flex justify-center mt-4 space-x-4 lg:space-x-12 h-12">
+          <button
+            className="cursor-pointer scale-75 lg:scale-100"
+            type="button"
+          >
+            <Image
+              src={navericon}
+              alt="navericon"
+              onClick={handleLogin("naver")}
+            />
+          </button>
+          <button
+            className="cursor-pointer scale-75 lg:scale-100"
+            type="button"
+          >
+            <Image
+              src={kakaoicon}
+              alt="navericon"
+              onClick={handleLogin("kakao")}
+            />
+          </button>
+          <button
+            className="cursor-pointer scale-75 lg:scale-100"
+            type="button"
+          >
+            <Image
+              src={googleicon}
+              alt="navericon"
+              onClick={handleLogin("google")}
+            />
+          </button>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./(main)/globals.css";
 import Providers from "@/hooks/useReactQuery";
 import Navigator from "@/components/sidebar/Navigator";
+import AuthProvider from "@/components/Auth/AuthProvider";
 
 export const metadata: Metadata = {
   title: "쓰파인더",
@@ -25,8 +26,10 @@ export default function RootLayout({
     <html lang="ko">
       <head />
       <body className="flex flex-row w-screen h-[100svh] font-pretendard ">
-        <Navigator />
-        <Providers>{children}</Providers>
+        <AuthProvider>
+          <Navigator />
+          <Providers>{children}</Providers>
+        </AuthProvider>
       </body>
     </html>
   );
