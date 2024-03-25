@@ -16,10 +16,12 @@ interface NavigationState {
   selectedRoute: number | null;
   carRoute: RouteSection[];
   walkRoute: FeatureCollection;
+  map: any;
 }
 
 // 초기 상태
 export const initialNavigationState: NavigationState = {
+  map: null,
   selectedTransport: "car",
   navigateCoordinate: {},
   marker: {},
@@ -34,10 +36,10 @@ export const initialNavigationState: NavigationState = {
 
 const Actions = {
   SET: "SET",
+  SET_MAP: "SET_MAP",
   SET_TRANSPORT: "SET_TRANSPORT",
   SET_DEPARTURE: "SET_DEPARTURE",
   SET_ARRIVAL: "SET_ARRIVAL",
-  SET_NAV_MARKER: "SET_NAV_MARKER",
   SET_SELECTED_ROUTE: "SET_SELECTED_ROUTE",
   SET_CAR_ROUTE: "SET_CAR_ROUTE",
   SET_WALK_ROUTE: "SET_WALK_ROUTE",
@@ -48,6 +50,11 @@ export type NavigateActionType = (typeof Actions)[keyof typeof Actions];
 interface SetAction {
   type: "SET";
   payload: Partial<NavigationState>;
+}
+
+interface SetMapAction {
+  type: "SET_MAP";
+  payload: any;
 }
 
 interface SetTransportAction {
@@ -63,11 +70,6 @@ interface SetDepartureAction {
 interface SetArrivalAction {
   type: "SET_ARRIVAL";
   payload: Pick<NavigationCoordinate, "endX" | "endY">;
-}
-
-interface SetNavMarkerAction {
-  type: "SET_NAV_MARKER";
-  payload: MarkerType;
 }
 
 interface SetSelectedRouteAction {
@@ -87,10 +89,10 @@ interface SetWalkRouteAction {
 
 export type NavigationAction =
   | SetAction
+  | SetMapAction
   | SetTransportAction
   | SetDepartureAction
   | SetArrivalAction
-  | SetNavMarkerAction
   | SetSelectedRouteAction
   | SetCarRouteAction
   | SetWalkRouteAction;
@@ -99,21 +101,41 @@ export type NavigationAction =
 export const navigationReducer = (
   state: NavigationState,
   action: NavigationAction,
-) => {
+): NavigationState => {
   switch (action.type) {
     case "SET":
       return {
         ...state,
         ...action.payload,
       };
+    case "SET_MAP": {
+      const startMarker = new window.kakao.maps.Marker({});
+      const endMarker = new window.kakao.maps.Marker({});
+      startMarker.setMap(action.payload);
+      endMarker.setMap(action.payload);
+      return {
+        ...state,
+        marker: {
+          startMarker,
+          endMarker,
+        },
+        map: action.payload,
+      };
+    }
+
     case "SET_TRANSPORT":
       return {
         ...state,
         selectedTransport: action.payload,
       };
 
-    case "SET_DEPARTURE":
-    case "SET_ARRIVAL":
+    case "SET_DEPARTURE": {
+      state.marker.startMarker.setPosition(
+        new window.kakao.maps.LatLng(
+          action.payload.startY,
+          action.payload.startX,
+        ),
+      );
       return {
         ...state,
         navigateCoordinate: {
@@ -121,19 +143,33 @@ export const navigationReducer = (
           ...action.payload,
         },
       };
-    case "SET_NAV_MARKER":
+    }
+
+    case "SET_ARRIVAL": {
+      state.marker.endMarker.setPosition(
+        new window.kakao.maps.LatLng(action.payload.endY, action.payload.endX),
+      );
       return {
         ...state,
-        marker: {
-          ...state.marker,
+        navigateCoordinate: {
+          ...state.navigateCoordinate,
           ...action.payload,
         },
       };
-    case "SET_SELECTED_ROUTE":
+    }
+
+    case "SET_SELECTED_ROUTE": {
+      if (action.payload === null) {
+        return {
+          ...state,
+          selectedRoute: null,
+        };
+      }
       return {
         ...state,
         selectedRoute: action.payload,
       };
+    }
 
     case "SET_CAR_ROUTE":
       return {

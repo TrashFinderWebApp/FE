@@ -53,19 +53,23 @@ const getFetchInfo = (type: Transportation, payload: NavigationCoordinate) => {
   }
 };
 
+const NavigationCoordinateKeys = ["startX", "startY", "endX", "endY"] as const;
+
 export default function useNavigation(
   type: Transportation,
   payload: NavigationCoordinate,
 ) {
+  const isAllCoordinateExist = NavigationCoordinateKeys.every(
+    (key) => payload[key],
+  );
+
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [QUERY_KEY.navigation, payload, type],
     queryFn: async () =>
       fetch(...(getFetchInfo(type, payload) as [string, {}])).then((res) =>
         res.json(),
       ),
-    enabled: (Object.keys(payload) as Array<keyof NavigationCoordinate>).every(
-      (key) => payload[key] !== null,
-    ),
+    enabled: isAllCoordinateExist,
     refetchOnWindowFocus: false,
   });
 

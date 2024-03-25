@@ -40,19 +40,25 @@ export default function Navigation({ map }: NavigationProps) {
       selectedTransport,
       navigateCoordinate,
       isSettingMarker,
-      marker,
       selectedRoute,
       carRoute,
       walkRoute,
     },
     dispatch,
-  ] = useReducer(navigationReducer, initialNavigationState);
+  ] = useReducer(navigationReducer, { ...initialNavigationState, map });
 
   const path = useNavigation(selectedTransport, navigateCoordinate);
 
   useEffect(() => {
-    // 카카오 길찾기 일때
+    if (map) {
+      dispatch({ type: "SET_MAP", payload: map });
+    }
+  }, [map]);
 
+  useEffect(() => {
+    if (path.navigate && Object.keys(path.navigate).length === 0) return;
+
+    // 카카오 길찾기 일때
     if (path.navigate?.trans_id && path.navigate?.routes[0].result_code === 0) {
       const navigate = path.navigate as NavigationResponse;
 
@@ -62,7 +68,7 @@ export default function Navigation({ map }: NavigationProps) {
           type: "SET_CAR_ROUTE",
           payload: routes.map((route) => route.sections[0]),
         });
-        dispatch({ type: "SET", payload: { selectedRoute: 0 } });
+        dispatch({ type: "SET_SELECTED_ROUTE", payload: 0 });
       }
     }
 
@@ -74,13 +80,13 @@ export default function Navigation({ map }: NavigationProps) {
 
     if (path.navigate?.type === "FeatureCollection") {
       dispatch({ type: "SET_WALK_ROUTE", payload: path.navigate });
-      dispatch({ type: "SET", payload: { selectedRoute: 0 } });
+      dispatch({ type: "SET_SELECTED_ROUTE", payload: 0 });
     }
 
     if (path.navigate?.error && path.navigate?.error.message) {
       alert(path.navigate?.error.message);
     }
-  }, [path.navigate]);
+  }, [path]);
 
   useEffect(() => {
     let erase: () => void;
@@ -101,62 +107,6 @@ export default function Navigation({ map }: NavigationProps) {
     }
     return () => erase?.();
   }, [selectedRoute, selectedTransport, path]);
-
-  useEffect(() => {
-    if (navigateCoordinate.startX && navigateCoordinate.startY) {
-      if (marker.startMarker) {
-        marker.startMarker.setPosition(
-          new window.kakao.maps.LatLng(
-            navigateCoordinate.startY,
-            navigateCoordinate.startX,
-          ),
-        );
-      } else {
-        dispatch({
-          type: "SET_NAV_MARKER",
-          payload: {
-            startMarker: new window.kakao.maps.Marker({
-              position: new window.kakao.maps.LatLng(
-                navigateCoordinate.startY,
-                navigateCoordinate.startX,
-              ),
-            }),
-          },
-        });
-      }
-    }
-    if (navigateCoordinate.endX && navigateCoordinate.endY) {
-      if (marker.endMarker) {
-        marker.endMarker.setPosition(
-          new window.kakao.maps.LatLng(
-            navigateCoordinate.endY,
-            navigateCoordinate.endX,
-          ),
-        );
-      } else {
-        dispatch({
-          type: "SET_NAV_MARKER",
-          payload: {
-            endMarker: new window.kakao.maps.Marker({
-              position: new window.kakao.maps.LatLng(
-                navigateCoordinate.endY,
-                navigateCoordinate.endX,
-              ),
-            }),
-          },
-        });
-      }
-    }
-  }, [navigateCoordinate]);
-
-  useEffect(() => {
-    if (marker.startMarker) {
-      marker.startMarker.setMap(map);
-    }
-    if (marker.endMarker) {
-      marker.endMarker.setMap(map);
-    }
-  }, [marker]);
 
   return (
     <div className="flex flex-col gap-4">
