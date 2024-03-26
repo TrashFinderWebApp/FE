@@ -26,7 +26,7 @@ interface Place {
 export default function SearchBar({
   placeholder = "검색어를 입력하세요.",
 }: SearchBarProps) {
-  const { keywordSearch } = useKakaoStore();
+  const { keywordSearch, kakaoMap } = useKakaoStore();
   const debouncedSearch = useCallback(debounce(keywordSearch, 500), [
     keywordSearch,
   ]);
@@ -68,7 +68,15 @@ export default function SearchBar({
           setKeyword(e.currentTarget.value);
         }}
       />
-      <DropDown locationList={locationList} highlight={keyword} />
+      <DropDown
+        locationList={locationList}
+        highlight={keyword}
+        onClick={(location) => {
+          kakaoMap?.setCenter(
+            new window.kakao.maps.LatLng(location.latitude, location.longitude),
+          );
+        }}
+      />
     </div>
   );
 }
