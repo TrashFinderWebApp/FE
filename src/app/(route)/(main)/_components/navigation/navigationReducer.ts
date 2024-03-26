@@ -17,6 +17,7 @@ interface NavigationState {
   carRoute: RouteSection[];
   walkRoute: FeatureCollection;
   map: any;
+  eraseMarker?: () => void;
 }
 
 // 초기 상태
@@ -32,6 +33,7 @@ export const initialNavigationState: NavigationState = {
     type: "FeatureCollection",
     features: [],
   },
+  eraseMarker: () => {},
 };
 
 const Actions = {
@@ -43,6 +45,8 @@ const Actions = {
   SET_SELECTED_ROUTE: "SET_SELECTED_ROUTE",
   SET_CAR_ROUTE: "SET_CAR_ROUTE",
   SET_WALK_ROUTE: "SET_WALK_ROUTE",
+  SWAP_DEPARTURE_ARRIVAL: "SWAP_DEPARTURE_ARRIVAL",
+  REMOVE_DEPARTURE_ARRIVAL: "REMOVE_DEPARTURE_ARRIVAL",
 } as const;
 
 export type NavigateActionType = (typeof Actions)[keyof typeof Actions];
@@ -87,6 +91,14 @@ interface SetWalkRouteAction {
   payload: FeatureCollection;
 }
 
+interface SwapDepartureArrivalAction {
+  type: "SWAP_DEPARTURE_ARRIVAL";
+}
+
+interface RemoveDepartureArrivalAction {
+  type: "REMOVE_DEPARTURE_ARRIVAL";
+}
+
 export type NavigationAction =
   | SetAction
   | SetMapAction
@@ -95,7 +107,9 @@ export type NavigationAction =
   | SetArrivalAction
   | SetSelectedRouteAction
   | SetCarRouteAction
-  | SetWalkRouteAction;
+  | SetWalkRouteAction
+  | SwapDepartureArrivalAction
+  | RemoveDepartureArrivalAction;
 
 // 리듀서 함수
 export const navigationReducer = (
@@ -109,8 +123,25 @@ export const navigationReducer = (
         ...action.payload,
       };
     case "SET_MAP": {
-      const startMarker = new window.kakao.maps.Marker({});
-      const endMarker = new window.kakao.maps.Marker({});
+      const startImageSrc = "svg/departure.svg"; // 마커이미지의 주소입니다
+      const imageSize = new window.kakao.maps.Size(32, 32);
+      const startMarkerImage = new window.kakao.maps.MarkerImage(
+        startImageSrc,
+        imageSize,
+      );
+
+      const endImageSrc = "svg/arrival.svg"; // 마커이미지의 주소입니다
+      const endMarkerImage = new window.kakao.maps.MarkerImage(
+        endImageSrc,
+        imageSize,
+      );
+      const startMarker = new window.kakao.maps.Marker({
+        image: startMarkerImage,
+      });
+
+      const endMarker = new window.kakao.maps.Marker({
+        image: endMarkerImage,
+      });
       startMarker.setMap(action.payload);
       endMarker.setMap(action.payload);
       return {
@@ -136,6 +167,7 @@ export const navigationReducer = (
           action.payload.startX,
         ),
       );
+
       return {
         ...state,
         navigateCoordinate: {
@@ -175,12 +207,42 @@ export const navigationReducer = (
       return {
         ...state,
         carRoute: action.payload,
+        selectedRoute: 0,
       };
     case "SET_WALK_ROUTE":
       return {
         ...state,
         walkRoute: action.payload,
+        selectedRoute: 0,
       };
+
+    case "SWAP_DEPARTURE_ARRIVAL": {
+      const { startX, startY, endX, endY } = state.navigateCoordinate;
+      state.marker.startMarker.setPosition(
+        new window.kakao.maps.LatLng(endY, endX),
+      );
+      state.marker.endMarker.setPosition(
+        new window.kakao.maps.LatLng(startY, startX),
+      );
+      return {
+        ...state,
+        navigateCoordinate: {
+          startX: endX,
+          startY: endY,
+          endX: startX,
+          endY: startY,
+        },
+      };
+    }
+
+    case "REMOVE_DEPARTURE_ARRIVAL": {
+      state.marker.startMarker.setMap(null);
+      state.marker.endMarker.setMap(null);
+      return {
+        ...state,
+        navigateCoordinate: {},
+      };
+    }
     default:
       return state;
   }

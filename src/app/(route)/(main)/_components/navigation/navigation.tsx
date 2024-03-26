@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable camelcase */
 
 import ButtonList from "@/components/button/buttonlist";
@@ -12,14 +13,11 @@ import {
 } from "@/types/navigate";
 import { useEffect, useReducer } from "react";
 import useNavigation from "@/hooks/useNavigation";
+import { useKakaoStore } from "@/stores/useKakaoStore";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 import handleTargetCoordinate from "./handleTargetCoordinate";
 import { initialNavigationState, navigationReducer } from "./navigationReducer";
-
-interface NavigationProps {
-  map: any;
-}
 
 const trasnportInfo: ButtonProps<Transportation>[] = [
   {
@@ -34,7 +32,7 @@ const trasnportInfo: ButtonProps<Transportation>[] = [
   },
 ];
 
-export default function Navigation({ map }: NavigationProps) {
+export default function Navigation() {
   const [
     {
       selectedTransport,
@@ -48,7 +46,7 @@ export default function Navigation({ map }: NavigationProps) {
   ] = useReducer(navigationReducer, initialNavigationState);
 
   const path = useNavigation(selectedTransport, navigateCoordinate);
-
+  const { kakaoMap: map } = useKakaoStore();
   useEffect(() => {
     if (map) {
       dispatch({ type: "SET_MAP", payload: map });
@@ -68,7 +66,6 @@ export default function Navigation({ map }: NavigationProps) {
           type: "SET_CAR_ROUTE",
           payload: routes.map((route) => route.sections[0]),
         });
-        dispatch({ type: "SET_SELECTED_ROUTE", payload: 0 });
       }
     }
 
@@ -80,13 +77,12 @@ export default function Navigation({ map }: NavigationProps) {
 
     if (path.navigate?.type === "FeatureCollection") {
       dispatch({ type: "SET_WALK_ROUTE", payload: path.navigate });
-      dispatch({ type: "SET_SELECTED_ROUTE", payload: 0 });
     }
 
     if (path.navigate?.error && path.navigate?.error.message) {
       alert(path.navigate?.error.message);
     }
-  }, [path]);
+  }, [path.navigate]);
 
   useEffect(() => {
     let erase: () => void;
@@ -124,31 +120,65 @@ export default function Navigation({ map }: NavigationProps) {
         }
         buttonInfo={trasnportInfo}
       />
-      <form className="flex flex-col gap-0">
-        <input
-          className="bg-red border-2 rounded-t-md border-s outline-none"
-          type=""
-        />
-        <input className="bg-red border-2 rounded-b-md outline-none" />
-      </form>
-      <button
-        type="button"
-        onClick={() =>
-          isSettingMarker ||
-          handleTargetCoordinate(map, dispatch, "SET_DEPARTURE")
-        }
-      >
-        시작 위치
-      </button>
-      <button
-        type="button"
-        onClick={() =>
-          isSettingMarker ||
-          handleTargetCoordinate(map, dispatch, "SET_ARRIVAL")
-        }
-      >
-        도착 위치
-      </button>
+      <div className="flex justify-between gap-4">
+        <form className="w-full flex flex-col gap-0">
+          <div className="relative">
+            <input
+              className="w-full border-2 rounded-t-md outline-none px-4 py-2 pl-12"
+              type=""
+              style={{
+                backgroundImage: "url(/svg/departure.svg)",
+                backgroundPosition: "left 0.5rem center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "2rem",
+              }}
+              placeholder="출발지를 입력하세요"
+            />
+            <button
+              type="button"
+              className="absolute top-1/2 transform -translate-y-1/2 right-0 w-10 h-10"
+              onClick={() => {
+                navigator.geolocation.getCurrentPosition((position) => {
+                  dispatch({
+                    type: "SET_DEPARTURE",
+                    payload: {
+                      startY: position.coords.latitude,
+                      startX: position.coords.longitude,
+                    },
+                  });
+                });
+              }}
+            >
+              <img src="/svg/RightMyGps.svg" alt="현재 위치" />
+            </button>
+          </div>
+          <input
+            className=" border-2 border-t-0 rounded-b-md outline-none px-4 py-2 pl-12"
+            style={{
+              backgroundImage: "url(/svg/arrival.svg)",
+              backgroundPosition: "left 0.5rem center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "2rem",
+            }}
+            placeholder="도착지를 입력하세요"
+          />
+        </form>
+        <div className="flex flex-col items-center justify-around">
+          <button
+            type="button"
+            onClick={() => dispatch({ type: "SWAP_DEPARTURE_ARRIVAL" })}
+          >
+            <img src="/svg/swap.svg" alt="출발지 목적지 교체" />
+          </button>
+          <button
+            type="button"
+            onClick={() => dispatch({ type: "REMOVE_DEPARTURE_ARRIVAL" })}
+          >
+            <img src="/svg/remove.svg" alt="값 비우기" />
+          </button>
+        </div>
+      </div>
+
       <ul>
         {selectedTransport === "car" &&
           carRoute.map((route, index) => (

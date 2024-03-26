@@ -1,16 +1,18 @@
+/* eslint-disable no-unused-vars */
+import { useKakaoStore } from "@/stores/useKakaoStore";
 import { useEffect, useState } from "react";
 
-interface mapResult {
+export interface mapResult {
   map: any;
   clusterer: any;
+  keywordSearch: (
+    keyword: string,
+    callback: (data: any, status: any, pagination?: any) => void,
+  ) => void;
 }
 
 export default function useMap(ref: React.RefObject<HTMLDivElement>) {
-  const [mapProps, setMapProps] = useState<mapResult>({
-    map: null,
-    clusterer: null,
-  });
-
+  const { setKakaoMap, setKakaoClusterer, setKeywordSearch } = useKakaoStore();
   useEffect(() => {
     const onLoadKakaoMap = () => {
       if (window.kakao) {
@@ -38,7 +40,11 @@ export default function useMap(ref: React.RefObject<HTMLDivElement>) {
             minLevel: 7,
           });
 
-          setMapProps({ map, clusterer });
+          const placeSearch = new window.kakao.maps.services.Places();
+
+          setKakaoMap(map);
+          setKakaoClusterer(clusterer);
+          setKeywordSearch(placeSearch.keywordSearch);
         });
       }
     };
@@ -53,6 +59,4 @@ export default function useMap(ref: React.RefObject<HTMLDivElement>) {
       script.addEventListener("load", onLoadKakaoMap);
     }
   }, []);
-
-  return { ...mapProps };
 }
