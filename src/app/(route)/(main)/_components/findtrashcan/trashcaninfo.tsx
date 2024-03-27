@@ -19,9 +19,9 @@ export default function TrashCanInfo({
         <img src="svg/AlertIcon.svg" alt="쓰레기통 사진" />
       </div>
       <div className="flex items-center justify-between">
-        {imageList?.slice(0, 2).map((img) => (
+        {imageList?.slice(0, 2).map((img, idx) => (
           <Image
-            key={img}
+            key={`${img + idx}`}
             src={img}
             alt="쓰레기통 사진"
             sizes="100vw"
