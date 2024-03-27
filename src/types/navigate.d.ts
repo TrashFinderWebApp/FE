@@ -1,8 +1,10 @@
 export interface NavigationCoordinate {
   startX?: number;
   startY?: number;
+  startName?: string;
   endX?: number;
   endY?: number;
+  endName?: string;
 }
 
 export type Transportation = "walk" | "car" | "public";
@@ -137,4 +139,30 @@ export interface FeatureCollection {
 export interface MarkerType {
   startMarker?: any;
   endMarker?: any;
+}
+
+export interface Place {
+  address_name: string;
+  category_group_code: string;
+  category_group_name: string;
+  category_name: string;
+  distance: string;
+  id: string;
+  phone: string;
+  place_name: string;
+  place_url: string;
+  road_address_name: string;
+  x: string;
+  y: string;
+}
+
+export interface Location {
+  latitude: number;
+  longitude: number;
+  address: string;
+  address_detail?: string;
+  name?: string;
+  id: string;
+  category?: string;
+  distance?: number;
 }

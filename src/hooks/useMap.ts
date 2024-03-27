@@ -12,7 +12,12 @@ export interface mapResult {
 }
 
 export default function useMap(ref: React.RefObject<HTMLDivElement>) {
-  const { setKakaoMap, setKakaoClusterer, setKeywordSearch } = useKakaoStore();
+  const {
+    setKakaoMap,
+    setKakaoClusterer,
+    setKeywordSearch,
+    setGeoCoder: setGetCoder,
+  } = useKakaoStore();
   useEffect(() => {
     const onLoadKakaoMap = () => {
       if (window.kakao) {
@@ -41,10 +46,11 @@ export default function useMap(ref: React.RefObject<HTMLDivElement>) {
           });
 
           const placeSearch = new window.kakao.maps.services.Places();
-
+          const geocoder = new window.kakao.maps.services.Geocoder();
           setKakaoMap(map);
           setKakaoClusterer(clusterer);
           setKeywordSearch(placeSearch.keywordSearch);
+          setGetCoder(geocoder);
         });
       }
     };

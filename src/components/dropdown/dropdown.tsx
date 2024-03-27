@@ -59,7 +59,10 @@ export default function DropDown({
               role="presentation"
               key={location.id}
               className="flex justify-between"
-              onClick={() => onClick?.(location)}
+              onClick={() => {
+                onClick?.(location);
+                setIsOpened(false);
+              }}
             >
               <div className="flex flex-col">
                 <div className="flex">

@@ -6,22 +6,24 @@ export default function useKeywordSearch(
   keyword: string,
   keywordSearch: (
     word: string,
-    callback: (data: any, status: any, pagination?: any) => void,
+    callback: (data: any, status: any) => void,
   ) => void,
 ) {
-  const [searchResult, setSearchResult] = useState<any>();
+  const [searchResult, setSearchResult] = useState<any[]>([]);
 
-  const debouncedSearch = useCallback(debounce(keywordSearch, 500), []);
+  const debouncedSearch = useCallback(debounce(keywordSearch, 500), [
+    keywordSearch,
+  ]);
 
   useEffect(() => {
     if (keyword) {
       debouncedSearch(keyword, (data, status) => {
         if (status === window.kakao.maps.services.Status.OK) {
           setSearchResult(data);
+        } else {
+          setSearchResult([]);
         }
       });
-    } else {
-      setSearchResult(null);
     }
   }, [keyword]);
 

@@ -7,17 +7,20 @@ import NavigationIconSVG from "@/components/svg/NavigationIconSVG";
 import WalkerIconSVG from "@/components/svg/WalkerIconSVG";
 import { ButtonProps } from "@/types/button";
 import {
+  NavigationCoordinate,
   NavigationResponse,
   PointFeatureProperties,
   Transportation,
 } from "@/types/navigate";
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import useNavigation from "@/hooks/useNavigation";
 import { useKakaoStore } from "@/stores/useKakaoStore";
+import useKeywordSearch from "@/hooks/useKeywordSearch";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
-import handleTargetCoordinate from "./handleTargetCoordinate";
 import { initialNavigationState, navigationReducer } from "./navigationReducer";
+import SearchTarget from "./searchtarget";
+import { resolveKakaoResult } from "./resolveresult";
 
 const trasnportInfo: ButtonProps<Transportation>[] = [
   {
@@ -32,26 +35,56 @@ const trasnportInfo: ButtonProps<Transportation>[] = [
   },
 ];
 
+const checkNavigationCoordinate = (coordinate: NavigationCoordinate) => {
+  return (
+    coordinate.startX && coordinate.startY && coordinate.endX && coordinate.endY
+  );
+};
+
 export default function Navigation() {
   const [
     {
       selectedTransport,
       navigateCoordinate,
-      isSettingMarker,
       selectedRoute,
       carRoute,
       walkRoute,
+      marker,
     },
     dispatch,
   ] = useReducer(navigationReducer, initialNavigationState);
 
   const path = useNavigation(selectedTransport, navigateCoordinate);
-  const { kakaoMap: map } = useKakaoStore();
+  const erase = useRef<() => void>();
+
+  const { kakaoMap: map, geoCoder, keywordSearch } = useKakaoStore();
   useEffect(() => {
     if (map) {
       dispatch({ type: "SET_MAP", payload: map });
     }
   }, [map]);
+
+  useEffect(() => {
+    if (!marker.startMarker) return;
+    navigator.geolocation.getCurrentPosition((position) => {
+      geoCoder.coord2Address(
+        position.coords.longitude,
+        position.coords.latitude,
+        (result: any, status: any) => {
+          if (status === window.kakao.maps.services.Status.OK) {
+            dispatch({
+              type: "SET_DEPARTURE",
+              payload: {
+                startX: position.coords.longitude,
+                startY: position.coords.latitude,
+                startName: result[0].address.address_name,
+              },
+            });
+          }
+        },
+      );
+    });
+  }, [marker]);
 
   useEffect(() => {
     if (path.navigate && Object.keys(path.navigate).length === 0) return;
@@ -85,24 +118,31 @@ export default function Navigation() {
   }, [path.navigate]);
 
   useEffect(() => {
-    let erase: () => void;
+    // navigateCoordinate가 비어있다면
+    if (!checkNavigationCoordinate(navigateCoordinate)) {
+      return () => erase.current?.();
+    }
+
     if (
       selectedRoute !== null &&
       carRoute.length > 0 &&
       selectedTransport === "car" &&
       carRoute[selectedRoute]
     ) {
-      erase = drawKakaoNavigation(carRoute[selectedRoute], map);
+      erase.current = drawKakaoNavigation(carRoute[selectedRoute], map);
     }
     if (
       selectedRoute !== null &&
       walkRoute.features.length > 0 &&
       selectedTransport === "walk"
     ) {
-      erase = drawSKNavigation(walkRoute, map);
+      erase.current = drawSKNavigation(walkRoute, map);
     }
-    return () => erase?.();
-  }, [selectedRoute, selectedTransport, path]);
+
+    return () => erase.current?.();
+  }, [selectedRoute, selectedTransport, path, navigateCoordinate]);
+
+  console.log(navigateCoordinate);
 
   return (
     <div className="flex flex-col gap-4">
@@ -122,45 +162,39 @@ export default function Navigation() {
       />
       <div className="flex justify-between gap-4">
         <form className="w-full flex flex-col gap-0">
-          <div className="relative">
-            <input
-              className="w-full border-2 rounded-t-md outline-none px-4 py-2 pl-12"
-              type=""
-              style={{
-                backgroundImage: "url(/svg/departure.svg)",
-                backgroundPosition: "left 0.5rem center",
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "2rem",
-              }}
-              placeholder="출발지를 입력하세요"
-            />
-            <button
-              type="button"
-              className="absolute top-1/2 transform -translate-y-1/2 right-0 w-10 h-10"
-              onClick={() => {
-                navigator.geolocation.getCurrentPosition((position) => {
-                  dispatch({
-                    type: "SET_DEPARTURE",
-                    payload: {
-                      startY: position.coords.latitude,
-                      startX: position.coords.longitude,
-                    },
-                  });
-                });
-              }}
-            >
-              <img src="/svg/RightMyGps.svg" alt="현재 위치" />
-            </button>
-          </div>
-          <input
-            className=" border-2 border-t-0 rounded-b-md outline-none px-4 py-2 pl-12"
-            style={{
-              backgroundImage: "url(/svg/arrival.svg)",
-              backgroundPosition: "left 0.5rem center",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "2rem",
-            }}
-            placeholder="도착지를 입력하세요"
+          <SearchTarget
+            placeName={navigateCoordinate.startName || ""}
+            placeholder="출발지를 입력하세요."
+            logo="/svg/departure.svg"
+            setTarget={(coordinate) =>
+              dispatch({
+                type: "SET_DEPARTURE",
+                payload: {
+                  startX: coordinate.x,
+                  startY: coordinate.y,
+                  startName: coordinate.name,
+                },
+              })
+            }
+            keywordSearch={keywordSearch}
+            resolveResult={resolveKakaoResult}
+          />
+          <SearchTarget
+            placeholder="도착지를 입력하세요."
+            placeName={navigateCoordinate.endName || ""}
+            logo="/svg/arrival.svg"
+            setTarget={(coordinate) =>
+              dispatch({
+                type: "SET_ARRIVAL",
+                payload: {
+                  endX: coordinate.x,
+                  endY: coordinate.y,
+                  endName: coordinate.name,
+                },
+              })
+            }
+            keywordSearch={keywordSearch}
+            resolveResult={resolveKakaoResult}
           />
         </form>
         <div className="flex flex-col items-center justify-around">
@@ -172,52 +206,60 @@ export default function Navigation() {
           </button>
           <button
             type="button"
-            onClick={() => dispatch({ type: "REMOVE_DEPARTURE_ARRIVAL" })}
+            onClick={() => {
+              dispatch({ type: "REMOVE_DEPARTURE_ARRIVAL" });
+              erase.current?.();
+            }}
           >
             <img src="/svg/remove.svg" alt="값 비우기" />
           </button>
         </div>
       </div>
-
-      <ul>
-        {selectedTransport === "car" &&
-          carRoute.map((route, index) => (
+      {checkNavigationCoordinate(navigateCoordinate) && (
+        <ul>
+          {selectedTransport === "car" &&
+            carRoute.map((route, index) => (
+              <NavigationDetail
+                key={route.distance + route.duration}
+                details={route}
+                onClick={() =>
+                  dispatch({ type: "SET_SELECTED_ROUTE", payload: index })
+                }
+                isSelected={selectedRoute === index}
+              />
+            ))}
+          {selectedTransport === "walk" && walkRoute.features.length > 0 && (
             <NavigationDetail
-              key={route.distance + route.duration}
-              details={route}
+              details={{
+                distance:
+                  (walkRoute.features[0].properties as PointFeatureProperties)
+                    .totalDistance || 0,
+                duration:
+                  (walkRoute.features[0].properties as PointFeatureProperties)
+                    .totalTime || 0,
+                guides: walkRoute.features
+                  .filter((feature) => feature.geometry.type === "Point")
+                  .map(
+                    (feature) => feature.properties as PointFeatureProperties,
+                  )
+                  .map((property) => {
+                    return {
+                      name: property.name,
+                      guidance: property.description,
+                      distance: 0,
+                      duration: 0,
+                      description: property.description,
+                    };
+                  }),
+              }}
               onClick={() =>
-                dispatch({ type: "SET_SELECTED_ROUTE", payload: index })
+                dispatch({ type: "SET_SELECTED_ROUTE", payload: 0 })
               }
-              isSelected={selectedRoute === index}
+              isSelected
             />
-          ))}
-        {selectedTransport === "walk" && walkRoute.features.length > 0 && (
-          <NavigationDetail
-            details={{
-              distance:
-                (walkRoute.features[0].properties as PointFeatureProperties)
-                  .totalDistance || 0,
-              duration:
-                (walkRoute.features[0].properties as PointFeatureProperties)
-                  .totalTime || 0,
-              guides: walkRoute.features
-                .filter((feature) => feature.geometry.type === "Point")
-                .map((feature) => feature.properties as PointFeatureProperties)
-                .map((property) => {
-                  return {
-                    name: property.name,
-                    guidance: property.description,
-                    distance: 0,
-                    duration: 0,
-                    description: property.description,
-                  };
-                }),
-            }}
-            onClick={() => dispatch({ type: "SET_SELECTED_ROUTE", payload: 0 })}
-            isSelected
-          />
-        )}
-      </ul>
+          )}
+        </ul>
+      )}
     </div>
   );
 }

@@ -18,6 +18,7 @@ interface NavigationState {
   walkRoute: FeatureCollection;
   map: any;
   eraseMarker?: () => void;
+  initialLocation: string;
 }
 
 // 초기 상태
@@ -34,6 +35,7 @@ export const initialNavigationState: NavigationState = {
     features: [],
   },
   eraseMarker: () => {},
+  initialLocation: "",
 };
 
 const Actions = {
@@ -68,12 +70,12 @@ interface SetTransportAction {
 
 interface SetDepartureAction {
   type: "SET_DEPARTURE";
-  payload: Pick<NavigationCoordinate, "startX" | "startY">;
+  payload: Pick<NavigationCoordinate, "startX" | "startY" | "startName">;
 }
 
 interface SetArrivalAction {
   type: "SET_ARRIVAL";
-  payload: Pick<NavigationCoordinate, "endX" | "endY">;
+  payload: Pick<NavigationCoordinate, "endX" | "endY" | "endName">;
 }
 
 interface SetSelectedRouteAction {
@@ -168,6 +170,15 @@ export const navigationReducer = (
         ),
       );
 
+      state.map.setCenter(
+        new window.kakao.maps.LatLng(
+          action.payload.startY,
+          action.payload.startX,
+        ),
+      );
+
+      state.marker.startMarker.setVisible(true);
+
       return {
         ...state,
         navigateCoordinate: {
@@ -181,6 +192,12 @@ export const navigationReducer = (
       state.marker.endMarker.setPosition(
         new window.kakao.maps.LatLng(action.payload.endY, action.payload.endX),
       );
+
+      state.map.setCenter(
+        new window.kakao.maps.LatLng(action.payload.endY, action.payload.endX),
+      );
+
+      state.marker.endMarker.setVisible(true);
       return {
         ...state,
         navigateCoordinate: {
@@ -217,7 +234,8 @@ export const navigationReducer = (
       };
 
     case "SWAP_DEPARTURE_ARRIVAL": {
-      const { startX, startY, endX, endY } = state.navigateCoordinate;
+      const { startX, startY, endX, endY, startName, endName } =
+        state.navigateCoordinate;
       state.marker.startMarker.setPosition(
         new window.kakao.maps.LatLng(endY, endX),
       );
@@ -229,15 +247,18 @@ export const navigationReducer = (
         navigateCoordinate: {
           startX: endX,
           startY: endY,
+          startName: endName,
           endX: startX,
           endY: startY,
+          endName: startName,
         },
       };
     }
 
     case "REMOVE_DEPARTURE_ARRIVAL": {
-      state.marker.startMarker.setMap(null);
-      state.marker.endMarker.setMap(null);
+      state.marker.startMarker.setVisible(false);
+      state.marker.endMarker.setVisible(false);
+      state.eraseMarker?.();
       return {
         ...state,
         navigateCoordinate: {},
