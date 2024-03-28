@@ -3,7 +3,7 @@ import SearchBar from "@/components/searchbar/searchbar";
 import { useKakaoStore } from "@/stores/useKakaoStore";
 import { ButtonProps } from "@/types/button";
 import { Coordinate } from "@/types/navigate";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type RegisterType = "new" | "recommend";
 
@@ -32,14 +32,6 @@ const onFileChange =
     }
   };
 
-const moveMarker = (marker: Marker, kakaoMap: any, coordinate: Coordinate) => {
-  const latlng = new window.kakao.maps.LatLng(coordinate.lat, coordinate.lng);
-  marker?.marker.setPosition(latlng);
-  marker?.info.setPosition(latlng);
-
-  kakaoMap.setCenter(latlng);
-};
-
 export default function RegisterTrashCan() {
   const [selectedMethod, setSelectedMethod] = useState<RegisterType>("new");
   const [selectedLocation, setSelectedCoordinate] = useState<Coordinate | null>(
@@ -52,6 +44,19 @@ export default function RegisterTrashCan() {
     info: null,
   });
   const { kakaoMap, keywordSearch } = useKakaoStore();
+
+  const moveMarker = useCallback(
+    (coordinate: Coordinate) => {
+      const pos = new window.kakao.maps.LatLng(coordinate.lat, coordinate.lng);
+
+      marker.current?.marker.setPosition(pos);
+      marker.current?.info.setPosition(pos);
+
+      kakaoMap?.setCenter(pos);
+      setSelectedCoordinate(coordinate);
+    },
+    [marker, kakaoMap],
+  );
 
   useEffect(() => {
     if (kakaoMap) {
@@ -97,7 +102,7 @@ export default function RegisterTrashCan() {
     }
     const onDragMap = () => {
       const center = kakaoMap.getCenter();
-      moveMarker(marker.current, kakaoMap, {
+      moveMarker({
         lat: center.getLat(),
         lng: center.getLng(),
       });
@@ -136,32 +141,12 @@ export default function RegisterTrashCan() {
         <p>1. 등록하고 싶은 쓰레기통의 위치를 지정해 주세요.</p>
         <SearchBar
           placeholder="장소, 도로, 건물 검색"
-          onClick={(location) => {
-            setSelectedCoordinate({
+          onClick={(location) =>
+            moveMarker({
               lat: location.latitude,
               lng: location.longitude,
-            });
-            marker.current.marker.setPosition(
-              new window.kakao.maps.LatLng(
-                location.latitude,
-                location.longitude,
-              ),
-            );
-
-            marker.current.info.setPosition(
-              new window.kakao.maps.LatLng(
-                location.latitude,
-                location.longitude,
-              ),
-            );
-
-            kakaoMap.setCenter(
-              new window.kakao.maps.LatLng(
-                location.latitude,
-                location.longitude,
-              ),
-            );
-          }}
+            })
+          }
           logo="/svg/searchicon.svg"
           keywordSearchMethod={keywordSearch}
           className="border-2 border-light-green rounded-md p-2"
