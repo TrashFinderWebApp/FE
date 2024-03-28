@@ -4,8 +4,7 @@ import useMap from "@/hooks/useMap";
 import { useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { TrashCan } from "@/types/TrashInfo";
-import SearchBar from "../../../components/searchbar/searchbar";
-import Navigation from "./_components/navigation/navigation";
+import RegisterTrashCan from "./_components/registertrashcan/registertrashcan";
 
 export default function MainPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -18,9 +17,8 @@ export default function MainPage() {
   return (
     <>
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
-        <SearchBar placeholder="장소, 도로, 건물 검색" />
         <section className="my-5">
-          <Navigation />
+          <RegisterTrashCan />
         </section>
       </Accordion>
       <div

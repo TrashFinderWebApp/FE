@@ -10,8 +10,8 @@ export interface NavigationCoordinate {
 export type Transportation = "walk" | "car" | "public";
 
 interface Coordinate {
-  x: number;
-  y: number;
+  lng: number;
+  lat: number;
 }
 
 // 카카오맵 길찾기 API 응답

@@ -1,15 +1,5 @@
+import { Location } from "@/types/navigate";
 import { useEffect, useRef, useState } from "react";
-
-interface Location {
-  latitude: number;
-  longitude: number;
-  address: string;
-  address_detail?: string;
-  name?: string;
-  id: string;
-  category?: string;
-  distance?: number;
-}
 
 interface DropDownProps {
   locationList: Location[];
