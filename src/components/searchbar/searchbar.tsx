@@ -1,66 +1,69 @@
-import { useKakaoStore } from "@/stores/useKakaoStore";
-import { useCallback, useMemo, useState } from "react";
-import { Place } from "@/types/navigate";
-import debounce from "../util/debounce";
-import DropDown from "../dropdown/dropdown";
-
 /* eslint-disable no-unused-vars */
+import { resolveKakaoResult } from "@/app/(route)/(main)/_components/navigation/resolveresult";
+import DropDown from "@/components/dropdown/dropdown";
+import useKeywordSearch from "@/hooks/useKeywordSearch";
+import { Location } from "@/types/navigate";
+import { useMemo, useState } from "react";
+
 interface SearchBarProps {
-  placeholder?: string;
+  placeholder: string;
+  keywordSearchMethod: (
+    keyword: string,
+    callback: (data: any, status: any) => void,
+  ) => void;
+  resolveResult?: (result: any) => Location;
+  logo?: string;
+  className?: string;
+  onClick?: (location: Location) => void;
 }
 
 export default function SearchBar({
-  placeholder = "검색어를 입력하세요.",
+  placeholder,
+  logo,
+  keywordSearchMethod,
+  resolveResult = resolveKakaoResult,
+  onClick,
+  className,
 }: SearchBarProps) {
-  const { keywordSearch, kakaoMap } = useKakaoStore();
-  const debouncedSearch = useCallback(debounce(keywordSearch, 500), [
-    keywordSearch,
-  ]);
-  const [searchResult, setSearchResult] = useState<Place[]>([]);
   const [keyword, setKeyword] = useState<string>("");
+  const [placeName, setPlaceName] = useState<string>("");
+  const [selected, setSelected] = useState<boolean>(true);
+  const searchResult = useKeywordSearch(keyword, keywordSearchMethod);
 
   const locationList = useMemo(
-    () =>
-      searchResult.map((result) => ({
-        latitude: Number(result.y),
-        longitude: Number(result.x),
-        address: result.road_address_name,
-        name: result.place_name,
-        id: result.id,
-        category: result.category_group_name,
-      })),
+    () => searchResult.map(resolveResult),
     [searchResult],
   );
 
   return (
     <div className="relative">
       <input
-        className="flex-grow outline-none border-2 border-light-green rounded-md p-2 w-full pl-10"
         placeholder={placeholder}
+        className={`w-full border-2 rounded-b-md outline-none px-4 py-2 pl-12 ${className}`}
         style={{
-          backgroundImage: "url(/svg/searchIcon.svg)",
+          backgroundImage: `url(${logo})`,
           backgroundPosition: "left 0.5rem center",
           backgroundRepeat: "no-repeat",
-          backgroundSize: "1.75rem",
+          backgroundSize: "2rem",
+        }}
+        onClick={(e) => {
+          setKeyword("");
+          setSelected(false);
         }}
         onChange={(e) => {
-          debouncedSearch(e.currentTarget.value, (data, status) => {
-            if (status === window.kakao.maps.services.Status.OK) {
-              setSearchResult(data);
-            } else {
-              setSearchResult([]);
-            }
-          });
           setKeyword(e.currentTarget.value);
+          setSelected(false);
         }}
+        value={selected ? placeName : keyword}
       />
       <DropDown
         locationList={locationList}
         highlight={keyword}
         onClick={(location) => {
-          kakaoMap?.setCenter(
-            new window.kakao.maps.LatLng(location.latitude, location.longitude),
-          );
+          setKeyword(location.name || location.address);
+          setSelected(true);
+          setPlaceName(location.name || location.address);
+          onClick?.(location);
         }}
       />
     </div>
