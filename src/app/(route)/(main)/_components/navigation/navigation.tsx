@@ -142,8 +142,6 @@ export default function Navigation() {
     return () => erase.current?.();
   }, [selectedRoute, selectedTransport, path, navigateCoordinate]);
 
-  console.log(navigateCoordinate);
-
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-[1.25rem] font-extrabold flex items-center gap-2 ">
