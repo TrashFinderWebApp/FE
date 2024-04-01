@@ -1,18 +1,15 @@
-export interface NavigationCoordinate {
-  startX?: number;
-  startY?: number;
-  startName?: string;
-  endX?: number;
-  endY?: number;
-  endName?: string;
-}
-
-export type Transportation = "walk" | "car" | "public";
-
 interface Coordinate {
   x: number;
   y: number;
+  name?: string;
 }
+
+export interface NavigationCoordinate {
+  start?: Coordinate;
+  end?: Coordinate;
+}
+
+export type Transportation = "walk" | "car" | "public";
 
 // 카카오맵 길찾기 API 응답
 interface RouteSummary {
@@ -154,15 +151,4 @@ export interface Place {
   road_address_name: string;
   x: string;
   y: string;
-}
-
-export interface Location {
-  latitude: number;
-  longitude: number;
-  address: string;
-  address_detail?: string;
-  name?: string;
-  id: string;
-  category?: string;
-  distance?: number;
 }

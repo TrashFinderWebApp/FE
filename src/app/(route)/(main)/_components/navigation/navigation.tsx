@@ -37,7 +37,12 @@ const trasnportInfo: ButtonProps<Transportation>[] = [
 
 const checkNavigationCoordinate = (coordinate: NavigationCoordinate) => {
   return (
-    coordinate.startX && coordinate.startY && coordinate.endX && coordinate.endY
+    coordinate.start &&
+    coordinate.start.x !== undefined &&
+    coordinate.start.y !== undefined &&
+    coordinate.end &&
+    coordinate.end.x !== undefined &&
+    coordinate.end.y !== undefined
   );
 };
 
@@ -75,9 +80,9 @@ export default function Navigation() {
             dispatch({
               type: "SET_DEPARTURE",
               payload: {
-                startX: position.coords.longitude,
-                startY: position.coords.latitude,
-                startName: result[0].address.address_name,
+                x: position.coords.longitude,
+                y: position.coords.latitude,
+                name: result[0].address.address_name,
               },
             });
           }
@@ -163,16 +168,16 @@ export default function Navigation() {
       <div className="flex justify-between gap-4">
         <form className="w-full flex flex-col gap-0">
           <SearchTarget
-            placeName={navigateCoordinate.startName || ""}
+            placeName={navigateCoordinate.start?.name || ""}
             placeholder="출발지를 입력하세요."
             logo="/svg/departure.svg"
             setTarget={(coordinate) =>
               dispatch({
                 type: "SET_DEPARTURE",
                 payload: {
-                  startX: coordinate.x,
-                  startY: coordinate.y,
-                  startName: coordinate.name,
+                  x: coordinate.x,
+                  y: coordinate.y,
+                  name: coordinate.name,
                 },
               })
             }
@@ -181,15 +186,15 @@ export default function Navigation() {
           />
           <SearchTarget
             placeholder="도착지를 입력하세요."
-            placeName={navigateCoordinate.endName || ""}
+            placeName={navigateCoordinate.end?.name || ""}
             logo="/svg/arrival.svg"
             setTarget={(coordinate) =>
               dispatch({
                 type: "SET_ARRIVAL",
                 payload: {
-                  endX: coordinate.x,
-                  endY: coordinate.y,
-                  endName: coordinate.name,
+                  x: coordinate.x,
+                  y: coordinate.y,
+                  name: coordinate.name,
                 },
               })
             }

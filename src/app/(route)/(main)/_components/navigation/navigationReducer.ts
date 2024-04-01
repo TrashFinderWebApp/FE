@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import {
+  Coordinate,
   FeatureCollection,
   MarkerType,
   NavigationCoordinate,
@@ -70,12 +71,12 @@ interface SetTransportAction {
 
 interface SetDepartureAction {
   type: "SET_DEPARTURE";
-  payload: Pick<NavigationCoordinate, "startX" | "startY" | "startName">;
+  payload: Coordinate;
 }
 
 interface SetArrivalAction {
   type: "SET_ARRIVAL";
-  payload: Pick<NavigationCoordinate, "endX" | "endY" | "endName">;
+  payload: Coordinate;
 }
 
 interface SetSelectedRouteAction {
@@ -164,17 +165,11 @@ export const navigationReducer = (
 
     case "SET_DEPARTURE": {
       state.marker.startMarker.setPosition(
-        new window.kakao.maps.LatLng(
-          action.payload.startY,
-          action.payload.startX,
-        ),
+        new window.kakao.maps.LatLng(action.payload.y, action.payload.x),
       );
 
       state.map.setCenter(
-        new window.kakao.maps.LatLng(
-          action.payload.startY,
-          action.payload.startX,
-        ),
+        new window.kakao.maps.LatLng(action.payload.y, action.payload.x),
       );
 
       state.marker.startMarker.setVisible(true);
@@ -183,18 +178,18 @@ export const navigationReducer = (
         ...state,
         navigateCoordinate: {
           ...state.navigateCoordinate,
-          ...action.payload,
+          start: { ...action.payload },
         },
       };
     }
 
     case "SET_ARRIVAL": {
       state.marker.endMarker.setPosition(
-        new window.kakao.maps.LatLng(action.payload.endY, action.payload.endX),
+        new window.kakao.maps.LatLng(action.payload.y, action.payload.x),
       );
 
       state.map.setCenter(
-        new window.kakao.maps.LatLng(action.payload.endY, action.payload.endX),
+        new window.kakao.maps.LatLng(action.payload.y, action.payload.x),
       );
 
       state.marker.endMarker.setVisible(true);
@@ -202,7 +197,7 @@ export const navigationReducer = (
         ...state,
         navigateCoordinate: {
           ...state.navigateCoordinate,
-          ...action.payload,
+          end: { ...action.payload },
         },
       };
     }
@@ -234,8 +229,15 @@ export const navigationReducer = (
       };
 
     case "SWAP_DEPARTURE_ARRIVAL": {
-      const { startX, startY, endX, endY, startName, endName } =
-        state.navigateCoordinate;
+      const nav = state.navigateCoordinate;
+
+      if (!nav.start || !nav.end) return state;
+
+      const startX = nav.start?.x;
+      const startY = nav.start?.y;
+      const endX = nav.end?.x;
+      const endY = nav.end?.y;
+
       state.marker.startMarker.setPosition(
         new window.kakao.maps.LatLng(endY, endX),
       );
@@ -245,12 +247,8 @@ export const navigationReducer = (
       return {
         ...state,
         navigateCoordinate: {
-          startX: endX,
-          startY: endY,
-          startName: endName,
-          endX: startX,
-          endY: startY,
-          endName: startName,
+          start: { ...nav.end },
+          end: { ...nav.start },
         },
       };
     }

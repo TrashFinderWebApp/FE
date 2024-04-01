@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import DropDown from "@/components/dropdown/dropdown";
 import useKeywordSearch from "@/hooks/useKeywordSearch";
-import { Coordinate, Location, Place } from "@/types/navigate";
+import { LocationInfo, OptionalTrashCanInfo } from "@/types/TrashInfo";
+import { Coordinate } from "@/types/navigate";
 import { useMemo, useState } from "react";
 
 interface SearchTargetProps {
@@ -13,7 +14,7 @@ interface SearchTargetProps {
     keyword: string,
     callback: (data: any, status: any) => void,
   ) => void;
-  resolveResult: (result: any) => Location;
+  resolveResult: (result: any) => LocationInfo & { id: string };
 }
 
 export default function SearchTarget({
@@ -60,8 +61,8 @@ export default function SearchTarget({
         onClick={(location) => {
           setKeyword(location.name || location.address);
           setTarget({
-            x: Number(location.longitude),
-            y: Number(location.latitude),
+            x: Number(location.lng),
+            y: Number(location.lat),
             name: location.name || location.address,
           });
           setSelected(true);

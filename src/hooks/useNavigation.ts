@@ -36,8 +36,8 @@ const getFetchInfo = (type: Transportation, payload: NavigationCoordinate) => {
     case "car":
       return [
         `${url.car}?${new URLSearchParams({
-          origin: `${payload.startX},${payload.startY}`,
-          destination: `${payload.endX},${payload.endY}`,
+          origin: `${payload.start?.x},${payload.start?.y}`,
+          destination: `${payload.end?.x},${payload.end?.y}`,
           alternatives: "true",
         }).toString()}`,
         {
@@ -53,14 +53,14 @@ const getFetchInfo = (type: Transportation, payload: NavigationCoordinate) => {
   }
 };
 
-const NavigationCoordinateKeys = ["startX", "startY", "endX", "endY"] as const;
+const NavigationCoordinateKeys = ["start", "end"] as const;
 
 export default function useNavigation(
   type: Transportation,
   payload: NavigationCoordinate,
 ) {
   const isAllCoordinateExist = NavigationCoordinateKeys.every(
-    (key) => payload[key],
+    (key) => payload[key]?.x && payload[key]?.y,
   );
 
   const { data, isLoading, isError, refetch } = useQuery({
