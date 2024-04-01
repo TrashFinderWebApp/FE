@@ -3,14 +3,11 @@
 import useMap from "@/hooks/useMap";
 import { useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
-import { TrashCan } from "@/types/TrashInfo";
 import SearchBar from "../../../components/searchbar/searchbar";
 import Navigation from "./_components/navigation/navigation";
 
 export default function MainPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
-  // eslint-disable-next-line no-unused-vars
-  const [selectedMarker, setSelectedMarker] = useState<TrashCan | null>(null);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
   useMap(mapRef);
