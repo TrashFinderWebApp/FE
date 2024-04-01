@@ -3,10 +3,9 @@
 import useMap from "@/hooks/useMap";
 import { useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
-import { TrashCan } from "@/types/TrashInfo";
 import FindTrashCan from "../_components/findtrashcan/findtrashcan";
-import Navigation from "../_components/navigation/navigation";
 import RegisterTrashCan from "../_components/registertrashcan/registertrashcan";
+import Navigation from "../_components/navigation/navigation";
 
 const selectedAccordion = (accordion: string) => {
   switch (accordion) {
@@ -24,18 +23,18 @@ const selectedAccordion = (accordion: string) => {
 export default function MainPage({
   params,
 }: {
-  params: { accordion: string };
+  params: { accordion: string[] };
 }) {
   const mapRef = useRef<HTMLDivElement | null>(null);
-  // eslint-disable-next-line no-unused-vars
-  const [selectedMarker, setSelectedMarker] = useState<TrashCan | null>(null);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   useMap(mapRef);
   return (
     <>
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
         <section className="my-5">
-          {selectedAccordion(params.accordion)}
+          {selectedAccordion(
+            params.accordion ? params.accordion[0] : "findtrashcan",
+          )}
         </section>
       </Accordion>
       <div

@@ -2,8 +2,10 @@
 import { resolveKakaoResult } from "@/app/(route)/(main)/_components/navigation/resolveresult";
 import DropDown from "@/components/dropdown/dropdown";
 import useKeywordSearch from "@/hooks/useKeywordSearch";
-import { Location } from "@/types/navigate";
+import { LocationInfo } from "@/types/TrashInfo";
 import { useMemo, useState } from "react";
+
+type SearchLocation = LocationInfo & { id: string };
 
 interface SearchBarProps {
   placeholder: string;
@@ -11,10 +13,11 @@ interface SearchBarProps {
     keyword: string,
     callback: (data: any, status: any) => void,
   ) => void;
-  resolveResult?: (result: any) => Location;
+  resolveResult?: (result: any) => SearchLocation;
   logo?: string;
   className?: string;
-  onClick?: (location: Location) => void;
+  onClick?: (location: SearchLocation) => void;
+  placeName?: string;
 }
 
 export default function SearchBar({
@@ -24,9 +27,10 @@ export default function SearchBar({
   resolveResult = resolveKakaoResult,
   onClick,
   className,
+  placeName,
 }: SearchBarProps) {
   const [keyword, setKeyword] = useState<string>("");
-  const [placeName, setPlaceName] = useState<string>("");
+  const [_placeName, setPlaceName] = useState<string>(placeName || "");
   const [selected, setSelected] = useState<boolean>(true);
   const searchResult = useKeywordSearch(keyword, keywordSearchMethod);
 

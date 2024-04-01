@@ -1,11 +1,13 @@
-import { Location } from "@/types/navigate";
+import { LocationInfo } from "@/types/TrashInfo";
 import { useEffect, useRef, useState } from "react";
 
+type LocationIdType = LocationInfo & { id: string };
+
 interface DropDownProps {
-  locationList: Location[];
+  locationList: LocationIdType[];
   highlight?: string;
   // eslint-disable-next-line no-unused-vars
-  onClick: (location: Location) => void;
+  onClick: (location: LocationIdType) => void;
 }
 
 export default function DropDown({
