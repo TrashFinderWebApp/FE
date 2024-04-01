@@ -34,6 +34,7 @@ const onFileChange =
 
 export default function RegisterTrashCan() {
   const [selectedMethod, setSelectedMethod] = useState<RegisterType>("new");
+  // eslint-disable-next-line no-unused-vars
   const [selectedLocation, setSelectedCoordinate] = useState<Coordinate | null>(
     null,
   );
@@ -53,7 +54,6 @@ export default function RegisterTrashCan() {
       marker.current?.info.setPosition(pos);
 
       kakaoMap?.setCenter(pos);
-      setSelectedCoordinate(coordinate);
     },
     [marker, kakaoMap],
   );
@@ -107,22 +107,32 @@ export default function RegisterTrashCan() {
         lng: center.getLng(),
       });
     };
-
+    const onDragEnd = () => {
+      const center = kakaoMap.getCenter();
+      setSelectedCoordinate({
+        lat: center.getLat(),
+        lng: center.getLng(),
+      });
+    };
     if (kakaoMap) {
       window.kakao.maps.event.addListener(kakaoMap, "drag", onDragMap);
+      window.kakao.maps.event.addListener(kakaoMap, "dragend", onDragEnd);
     }
 
     return () => {
       if (kakaoMap) {
         window.kakao.maps.event.removeListener(kakaoMap, "drag", onDragMap);
+        window.kakao.maps.event.removeListener(kakaoMap, "dragend", onDragEnd);
       }
     };
   }, [kakaoMap]);
 
   return (
     <div className="flex flex-col gap-4">
-      <h1>target:{`${selectedLocation?.lat} ${selectedLocation?.lng}`}</h1>
-      <h2 className="font-extrabold text-[1.25rem] py-2">새로운 장소</h2>
+      <h2 className="flex items-center gap-2">
+        <img src="svg/CameraIcon.svg" alt="카메라아이콘" />
+        <p className="font-extrabold text-[1.25rem] py-2"> 새로운 장소</p>
+      </h2>
       <ButtonList
         selectedStatus={selectedMethod}
         setselectedStatus={(status) => {

@@ -4,21 +4,38 @@ import useMap from "@/hooks/useMap";
 import { useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { TrashCan } from "@/types/TrashInfo";
-import RegisterTrashCan from "./_components/registertrashcan/registertrashcan";
+import FindTrashCan from "../_components/findtrashcan/findtrashcan";
+import Navigation from "../_components/navigation/navigation";
+import RegisterTrashCan from "../_components/registertrashcan/registertrashcan";
 
-export default function MainPage() {
+const selectedAccordion = (accordion: string) => {
+  switch (accordion) {
+    case "findtrashcan":
+      return <FindTrashCan />;
+    case "registertrashcan":
+      return <RegisterTrashCan />;
+    case "navigation":
+      return <Navigation />;
+    default:
+      return <FindTrashCan />;
+  }
+};
+
+export default function MainPage({
+  params,
+}: {
+  params: { accordion: string };
+}) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   // eslint-disable-next-line no-unused-vars
   const [selectedMarker, setSelectedMarker] = useState<TrashCan | null>(null);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
-
   useMap(mapRef);
-
   return (
     <>
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
         <section className="my-5">
-          <RegisterTrashCan />
+          {selectedAccordion(params.accordion)}
         </section>
       </Accordion>
       <div
