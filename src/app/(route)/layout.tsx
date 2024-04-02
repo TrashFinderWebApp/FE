@@ -26,8 +26,8 @@ export default function RootLayout({
     <html lang="ko">
       <head />
       <body className="flex flex-row w-screen h-[100svh] font-pretendard ">
-        <Navigator />
         <AuthProvider>
+          <Navigator />
           <Providers>{children}</Providers>
         </AuthProvider>
       </body>

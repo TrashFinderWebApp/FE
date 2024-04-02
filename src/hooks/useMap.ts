@@ -13,6 +13,7 @@ export interface mapResult {
 
 export default function useMap(ref: React.RefObject<HTMLDivElement>) {
   const {
+    kakaoMap,
     setKakaoMap,
     setKakaoClusterer,
     setKeywordSearch,
@@ -54,6 +55,9 @@ export default function useMap(ref: React.RefObject<HTMLDivElement>) {
         });
       }
     };
+    if (window.kakao) {
+      onLoadKakaoMap();
+    }
 
     if (!window.kakao) {
       const script = document.createElement("script");

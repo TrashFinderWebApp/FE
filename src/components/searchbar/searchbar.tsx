@@ -58,7 +58,7 @@ export default function SearchBar({
           setKeyword(e.currentTarget.value);
           setSelected(false);
         }}
-        value={selected ? placeName : keyword}
+        value={selected ? _placeName : keyword}
       />
       <DropDown
         locationList={locationList}

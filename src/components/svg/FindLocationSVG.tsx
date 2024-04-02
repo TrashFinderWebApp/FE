@@ -31,7 +31,7 @@ export default function FindLocationSVG({ color }: SVGProps) {
               x="7"
               width="32"
               height="32"
-              fill="url(#pattern1)"
+              fill="url(#findlocationsvg)"
             />
           </mask>
           <g mask="url(#mask0_237_826)">
@@ -47,7 +47,7 @@ export default function FindLocationSVG({ color }: SVGProps) {
       </g>
       <defs>
         <pattern
-          id="pattern1"
+          id="findlocationsvg"
           patternContentUnits="objectBoundingBox"
           width="1"
           height="1"
