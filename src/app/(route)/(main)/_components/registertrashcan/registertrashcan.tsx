@@ -48,7 +48,7 @@ export default function RegisterTrashCan() {
 
   const moveMarker = useCallback(
     (coordinate: Coordinate) => {
-      const pos = new window.kakao.maps.LatLng(coordinate.lat, coordinate.lng);
+      const pos = new window.kakao.maps.LatLng(coordinate.y, coordinate.x);
 
       marker.current?.marker.setPosition(pos);
       marker.current?.info.setPosition(pos);
@@ -59,11 +59,18 @@ export default function RegisterTrashCan() {
   );
 
   useEffect(() => {
+    return () => {
+      marker.current.marker?.setMap(null);
+      marker.current.info?.setMap(null);
+    };
+  }, []);
+
+  useEffect(() => {
     if (kakaoMap) {
       navigator.geolocation.getCurrentPosition((position) => {
         setSelectedCoordinate({
-          lng: position.coords.longitude,
-          lat: position.coords.latitude,
+          y: position.coords.longitude,
+          x: position.coords.latitude,
         });
 
         const imageSrc = "/svg/selectmarker.svg";
@@ -103,15 +110,15 @@ export default function RegisterTrashCan() {
     const onDragMap = () => {
       const center = kakaoMap.getCenter();
       moveMarker({
-        lat: center.getLat(),
-        lng: center.getLng(),
+        y: center.getLat(),
+        x: center.getLng(),
       });
     };
     const onDragEnd = () => {
       const center = kakaoMap.getCenter();
       setSelectedCoordinate({
-        lat: center.getLat(),
-        lng: center.getLng(),
+        y: center.getLat(),
+        x: center.getLng(),
       });
     };
     if (kakaoMap) {
@@ -153,8 +160,8 @@ export default function RegisterTrashCan() {
           placeholder="장소, 도로, 건물 검색"
           onClick={(location) =>
             moveMarker({
-              lat: location.latitude,
-              lng: location.longitude,
+              y: location.lat,
+              x: location.lng,
             })
           }
           logo="/svg/searchicon.svg"

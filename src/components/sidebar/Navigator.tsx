@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+
+import { usePathname } from "next/navigation";
 import HomeSVG from "../svg/HomeSVG";
 import AddLocationSVG from "../svg/AddLocationSVG";
 import RankingSVG from "../svg/RankingSVG";
@@ -56,13 +57,13 @@ const menuItems: MenuItemType[] = [
 ];
 
 export default function Navigator() {
-  const [clicked, setClicked] = useState<NavigatorBarType>("");
-  const router = useRouter();
+  const pathName = usePathname();
+  const [clicked, setClicked] = useState<NavigatorBarType>(
+    pathName.slice(1) as NavigatorBarType,
+  );
   const session = useSession();
-
   const handleOnClick = (props: NavigatorBarType) => {
     setClicked(props);
-    router.push(`/${props}`);
   };
 
   return (
@@ -72,8 +73,8 @@ export default function Navigator() {
         <ul className="flex flex-col items-center space-y-2 py-2">
           {menuItems.map((item) => (
             <li key={item.id} className="w-full">
-              <button
-                type="button"
+              <Link
+                href={`/${item.id}`}
                 className="rounded-lg w-full flex justify-center items-center aspect-square"
                 style={{
                   backgroundColor: clicked === item.id ? "#02C39A" : "#FFFFFF",
@@ -83,7 +84,7 @@ export default function Navigator() {
                 {item.icon({
                   color: clicked === item.id ? "#FFFFFF" : "#184E77",
                 })}
-              </button>
+              </Link>
             </li>
           ))}
         </ul>
