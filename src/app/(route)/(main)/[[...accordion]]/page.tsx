@@ -4,6 +4,7 @@ import FindTrashCan from "../_components/findtrashcan/findtrashcan";
 import RegisterTrashCan from "../_components/registertrashcan/registertrashcan";
 import Navigation from "../_components/navigation/navigation";
 import Home from "../_components/home/home";
+import Ranking from "../_components/ranking/ranking";
 
 const selectedAccordion = (accordion: string) => {
   switch (accordion) {
@@ -13,6 +14,8 @@ const selectedAccordion = (accordion: string) => {
       return <RegisterTrashCan />;
     case "GetDirection":
       return <Navigation />;
+    case "Ranking":
+      return <Ranking />;
     default:
       return <Home />;
   }
