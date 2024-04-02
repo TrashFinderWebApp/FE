@@ -40,10 +40,12 @@ export default function RegisterTrashCan() {
   );
   const [selectedImage, setSelectedImage] = useState<File[]>([]);
   const explanation = useRef<string>("");
+
   const marker = useRef<Marker>({
     marker: null,
     info: null,
   });
+
   const { kakaoMap, keywordSearch } = useKakaoStore();
 
   const moveMarker = useCallback(
@@ -59,15 +61,10 @@ export default function RegisterTrashCan() {
   );
 
   useEffect(() => {
-    return () => {
-      marker.current.marker?.setMap(null);
-      marker.current.info?.setMap(null);
-    };
-  }, []);
-
-  useEffect(() => {
     if (kakaoMap) {
       navigator.geolocation.getCurrentPosition((position) => {
+        marker.current.marker?.setMap(null);
+        marker.current.info?.setMap(null);
         setSelectedCoordinate({
           y: position.coords.longitude,
           x: position.coords.latitude,
@@ -107,6 +104,7 @@ export default function RegisterTrashCan() {
         );
       });
     }
+
     const onDragMap = () => {
       const center = kakaoMap.getCenter();
       moveMarker({
@@ -114,6 +112,7 @@ export default function RegisterTrashCan() {
         x: center.getLng(),
       });
     };
+
     const onDragEnd = () => {
       const center = kakaoMap.getCenter();
       setSelectedCoordinate({
@@ -121,6 +120,7 @@ export default function RegisterTrashCan() {
         x: center.getLng(),
       });
     };
+
     if (kakaoMap) {
       window.kakao.maps.event.addListener(kakaoMap, "drag", onDragMap);
       window.kakao.maps.event.addListener(kakaoMap, "dragend", onDragEnd);
@@ -130,6 +130,8 @@ export default function RegisterTrashCan() {
       if (kakaoMap) {
         window.kakao.maps.event.removeListener(kakaoMap, "drag", onDragMap);
         window.kakao.maps.event.removeListener(kakaoMap, "dragend", onDragEnd);
+        marker.current.marker?.setMap(null);
+        marker.current.info?.setMap(null);
       }
     };
   }, [kakaoMap]);
