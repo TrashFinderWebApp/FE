@@ -7,6 +7,7 @@ import NavigationIconSVG from "@/components/svg/NavigationIconSVG";
 import WalkerIconSVG from "@/components/svg/WalkerIconSVG";
 import { ButtonProps } from "@/types/button";
 import {
+  MarkerType,
   NavigationCoordinate,
   NavigationResponse,
   PointFeatureProperties,
@@ -19,7 +20,6 @@ import SearchBar from "@/components/searchbar/searchbar";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 import { initialNavigationState, navigationReducer } from "./navigationReducer";
-import { resolveKakaoResult } from "./resolveresult";
 
 const transportInfo: ButtonProps<Transportation>[] = [
   {
@@ -60,13 +60,17 @@ export default function Navigation() {
 
   const path = useNavigation(selectedTransport, navigateCoordinate);
   const erase = useRef<() => void>();
-
+  const markerRef = useRef<MarkerType>({});
   const { kakaoMap: map, geoCoder, keywordSearch } = useKakaoStore();
   useEffect(() => {
     if (map) {
       dispatch({ type: "SET_MAP", payload: map });
     }
   }, [map]);
+
+  useEffect(() => {
+    markerRef.current = marker;
+  }, [marker]);
 
   useEffect(() => {
     if (!marker.startMarker) return;
@@ -148,6 +152,8 @@ export default function Navigation() {
 
   useEffect(() => {
     return () => {
+      markerRef.current?.startMarker?.setMap(null);
+      markerRef.current?.endMarker?.setMap(null);
       erase.current?.();
     };
   }, []);

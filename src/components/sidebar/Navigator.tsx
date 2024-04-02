@@ -69,7 +69,7 @@ export default function Navigator() {
     <header className="flex flex-col w-[4.25rem] h-lvh bg-dark-blue border-2 border-r-dark-blue z-50">
       <h1 className="aspect-[3/5] w-full">쓰파인더</h1>
       <nav className=" w-full h-screen flex flex-col justify-between flex-grow rounded-tr-lg bg-white ">
-        <ul className="flex flex-col items-center  space-y-2 py-2">
+        <ul className="flex flex-col items-center space-y-2 py-2">
           {menuItems.map((item) => (
             <li key={item.id} className="w-full">
               <button
@@ -87,7 +87,7 @@ export default function Navigator() {
             </li>
           ))}
         </ul>
-        <ul className="flex flex-col items-center  space-y-2 py-2">
+        <ul className="flex flex-col items-center space-y-2 py-2">
           <li>
             <ConfigSVG />
           </li>

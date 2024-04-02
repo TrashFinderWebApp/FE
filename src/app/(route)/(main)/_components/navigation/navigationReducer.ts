@@ -172,7 +172,7 @@ export const navigationReducer = (
         new window.kakao.maps.LatLng(action.payload.y, action.payload.x),
       );
 
-      state.marker.startMarker.setVisible(true);
+      state.marker.startMarker.setMap(state.map);
 
       return {
         ...state,
@@ -192,7 +192,7 @@ export const navigationReducer = (
         new window.kakao.maps.LatLng(action.payload.y, action.payload.x),
       );
 
-      state.marker.endMarker.setVisible(true);
+      state.marker.endMarker.setMap(state.map);
       return {
         ...state,
         navigateCoordinate: {
@@ -254,8 +254,9 @@ export const navigationReducer = (
     }
 
     case "REMOVE_DEPARTURE_ARRIVAL": {
-      state.marker.startMarker.setVisible(false);
-      state.marker.endMarker.setVisible(false);
+      console.log(state.marker);
+      state.marker.startMarker?.setMap(null);
+      state.marker.endMarker?.setMap(null);
       state.eraseMarker?.();
       return {
         ...state,
