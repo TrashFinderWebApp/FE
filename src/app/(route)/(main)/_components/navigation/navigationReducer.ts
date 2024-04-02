@@ -8,6 +8,7 @@ import {
   RouteSection,
   Transportation,
 } from "@/types/navigate";
+import createMarker from "../createmarker";
 
 interface NavigationState {
   selectedTransport: Transportation;
@@ -127,24 +128,10 @@ export const navigationReducer = (
       };
     case "SET_MAP": {
       const startImageSrc = "svg/departure.svg"; // 마커이미지의 주소입니다
-      const imageSize = new window.kakao.maps.Size(32, 32);
-      const startMarkerImage = new window.kakao.maps.MarkerImage(
-        startImageSrc,
-        imageSize,
-      );
-
       const endImageSrc = "svg/arrival.svg"; // 마커이미지의 주소입니다
-      const endMarkerImage = new window.kakao.maps.MarkerImage(
-        endImageSrc,
-        imageSize,
-      );
-      const startMarker = new window.kakao.maps.Marker({
-        image: startMarkerImage,
-      });
+      const startMarker = createMarker({}, startImageSrc);
+      const endMarker = createMarker({}, endImageSrc);
 
-      const endMarker = new window.kakao.maps.Marker({
-        image: endMarkerImage,
-      });
       startMarker.setMap(action.payload);
       endMarker.setMap(action.payload);
       return {
@@ -254,7 +241,6 @@ export const navigationReducer = (
     }
 
     case "REMOVE_DEPARTURE_ARRIVAL": {
-      console.log(state.marker);
       state.marker.startMarker?.setMap(null);
       state.marker.endMarker?.setMap(null);
       state.eraseMarker?.();

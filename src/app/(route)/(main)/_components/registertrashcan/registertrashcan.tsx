@@ -4,6 +4,7 @@ import { useKakaoStore } from "@/stores/useKakaoStore";
 import { ButtonProps } from "@/types/button";
 import { Coordinate } from "@/types/navigate";
 import { useCallback, useEffect, useRef, useState } from "react";
+import createMarker from "../createmarker";
 
 type RegisterType = "new" | "recommend";
 
@@ -71,21 +72,19 @@ export default function RegisterTrashCan() {
         });
 
         const imageSrc = "/svg/selectmarker.svg";
-        const imageSize = new window.kakao.maps.Size(40, 40);
-        const imageOption = { offset: new window.kakao.maps.Point(20, 40) };
+
         const center = new window.kakao.maps.LatLng(
           position.coords.latitude,
           position.coords.longitude,
         );
-        marker.current.marker = new window.kakao.maps.Marker({
-          position: center,
-          image: new window.kakao.maps.MarkerImage(
-            imageSrc,
-            imageSize,
-            imageOption,
-          ),
-          map: kakaoMap,
-        });
+
+        marker.current.marker = createMarker(
+          {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          },
+          imageSrc,
+        );
 
         marker.current.info = new window.kakao.maps.CustomOverlay({
           position: center,

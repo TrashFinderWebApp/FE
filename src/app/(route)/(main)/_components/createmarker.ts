@@ -1,11 +1,7 @@
 import { TrashCanInfo } from "@/types/TrashInfo";
 
 export default function createMarker(
-  {
-    lat,
-    lng,
-    status,
-  }: Pick<TrashCanInfo, "lat" | "lng"> & Partial<Pick<TrashCanInfo, "status">>,
+  { lat, lng, status }: Partial<Pick<TrashCanInfo, "lat" | "lng" | "status">>,
   markerIcon?: string,
   callback?: () => void,
 ) {
