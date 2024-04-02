@@ -15,14 +15,13 @@ import {
 import { useEffect, useReducer, useRef } from "react";
 import useNavigation from "@/hooks/useNavigation";
 import { useKakaoStore } from "@/stores/useKakaoStore";
-import useKeywordSearch from "@/hooks/useKeywordSearch";
+import SearchBar from "@/components/searchbar/searchbar";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 import { initialNavigationState, navigationReducer } from "./navigationReducer";
-import SearchTarget from "./searchtarget";
 import { resolveKakaoResult } from "./resolveresult";
 
-const trasnportInfo: ButtonProps<Transportation>[] = [
+const transportInfo: ButtonProps<Transportation>[] = [
   {
     content: "자동차",
     type: "car",
@@ -147,7 +146,11 @@ export default function Navigation() {
     return () => erase.current?.();
   }, [selectedRoute, selectedTransport, path, navigateCoordinate]);
 
-  console.log(navigateCoordinate);
+  useEffect(() => {
+    return () => {
+      erase.current?.();
+    };
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
@@ -163,43 +166,41 @@ export default function Navigation() {
         setselectedStatus={(status) =>
           dispatch({ type: "SET_TRANSPORT", payload: status })
         }
-        buttonInfo={trasnportInfo}
+        buttonInfo={transportInfo}
       />
       <div className="flex justify-between gap-4">
         <form className="w-full flex flex-col gap-0">
-          <SearchTarget
-            placeName={navigateCoordinate.start?.name || ""}
+          <SearchBar
+            placeName={navigateCoordinate.start?.name}
             placeholder="출발지를 입력하세요."
             logo="/svg/departure.svg"
-            setTarget={(coordinate) =>
+            onClick={(location) => {
               dispatch({
                 type: "SET_DEPARTURE",
                 payload: {
-                  x: coordinate.x,
-                  y: coordinate.y,
-                  name: coordinate.name,
+                  x: location.lng,
+                  y: location.lat,
+                  name: location.address,
                 },
-              })
-            }
-            keywordSearch={keywordSearch}
-            resolveResult={resolveKakaoResult}
+              });
+            }}
+            keywordSearchMethod={keywordSearch}
           />
-          <SearchTarget
+          <SearchBar
+            placeName={navigateCoordinate.end?.name}
             placeholder="도착지를 입력하세요."
-            placeName={navigateCoordinate.end?.name || ""}
             logo="/svg/arrival.svg"
-            setTarget={(coordinate) =>
+            onClick={(location) => {
               dispatch({
                 type: "SET_ARRIVAL",
                 payload: {
-                  x: coordinate.x,
-                  y: coordinate.y,
-                  name: coordinate.name,
+                  x: location.lng,
+                  y: location.lat,
+                  name: location.address,
                 },
-              })
-            }
-            keywordSearch={keywordSearch}
-            resolveResult={resolveKakaoResult}
+              });
+            }}
+            keywordSearchMethod={keywordSearch}
           />
         </form>
         <div className="flex flex-col items-center justify-around">

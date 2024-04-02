@@ -3,21 +3,38 @@
 import useMap from "@/hooks/useMap";
 import { useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
-import SearchBar from "../../../components/searchbar/searchbar";
-import Navigation from "./_components/navigation/navigation";
+import FindTrashCan from "../_components/findtrashcan/findtrashcan";
+import RegisterTrashCan from "../_components/registertrashcan/registertrashcan";
+import Navigation from "../_components/navigation/navigation";
 
-export default function MainPage() {
+const selectedAccordion = (accordion: string) => {
+  switch (accordion) {
+    case "findtrashcan":
+      return <FindTrashCan />;
+    case "registertrashcan":
+      return <RegisterTrashCan />;
+    case "navigation":
+      return <Navigation />;
+    default:
+      return <FindTrashCan />;
+  }
+};
+
+export default function MainPage({
+  params,
+}: {
+  params: { accordion: string[] };
+}) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
-
   useMap(mapRef);
-
   return (
     <>
       <Accordion isOpen={isAccordionOpen} setIsOpen={setIsAccordionOpen}>
-        <SearchBar placeholder="장소, 도로, 건물 검색" />
         <section className="my-5">
-          <Navigation />
+          {selectedAccordion(
+            params.accordion ? params.accordion[0] : "findtrashcan",
+          )}
         </section>
       </Accordion>
       <div
