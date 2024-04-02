@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import HomeSVG from "../svg/HomeSVG";
 import AddLocationSVG from "../svg/AddLocationSVG";
 import RankingSVG from "../svg/RankingSVG";
@@ -15,71 +16,54 @@ import LoginSVG from "../svg/LoginSVG";
 
 type NavigatorBarType =
   | ""
-  | "Home"
   | "FindLocation"
   | "AddLocation"
   | "Ranking"
   | "Announcement"
   | "GetDirection";
 
+interface MenuItemType {
+  id: NavigatorBarType;
+  // eslint-disable-next-line no-unused-vars
+  icon: ({ color }: { color: string }) => JSX.Element;
+}
+
+const menuItems: MenuItemType[] = [
+  {
+    id: "",
+    icon: HomeSVG,
+  },
+  {
+    id: "FindLocation",
+    icon: FindLocationSVG,
+  },
+  {
+    id: "GetDirection",
+    icon: GetDirectionSVG,
+  },
+  {
+    id: "AddLocation",
+    icon: AddLocationSVG,
+  },
+  {
+    id: "Ranking",
+    icon: RankingSVG,
+  },
+  {
+    id: "Announcement",
+    icon: AnnouncementSVG,
+  },
+];
+
 export default function Navigator() {
   const [clicked, setClicked] = useState<NavigatorBarType>("");
-
+  const router = useRouter();
   const session = useSession();
 
   const handleOnClick = (props: NavigatorBarType) => {
     setClicked(props);
+    router.push(`/${props}`);
   };
-
-  interface MenuItemType {
-    id: string;
-    icon: JSX.Element;
-  }
-
-  const menuItems: MenuItemType[] = [
-    {
-      id: "Home",
-      icon: <HomeSVG color={clicked === "Home" ? "#ffffff" : "#184E77"} />,
-    },
-    {
-      id: "FindLocation",
-      icon: (
-        <FindLocationSVG
-          color={clicked === "FindLocation" ? "#ffffff" : "#184E77"}
-        />
-      ),
-    },
-    {
-      id: "AddLocation",
-      icon: (
-        <AddLocationSVG
-          color={clicked === "AddLocation" ? "#ffffff" : "#184E77"}
-        />
-      ),
-    },
-    {
-      id: "Ranking",
-      icon: (
-        <RankingSVG color={clicked === "Ranking" ? "#ffffff" : "#184E77"} />
-      ),
-    },
-    {
-      id: "Announcement",
-      icon: (
-        <AnnouncementSVG
-          color={clicked === "Announcement" ? "#ffffff" : "#184E77"}
-        />
-      ),
-    },
-    {
-      id: "GetDirection",
-      icon: (
-        <GetDirectionSVG
-          color={clicked === "GetDirection" ? "#ffffff" : "#184E77"}
-        />
-      ),
-    },
-  ];
 
   return (
     <header className="flex flex-col w-[4.25rem] h-lvh bg-dark-blue border-2 border-r-dark-blue z-50">
@@ -90,14 +74,15 @@ export default function Navigator() {
             <li key={item.id} className="w-full">
               <button
                 type="button"
-                aria-label={item.id}
                 className="rounded-lg w-full flex justify-center items-center aspect-square"
                 style={{
                   backgroundColor: clicked === item.id ? "#02C39A" : "#FFFFFF",
                 }}
-                onClick={() => handleOnClick(item.id as NavigatorBarType)}
+                onClick={() => handleOnClick(item.id)}
               >
-                {item.icon}
+                {item.icon({
+                  color: clicked === item.id ? "#FFFFFF" : "#184E77",
+                })}
               </button>
             </li>
           ))}

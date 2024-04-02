@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import "./(main)/globals.css";
+import "./globals.css";
 import Providers from "@/hooks/useReactQuery";
 import Navigator from "@/components/sidebar/Navigator";
-import AuthProvider from "@/components/Auth/AuthProvider";
+import AuthProvider from "@/components/auth/authprovider";
 
 export const metadata: Metadata = {
   title: "쓰파인더",

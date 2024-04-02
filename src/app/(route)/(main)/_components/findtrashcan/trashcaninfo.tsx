@@ -1,27 +1,19 @@
 import Button from "@/components/button/button";
-import { TrashCan } from "@/types/TrashInfo";
+import { TrashCanInfo } from "@/types/TrashInfo";
 import Image from "next/image";
 
-interface TrashCanInfoProps extends TrashCan {
-  distance?: number;
-}
-
-export default function TrashCanInfo({
-  title,
-  address,
-  imageList,
-  distance,
-}: TrashCanInfoProps) {
+export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
+  const { name, address, distance, imageList } = info;
   return (
     <article className="w-full border-2 border-light-green rounded-md shadow-sm py-4">
       <div className="flex items-center justify-between px-3 pb-4">
-        <h3 className="font-bold text-[1.125rem]">{title ?? ""}</h3>
+        <h3 className="font-bold text-[1.125rem]">{name ?? ""}</h3>
         <img src="svg/AlertIcon.svg" alt="쓰레기통 사진" />
       </div>
       <div className="flex items-center justify-between">
-        {imageList?.slice(0, 2).map((img) => (
+        {imageList?.slice(0, 2).map((img, idx) => (
           <Image
-            key={img}
+            key={`${img + idx}`}
             src={img}
             alt="쓰레기통 사진"
             sizes="100vw"
