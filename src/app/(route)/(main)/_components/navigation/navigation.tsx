@@ -58,9 +58,11 @@ export default function Navigation() {
     dispatch,
   ] = useReducer(navigationReducer, initialNavigationState);
 
+  const markerRef = useRef<MarkerType>(marker);
+
   const path = useNavigation(selectedTransport, navigateCoordinate);
   const erase = useRef<() => void>();
-  const markerRef = useRef<MarkerType>({});
+
   const { kakaoMap: map, geoCoder, keywordSearch } = useKakaoStore();
   useEffect(() => {
     if (map) {
@@ -69,11 +71,10 @@ export default function Navigation() {
   }, [map]);
 
   useEffect(() => {
-    markerRef.current = marker;
-  }, [marker]);
+    if (!marker.startMarker || !marker.endMarker) return;
 
-  useEffect(() => {
-    if (!marker.startMarker) return;
+    markerRef.current = marker;
+
     navigator.geolocation.getCurrentPosition((position) => {
       geoCoder.coord2Address(
         position.coords.longitude,

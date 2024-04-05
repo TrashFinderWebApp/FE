@@ -1,8 +1,16 @@
 import { TrashCanInfo } from "@/types/TrashInfo";
 
 export default function createMarker(
-  { lat, lng, status }: Partial<Pick<TrashCanInfo, "lat" | "lng" | "status">>,
-  markerIcon?: string,
+  {
+    lat,
+    lng,
+    status,
+    markerIcon,
+    size = 30,
+  }: Partial<Pick<TrashCanInfo, "lat" | "lng" | "status">> & {
+    markerIcon?: string;
+    size?: number;
+  },
   callback?: () => void,
 ) {
   if (!window.kakao) return null;
@@ -19,7 +27,7 @@ export default function createMarker(
   if (markerIcon) {
     const markerImage = new window.kakao.maps.MarkerImage(
       icon,
-      new window.kakao.maps.Size(30, 30),
+      new window.kakao.maps.Size(size, size),
       {
         offset: new window.kakao.maps.Point(15, 15),
       },

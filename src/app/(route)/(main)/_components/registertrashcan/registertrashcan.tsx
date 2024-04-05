@@ -78,13 +78,11 @@ export default function RegisterTrashCan() {
           position.coords.longitude,
         );
 
-        marker.current.marker = createMarker(
-          {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          },
-          imageSrc,
-        );
+        marker.current.marker = createMarker({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          markerIcon: imageSrc,
+        });
 
         marker.current.info = new window.kakao.maps.CustomOverlay({
           position: center,
@@ -93,6 +91,7 @@ export default function RegisterTrashCan() {
           yAnchor: 2,
         });
 
+        marker.current.marker.setMap(kakaoMap);
         marker.current.info.setMap(kakaoMap);
 
         kakaoMap.setCenter(

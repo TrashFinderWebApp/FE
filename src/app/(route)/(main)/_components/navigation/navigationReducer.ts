@@ -129,8 +129,8 @@ export const navigationReducer = (
     case "SET_MAP": {
       const startImageSrc = "svg/departure.svg"; // 마커이미지의 주소입니다
       const endImageSrc = "svg/arrival.svg"; // 마커이미지의 주소입니다
-      const startMarker = createMarker({}, startImageSrc);
-      const endMarker = createMarker({}, endImageSrc);
+      const startMarker = createMarker({ markerIcon: startImageSrc });
+      const endMarker = createMarker({ markerIcon: endImageSrc });
 
       startMarker.setMap(action.payload);
       endMarker.setMap(action.payload);
@@ -241,9 +241,9 @@ export const navigationReducer = (
     }
 
     case "REMOVE_DEPARTURE_ARRIVAL": {
+      console.log("REMOVE_DEPARTURE_ARRIVAL");
       state.marker.startMarker?.setMap(null);
       state.marker.endMarker?.setMap(null);
-      state.eraseMarker?.();
       return {
         ...state,
         navigateCoordinate: {},

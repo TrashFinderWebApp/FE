@@ -12,6 +12,8 @@ export default function LoginForm() {
   const handleLogin = (provider: string) => async () => {
     await signIn(provider, {
       callbackUrl: "/",
+      email: "test@naver.com",
+      password: "test1234",
     });
   };
 
@@ -40,6 +42,7 @@ export default function LoginForm() {
         <button
           type="button"
           className="w-full bg-emerald-500 text-white py-2 rounded-md hover:bg-emerald-600 transition-colors duration-300 mb-4"
+          onClick={handleLogin("credentials")}
         >
           로그인
         </button>
