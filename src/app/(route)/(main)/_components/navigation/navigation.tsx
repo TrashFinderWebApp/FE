@@ -63,12 +63,15 @@ export default function Navigation() {
   const path = useNavigation(selectedTransport, navigateCoordinate);
   const erase = useRef<() => void>();
 
-  const { kakaoMap: map, geoCoder, keywordSearch } = useKakaoStore();
+  const { kakaoMap, geoCoder, keywordSearch } = useKakaoStore();
+
+  console.log(kakaoMap, "navigate");
+
   useEffect(() => {
-    if (map) {
-      dispatch({ type: "SET_MAP", payload: map });
+    if (kakaoMap) {
+      dispatch({ type: "SET_MAP", payload: kakaoMap });
     }
-  }, [map]);
+  }, [kakaoMap]);
 
   useEffect(() => {
     if (!marker.startMarker || !marker.endMarker) return;
@@ -138,14 +141,14 @@ export default function Navigation() {
       selectedTransport === "car" &&
       carRoute[selectedRoute]
     ) {
-      erase.current = drawKakaoNavigation(carRoute[selectedRoute], map);
+      erase.current = drawKakaoNavigation(carRoute[selectedRoute], kakaoMap);
     }
     if (
       selectedRoute !== null &&
       walkRoute.features.length > 0 &&
       selectedTransport === "walk"
     ) {
-      erase.current = drawSKNavigation(walkRoute, map);
+      erase.current = drawSKNavigation(walkRoute, kakaoMap);
     }
 
     return () => erase.current?.();
@@ -161,13 +164,13 @@ export default function Navigation() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-[1.25rem] font-extrabold flex items-center gap-2 ">
-        <div className=" bg-light-green p-[2px] rounded-md">
+      <h2 className="text-[1.25rem] font-extrabold flex items-center gap-2">
+        <div className="bg-light-green p-[2px] rounded-md">
           <NavigationIconSVG fill="white" />
         </div>
         <p>길찾기</p>
       </h2>
-      <div className="w-full border " />
+      <div className="w-full border" />
       <ButtonList
         selectedStatus={selectedTransport}
         setselectedStatus={(status) =>
@@ -192,6 +195,7 @@ export default function Navigation() {
               });
             }}
             keywordSearchMethod={keywordSearch}
+            className="rounded-md rounded-b-none"
           />
           <SearchBar
             placeName={navigateCoordinate.end?.name}
@@ -208,6 +212,7 @@ export default function Navigation() {
               });
             }}
             keywordSearchMethod={keywordSearch}
+            className="rounded-md rounded-t-none border-t-0"
           />
         </form>
         <div className="flex flex-col items-center justify-around">

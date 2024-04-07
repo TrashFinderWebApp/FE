@@ -7,14 +7,15 @@ import Home from "../_components/home/home";
 import Ranking from "../_components/ranking/ranking";
 
 const selectedAccordion = (accordion: string) => {
-  switch (accordion) {
-    case "FindLocation":
+  const lowerAccordion = accordion.toLowerCase();
+  switch (lowerAccordion) {
+    case "findlocation":
       return <FindTrashCan />;
-    case "AddLocation":
+    case "addlocation":
       return <RegisterTrashCan />;
-    case "GetDirection":
+    case "getdirection":
       return <Navigation />;
-    case "Ranking":
+    case "ranking":
       return <Ranking />;
     default:
       return <Home />;

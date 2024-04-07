@@ -18,7 +18,7 @@ export default function Home() {
         className="border-2 border-light-green rounded-md"
         logo="/svg/searchicon.svg"
       />
-      <div className="bg-[#A1D7FF] bg-opacity-20 rounded-md px-3 py-2 mt-2 flex items-center gap-2 ">
+      <div className="bg-[#A1D7FF] bg-opacity-20 rounded-md px-3 py-2 mt-2 flex items-center gap-2">
         <img src="svg/megaphone.svg" alt="" />
         <div className="flex text-[0.875rem] gap-2">
           <p className="font-bold">[업데이트]</p>

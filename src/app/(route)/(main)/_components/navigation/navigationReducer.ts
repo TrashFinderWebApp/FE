@@ -241,7 +241,6 @@ export const navigationReducer = (
     }
 
     case "REMOVE_DEPARTURE_ARRIVAL": {
-      console.log("REMOVE_DEPARTURE_ARRIVAL");
       state.marker.startMarker?.setMap(null);
       state.marker.endMarker?.setMap(null);
       return {

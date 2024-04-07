@@ -26,6 +26,7 @@ function SignUpForm() {
         },
         body: JSON.stringify(inputRef.current),
       });
+
       if (res.ok) {
         router.push("/login");
       }

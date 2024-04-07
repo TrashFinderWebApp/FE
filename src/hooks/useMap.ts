@@ -19,45 +19,44 @@ export default function useMap(ref: React.RefObject<HTMLDivElement>) {
     setKeywordSearch,
     setGeoCoder: setGetCoder,
   } = useKakaoStore();
+
   useEffect(() => {
+    const kakaoMapAction = () => {
+      const options = {
+        center: new window.kakao.maps.LatLng(37.4, 126.8),
+        level: 3,
+      };
+
+      const map = new window.kakao.maps.Map(ref.current, options);
+
+      map.setCopyrightPosition(
+        window.kakao.maps.CopyrightPosition.BOTTOMRIGHT,
+        true,
+      );
+
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        map.setCenter(new window.kakao.maps.LatLng(latitude, longitude));
+      });
+
+      const clusterer = new window.kakao.maps.MarkerClusterer({
+        map,
+        averageCenter: true,
+        minLevel: 7,
+      });
+
+      const placeSearch = new window.kakao.maps.services.Places();
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      setKakaoMap(map);
+      setKakaoClusterer(clusterer);
+      setKeywordSearch(placeSearch.keywordSearch);
+      setGetCoder(geocoder);
+    };
     const onLoadKakaoMap = () => {
       if (window.kakao) {
-        window.kakao.maps.load(() => {
-          const options = {
-            center: new window.kakao.maps.LatLng(37.4, 126.8),
-            level: 3,
-          };
-
-          const map = new window.kakao.maps.Map(ref.current, options);
-
-          map.setCopyrightPosition(
-            window.kakao.maps.CopyrightPosition.BOTTOMRIGHT,
-            true,
-          );
-
-          navigator.geolocation.getCurrentPosition((position) => {
-            const { latitude, longitude } = position.coords;
-            map.setCenter(new window.kakao.maps.LatLng(latitude, longitude));
-          });
-
-          const clusterer = new window.kakao.maps.MarkerClusterer({
-            map,
-            averageCenter: true,
-            minLevel: 7,
-          });
-
-          const placeSearch = new window.kakao.maps.services.Places();
-          const geocoder = new window.kakao.maps.services.Geocoder();
-          setKakaoMap(map);
-          setKakaoClusterer(clusterer);
-          setKeywordSearch(placeSearch.keywordSearch);
-          setGetCoder(geocoder);
-        });
+        window.kakao.maps.load(kakaoMapAction);
       }
     };
-    if (window.kakao) {
-      onLoadKakaoMap();
-    }
 
     if (!window.kakao) {
       const script = document.createElement("script");

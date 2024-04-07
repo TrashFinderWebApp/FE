@@ -38,12 +38,19 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         try {
-          const res = await fetch("http://localhost:3000/api/login", {
-            method: "POST",
-            body: JSON.stringify(credentials),
-          });
+          const res = await fetch(
+            "http://35.216.97.185:8080/api/members/signin",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(credentials),
+            },
+          );
 
           const data = await res.json();
+
           if (res.ok && data) {
             return data;
           }
@@ -61,18 +68,17 @@ const handler = NextAuth({
       if (!account) return false;
       if (account.provider === "credentials") return true;
       try {
-        const res = await fetch("http://localhost:3000/api/login", {
+        const res = await fetch("http://35.216.97.185:8080/api/oauth2/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
           },
           body: JSON.stringify({
-            code: "",
+            code: account.refresh_token,
             SocialType: account.provider.toUpperCase(),
           }),
         });
-
         if (res.ok) {
           const data = await res.json();
           if (data) {

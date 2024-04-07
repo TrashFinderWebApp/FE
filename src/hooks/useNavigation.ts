@@ -24,7 +24,10 @@ const getFetchInfo = (type: Transportation, payload: NavigationCoordinate) => {
             appKey: process.env.NEXT_PUBLIC_TMAP_API_KEY || "",
           },
           body: JSON.stringify({
-            ...payload,
+            startX: payload.start?.x,
+            startY: payload.start?.y,
+            endX: payload.end?.x,
+            endY: payload.end?.y,
             startName: "출발지",
             endName: "도착지",
             format: "json",

@@ -72,7 +72,7 @@ export default function Navigator() {
         <img src="img/TFinderCharacter.webp" alt="" />
         <p>TFINDER</p>
       </h1>
-      <nav className=" w-full h-screen flex flex-col justify-between flex-grow rounded-tr-lg bg-white ">
+      <nav className="w-full h-screen flex flex-col justify-between flex-grow rounded-tr-lg bg-white">
         <ul className="flex flex-col items-center space-y-2 py-2">
           {menuItems.map((item) => (
             <li key={item.id} className="w-full">

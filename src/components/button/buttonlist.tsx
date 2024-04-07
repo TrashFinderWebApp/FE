@@ -12,9 +12,9 @@ interface ButtonListProps<T extends unknown> {
 
 const buttontTailwindConfig = {
   selected:
-    "flex-grow rounded-md border-2 border-0 shadow-md bg-light-green text-white scale-105",
+    "w-full flex-grow rounded-md border-2 border-0 shadow-md bg-light-green text-white scale-105",
   unselected:
-    "flex-grow rounded-none border-2 border-[#aaaaaa] bg-white text-[#0a0a0a] border-l-0",
+    "w-full flex-grow rounded-none border-2 border-[#aaaaaa] bg-white text-[#0a0a0a] border-l-0",
   startIcon: "rounded-l-md border-l-2",
   endIcon: "rounded-r-md ",
 };

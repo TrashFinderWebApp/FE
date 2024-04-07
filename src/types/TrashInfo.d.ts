@@ -10,9 +10,16 @@ interface OptionalTrashCanInfo {
   category?: string;
 }
 
-export interface Location {
+interface Radius {
+  radius: number;
+}
+
+interface Coordinate {
   lat: number;
   lng: number;
+}
+
+export interface Location extends Coordinate {
   address: string;
   address_detail?: string;
   distance?: number;
@@ -23,3 +30,6 @@ export type TrashCanInfo = Location &
   OptionalTrashCanInfo;
 
 export type LocationInfo = Location & OptionalTrashCanInfo;
+export type TrashCanRequest = Coordinate &
+  Radius &
+  Partial<DetailedTrashCanInfo>;

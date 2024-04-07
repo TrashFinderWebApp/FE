@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "@/hooks/useReactQuery";
-import Navigator from "@/components/sidebar/Navigator";
 import AuthProvider from "@/components/auth/authprovider";
 
 export const metadata: Metadata = {
@@ -25,9 +24,8 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head />
-      <body className="flex flex-row w-screen h-[100svh] font-pretendard ">
+      <body className="flex flex-row w-screen h-v font-pretendard">
         <AuthProvider>
-          <Navigator />
           <Providers>{children}</Providers>
         </AuthProvider>
       </body>
