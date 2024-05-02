@@ -8,13 +8,14 @@ interface ButtonListProps<T extends unknown> {
     status: T,
   ) => void | React.Dispatch<React.SetStateAction<T>>;
   buttonInfo: ButtonProps<T>[];
+  className?: string;
 }
 
 const buttontTailwindConfig = {
   selected:
-    "flex-grow rounded-md border-2 border-0 shadow-md bg-light-green text-white scale-105",
+    "w-full flex-grow rounded-md border-2 border-0 shadow-md bg-light-green text-white scale-105",
   unselected:
-    "flex-grow rounded-none border-2 border-[#aaaaaa] bg-white text-[#0a0a0a] border-l-0",
+    "w-full flex-grow rounded-none border-2 border-[#aaaaaa] bg-white text-[#0a0a0a] border-l-0",
   startIcon: "rounded-l-md border-l-2",
   endIcon: "rounded-r-md ",
 };
@@ -23,9 +24,10 @@ export default function ButtonList<T>({
   selectedStatus,
   setselectedStatus,
   buttonInfo,
+  className,
 }: ButtonListProps<T>) {
   return (
-    <div className="flex flex-row">
+    <div className={`flex flex-row${className ? ` ${className}` : ""}`}>
       {buttonInfo.map((item, idx) => (
         <Button
           key={item.content}

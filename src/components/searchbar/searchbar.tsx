@@ -64,9 +64,9 @@ export default function SearchBar({
         locationList={locationList}
         highlight={keyword}
         onClick={(location) => {
-          setKeyword(location.name || location.address);
+          setKeyword(location.name || location.address || "");
           setSelected(true);
-          setPlaceName(location.name || location.address);
+          setPlaceName(location.name || location.address || "");
           onClick?.(location);
         }}
       />

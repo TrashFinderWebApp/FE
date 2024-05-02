@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useKakaoStore } from "@/stores/useKakaoStore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export interface mapResult {
   map: any;
@@ -11,53 +11,66 @@ export interface mapResult {
   ) => void;
 }
 
-export default function useMap(ref: React.RefObject<HTMLDivElement>) {
+export default function useMap(
+  mapRef: React.RefObject<HTMLDivElement>,
+  roadViewRef: React.RefObject<HTMLDivElement>,
+) {
   const {
     kakaoMap,
     setKakaoMap,
     setKakaoClusterer,
     setKeywordSearch,
-    setGeoCoder: setGetCoder,
+    setGeoCoder,
+    setKakakoRoadView,
+    setRoadViewClient,
   } = useKakaoStore();
+
   useEffect(() => {
+    const kakaoMapAction = () => {
+      const options = {
+        center: new window.kakao.maps.LatLng(37.566826, 126.9786567),
+        level: 3,
+      };
+
+      const map = new window.kakao.maps.Map(mapRef.current, options);
+      const roadView = new window.kakao.maps.Roadview(roadViewRef.current);
+      const roadViewClient = new window.kakao.maps.RoadviewClient();
+
+      map.setCopyrightPosition(
+        window.kakao.maps.CopyrightPosition.BOTTOMRIGHT,
+        true,
+      );
+
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        const pos = new window.kakao.maps.LatLng(latitude, longitude);
+        map.setCenter(pos);
+        roadViewClient.getNearestPanoId(pos, 50, (panoId: any) =>
+          roadView.setPanoId(panoId, pos),
+        );
+      });
+
+      const clusterer = new window.kakao.maps.MarkerClusterer({
+        map,
+        averageCenter: true,
+        minLevel: 7,
+      });
+
+      const placeSearch = new window.kakao.maps.services.Places();
+      const geocoder = new window.kakao.maps.services.Geocoder();
+
+      setKakaoMap(map);
+      setKakaoClusterer(clusterer);
+      setKeywordSearch(placeSearch.keywordSearch);
+      setGeoCoder(geocoder);
+      setKakakoRoadView(roadView);
+      setRoadViewClient(roadViewClient);
+    };
     const onLoadKakaoMap = () => {
       if (window.kakao) {
-        window.kakao.maps.load(() => {
-          const options = {
-            center: new window.kakao.maps.LatLng(37.4, 126.8),
-            level: 3,
-          };
-
-          const map = new window.kakao.maps.Map(ref.current, options);
-
-          map.setCopyrightPosition(
-            window.kakao.maps.CopyrightPosition.BOTTOMRIGHT,
-            true,
-          );
-
-          navigator.geolocation.getCurrentPosition((position) => {
-            const { latitude, longitude } = position.coords;
-            map.setCenter(new window.kakao.maps.LatLng(latitude, longitude));
-          });
-
-          const clusterer = new window.kakao.maps.MarkerClusterer({
-            map,
-            averageCenter: true,
-            minLevel: 7,
-          });
-
-          const placeSearch = new window.kakao.maps.services.Places();
-          const geocoder = new window.kakao.maps.services.Geocoder();
-          setKakaoMap(map);
-          setKakaoClusterer(clusterer);
-          setKeywordSearch(placeSearch.keywordSearch);
-          setGetCoder(geocoder);
-        });
+        window.kakao.maps.load(kakaoMapAction);
       }
     };
-    if (window.kakao) {
-      onLoadKakaoMap();
-    }
 
     if (!window.kakao) {
       const script = document.createElement("script");

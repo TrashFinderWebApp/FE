@@ -4,6 +4,12 @@ import { useKakaoStore } from "@/stores/useKakaoStore";
 import { ButtonProps } from "@/types/button";
 import { Coordinate } from "@/types/navigate";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { APIURL } from "@/util/const";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import distanceBetweenLatLng from "@/util/distance";
+import { TrashCanInfo } from "@/types/TrashInfo";
+import Modal from "@/components/modal/modal";
 import createMarker from "../createmarker";
 
 type RegisterType = "new" | "recommend";
@@ -36,18 +42,23 @@ const onFileChange =
 export default function RegisterTrashCan() {
   const [selectedMethod, setSelectedMethod] = useState<RegisterType>("new");
   // eslint-disable-next-line no-unused-vars
-  const [selectedLocation, setSelectedCoordinate] = useState<Coordinate | null>(
-    null,
-  );
+  const [selectedCoordinate, setSelectedCoordinate] =
+    useState<Coordinate | null>(null);
   const [selectedImage, setSelectedImage] = useState<File[]>([]);
-  const explanation = useRef<string>("");
-
+  const [selectedTrashcanId, setSelectedTrashcanId] = useState<
+    string | undefined
+  >(undefined);
+  const description = useRef<string>("");
+  const addressDetail = useRef<string>("");
   const marker = useRef<Marker>({
     marker: null,
     info: null,
   });
-
-  const { kakaoMap, keywordSearch } = useKakaoStore();
+  const [isModalOpened, setIsModalOpened] = useState(false);
+  const { kakaoMap, keywordSearch, geoCoder } = useKakaoStore();
+  const markerRef = useRef<any[]>([]);
+  const customOverlayRef = useRef<any[]>([]);
+  const session = useSession();
 
   const moveMarker = useCallback(
     (coordinate: Coordinate) => {
@@ -61,11 +72,187 @@ export default function RegisterTrashCan() {
     [marker, kakaoMap],
   );
 
+  const handleTrashCanPost = (id?: string) => {
+    if (!selectedCoordinate?.x || !selectedCoordinate?.y) return;
+
+    if (id) {
+      const formData = new FormData();
+      formData.append("id", id);
+
+      fetch(
+        `${APIURL}/api/trashcan/${selectedMethod === "new" ? "registrations" : "suggestions"}/${id}`,
+        {
+          method: "post",
+          headers: {
+            Authorization: `Bearer ${session.data?.accessToken}`,
+          },
+          body: formData,
+        },
+      )
+        .then((res) => {
+          if (res.ok) {
+            alert("성공적으로 등록되었습니다.");
+          } else {
+            res.json().then((json) => {
+              alert(json.message);
+            });
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+
+      return;
+    }
+
+    geoCoder.coord2Address(
+      selectedCoordinate?.x,
+      selectedCoordinate?.y,
+      (result: any) => {
+        const address = result[0]?.address;
+        const formData = new FormData();
+        selectedImage.forEach((image) => {
+          formData.append("image_object", image);
+        });
+
+        formData.append("address", address?.address_name ?? "");
+        formData.append("address_detail", addressDetail.current);
+        formData.append("description", description.current);
+        formData.append("latitude", selectedCoordinate?.y.toString());
+        formData.append("longitude", selectedCoordinate?.x.toString());
+
+        fetch(
+          `${APIURL}/api/trashcan/${selectedMethod === "new" ? "registrations" : "suggestions"}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${session.data?.accessToken}`,
+            },
+            body: formData,
+          },
+        )
+          .then((res) => {
+            if (res.ok) {
+              alert("성공적으로 등록되었습니다.");
+            } else {
+              alert("등록에 실패했습니다.");
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      },
+    );
+  };
+
+  const { data } = useQuery({
+    queryKey: [selectedMethod, selectedCoordinate],
+    queryFn: async () => {
+      const bound = kakaoMap.getBounds();
+      const center = kakaoMap.getCenter();
+
+      const [NElat, NElng, SWlat, SWlng] = [
+        bound.getNorthEast().getLat(),
+        bound.getNorthEast().getLng(),
+        bound.getSouthWest().getLat(),
+        bound.getSouthWest().getLng(),
+      ];
+
+      const radius =
+        (distanceBetweenLatLng(NElat, NElng, SWlat, SWlng) * 1000) / 2;
+      const res = await fetch(
+        `${APIURL}/api/trashcan/locations?${new URLSearchParams({
+          latitude: center.getLat(),
+          longitude: center.getLng(),
+          radius: radius.toString(),
+          status: selectedMethod === "new" ? "registered" : "suggested",
+        }).toString()}`,
+      );
+
+      const json = await res.json();
+      return json;
+    },
+  });
+
+  useEffect(() => {
+    if (data && data.length > 0 && kakaoMap) {
+      markerRef.current.forEach((markerEl) => {
+        markerEl.setMap(null);
+      });
+
+      markerRef.current = [];
+
+      data.forEach((trashcan: TrashCanInfo & { count?: number }) => {
+        const newMarker = createMarker(
+          {
+            latitude: trashcan.latitude,
+            longitude: trashcan.longitude,
+            status: selectedMethod === "new" ? "registered" : "suggested",
+            markerIcon: "/svg/trashcanicon.svg",
+          },
+          (markerEl) => {
+            const content = `<div class="bg-dark-blue text-white p-3 rounded-md">
+            <div class="flex justify-between">
+              <h2 class="font-bold text-lg">${trashcan.addressDetail ?? "쓰레기통"}</h2>
+              <button onclick="()=>{console.log('tq')}">X</button>
+            </div>
+            <p>${trashcan?.count}번 추천됨.</p>
+            </div>`;
+
+            const markerPos = new window.kakao.maps.LatLng(
+              trashcan.latitude,
+              trashcan.longitude,
+            );
+
+            const CustomOverlay = new window.kakao.maps.CustomOverlay({
+              position: markerPos,
+              content,
+              yAnchor: 1.5,
+            });
+
+            CustomOverlay.a.addEventListener?.("click", () => {
+              CustomOverlay.setMap(null);
+              setSelectedTrashcanId(trashcan.id);
+              setIsModalOpened(true);
+            });
+            window.kakao.maps.event.addListener(markerEl, "click", () => {
+              CustomOverlay.setMap(kakaoMap);
+            });
+
+            CustomOverlay.a
+              .querySelector("button")
+              .addEventListener("click", (e: any) => {
+                e.stopPropagation();
+                CustomOverlay.setMap(null);
+              });
+
+            customOverlayRef.current.push(CustomOverlay);
+          },
+        );
+
+        markerRef.current.push(newMarker);
+        newMarker.setMap(kakaoMap);
+      });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    return () => {
+      markerRef.current.forEach((markerEl) => {
+        markerEl.setMap(null);
+      });
+      customOverlayRef.current.forEach((overlay) => {
+        overlay.setMap(null);
+      });
+    };
+  }, []);
+
   useEffect(() => {
     if (kakaoMap) {
       navigator.geolocation.getCurrentPosition((position) => {
         marker.current.marker?.setMap(null);
         marker.current.info?.setMap(null);
+
         setSelectedCoordinate({
           y: position.coords.longitude,
           x: position.coords.latitude,
@@ -78,21 +265,20 @@ export default function RegisterTrashCan() {
           position.coords.longitude,
         );
 
-        marker.current.marker = createMarker(
-          {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          },
-          imageSrc,
-        );
+        marker.current.marker = createMarker({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          markerIcon: imageSrc,
+        });
 
         marker.current.info = new window.kakao.maps.CustomOverlay({
           position: center,
           content:
-            "<div class='bg-opacity-70 bg-[#111111] rounded-md border border-black text-white p-2'>지도를 끌어서 이동</div>",
+            "<div class='bg-opacity-70 bg-[#111111] rounded-md border border-black text-white p-2 z-50'>지도를 끌어서 이동</div>",
           yAnchor: 2,
         });
 
+        marker.current.marker.setMap(kakaoMap);
         marker.current.info.setMap(kakaoMap);
 
         kakaoMap.setCenter(
@@ -137,8 +323,42 @@ export default function RegisterTrashCan() {
 
   return (
     <div className="flex flex-col gap-4">
+      <Modal
+        isOpen={isModalOpened}
+        onClose={() => {
+          setIsModalOpened(false);
+        }}
+      >
+        <div className="flex flex-col gap-4">
+          <p>
+            정말 해당 위치에 {selectedMethod === "new" ? "등록" : "추천"}
+            하시겠습니까?
+          </p>
+          <div className="w-full">
+            <button
+              type="button"
+              className="bg-light-green text-white w-full p-2 rounded-md flex items-center justify-center"
+              onClick={() => {
+                handleTrashCanPost(selectedTrashcanId);
+                setIsModalOpened(false);
+              }}
+            >
+              네
+            </button>
+            <button
+              type="button"
+              className="w-full p-2 rounded-md flex items-center justify-center"
+              onClick={() => {
+                setIsModalOpened(false);
+              }}
+            >
+              아니요
+            </button>
+          </div>
+        </div>
+      </Modal>
       <h2 className="flex items-center gap-2">
-        <img src="svg/CameraIcon.svg" alt="카메라아이콘" />
+        <img src="/svg/CameraIcon.svg" alt="카메라아이콘" />
         <p className="font-extrabold text-[1.25rem] py-2"> 새로운 장소</p>
       </h2>
       <ButtonList
@@ -161,8 +381,8 @@ export default function RegisterTrashCan() {
           placeholder="장소, 도로, 건물 검색"
           onClick={(location) =>
             moveMarker({
-              y: location.lat,
-              x: location.lng,
+              y: location.latitude,
+              x: location.longitude,
             })
           }
           logo="/svg/searchicon.svg"
@@ -226,21 +446,36 @@ export default function RegisterTrashCan() {
       </div>
       <div className="mt-4 flex flex-col gap-4">
         <p>3. 선택한 위치에 대한 설명을 간단히 작성해 주세요.</p>
+        <input
+          className="w-full border-2 border-light-green rounded-md p-2 overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
+          placeholder={
+            selectedMethod === "new"
+              ? "예) 스타벅스 정문 앞 오른쪽"
+              : "예 : 스타벅스 부산역점 입구 앞 도보에 쓰레기가 넘쳐납니다. 쓰레기통이 새롭게 설치되면 좋을것 같아요."
+          }
+          onChange={(e) => {
+            addressDetail.current = e.target.value;
+          }}
+        />
+      </div>
+      <div className="mt-4 flex flex-col gap-4">
+        <p>4. 선택한 위치에 대한 설명을 간단히 작성해 주세요.</p>
         <textarea
           className="w-full aspect-[5/2] border-2 border-light-green rounded-md p-2 overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
           placeholder={
             selectedMethod === "new"
-              ? "예) 스타벅스 정문 앞 오른쪽에 있어요."
+              ? "예) 스타벅스 정문 앞 오른쪽에 있어요. 우산꽂이랑 헷갈리지 마세요."
               : "예 : 스타벅스 부산역점 입구 앞 도보에 쓰레기가 넘쳐납니다. 쓰레기통이 새롭게 설치되면 좋을것 같아요."
           }
           onChange={(e) => {
-            explanation.current = e.target.value;
+            description.current = e.target.value;
           }}
         />
       </div>
       <button
         type="button"
         className="bg-light-green text-white w-full p-2 rounded-md flex items-center justify-center"
+        onClick={() => handleTrashCanPost()}
       >
         요청하기
       </button>

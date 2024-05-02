@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useRef } from "react";
 import navericon from "public/svg/NaverIcon.svg";
 import kakaoicon from "public/svg/KakaoIcon.svg";
 import googleicon from "public/svg/GoogleIcon.svg";
@@ -9,9 +9,18 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 
 export default function LoginForm() {
+  const inputRef = useRef<{
+    email: string;
+    password: string;
+  }>({
+    email: "",
+    password: "",
+  });
+
   const handleLogin = (provider: string) => async () => {
     await signIn(provider, {
       callbackUrl: "/",
+      ...inputRef.current,
     });
   };
 
@@ -27,6 +36,9 @@ export default function LoginForm() {
             id="username"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="이메일"
+            onChange={(e) => {
+              inputRef.current.email = e.target.value;
+            }}
           />
         </div>
         <div className="mb-6">
@@ -35,11 +47,15 @@ export default function LoginForm() {
             id="password"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="비밀번호"
+            onChange={(e) => {
+              inputRef.current.password = e.target.value;
+            }}
           />
         </div>
         <button
           type="button"
           className="w-full bg-emerald-500 text-white py-2 rounded-md hover:bg-emerald-600 transition-colors duration-300 mb-4"
+          onClick={handleLogin("credentials")}
         >
           로그인
         </button>

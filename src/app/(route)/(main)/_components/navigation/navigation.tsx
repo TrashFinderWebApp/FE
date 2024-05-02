@@ -17,6 +17,7 @@ import { useEffect, useReducer, useRef } from "react";
 import useNavigation from "@/hooks/useNavigation";
 import { useKakaoStore } from "@/stores/useKakaoStore";
 import SearchBar from "@/components/searchbar/searchbar";
+import { useTrashCanStore } from "@/stores/useTrashCanStore";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 import { initialNavigationState, navigationReducer } from "./navigationReducer";
@@ -45,7 +46,11 @@ const checkNavigationCoordinate = (coordinate: NavigationCoordinate) => {
   );
 };
 
-export default function Navigation() {
+interface NavigationProps {
+  end?: { lat: number; lng: number; name?: string };
+}
+
+export default function Navigation({ end }: NavigationProps) {
   const [
     {
       selectedTransport,
@@ -56,24 +61,37 @@ export default function Navigation() {
       marker,
     },
     dispatch,
-  ] = useReducer(navigationReducer, initialNavigationState);
+  ] = useReducer(navigationReducer, initialNavigationState, () =>
+    end
+      ? {
+          ...initialNavigationState,
+          navigateCoordinate: {
+            end: { x: end.lng, y: end.lat, name: end.name },
+          },
+        }
+      : initialNavigationState,
+  );
+
+  const { keywordSearch: trashCanSearch } = useTrashCanStore();
+
+  const markerRef = useRef<MarkerType>(marker);
 
   const path = useNavigation(selectedTransport, navigateCoordinate);
   const erase = useRef<() => void>();
-  const markerRef = useRef<MarkerType>({});
-  const { kakaoMap: map, geoCoder, keywordSearch } = useKakaoStore();
+
+  const { kakaoMap, geoCoder, keywordSearch } = useKakaoStore();
+
   useEffect(() => {
-    if (map) {
-      dispatch({ type: "SET_MAP", payload: map });
+    if (kakaoMap) {
+      dispatch({ type: "SET_MAP", payload: kakaoMap });
     }
-  }, [map]);
+  }, [kakaoMap]);
 
   useEffect(() => {
+    if (!marker.startMarker || !marker.endMarker) return;
+
     markerRef.current = marker;
-  }, [marker]);
 
-  useEffect(() => {
-    if (!marker.startMarker) return;
     navigator.geolocation.getCurrentPosition((position) => {
       geoCoder.coord2Address(
         position.coords.longitude,
@@ -137,14 +155,14 @@ export default function Navigation() {
       selectedTransport === "car" &&
       carRoute[selectedRoute]
     ) {
-      erase.current = drawKakaoNavigation(carRoute[selectedRoute], map);
+      erase.current = drawKakaoNavigation(carRoute[selectedRoute], kakaoMap);
     }
     if (
       selectedRoute !== null &&
       walkRoute.features.length > 0 &&
       selectedTransport === "walk"
     ) {
-      erase.current = drawSKNavigation(walkRoute, map);
+      erase.current = drawSKNavigation(walkRoute, kakaoMap);
     }
 
     return () => erase.current?.();
@@ -160,13 +178,13 @@ export default function Navigation() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-[1.25rem] font-extrabold flex items-center gap-2 ">
-        <div className=" bg-light-green p-[2px] rounded-md">
+      <h2 className="text-[1.25rem] font-extrabold flex items-center gap-2">
+        <div className="bg-light-green p-[2px] rounded-md">
           <NavigationIconSVG fill="white" />
         </div>
         <p>길찾기</p>
       </h2>
-      <div className="w-full border " />
+      <div className="w-full border" />
       <ButtonList
         selectedStatus={selectedTransport}
         setselectedStatus={(status) =>
@@ -184,13 +202,14 @@ export default function Navigation() {
               dispatch({
                 type: "SET_DEPARTURE",
                 payload: {
-                  x: location.lng,
-                  y: location.lat,
+                  x: location.longitude,
+                  y: location.latitude,
                   name: location.address,
                 },
               });
             }}
             keywordSearchMethod={keywordSearch}
+            className="rounded-md rounded-b-none"
           />
           <SearchBar
             placeName={navigateCoordinate.end?.name}
@@ -200,13 +219,14 @@ export default function Navigation() {
               dispatch({
                 type: "SET_ARRIVAL",
                 payload: {
-                  x: location.lng,
-                  y: location.lat,
+                  x: location.longitude,
+                  y: location.latitude,
                   name: location.address,
                 },
               });
             }}
-            keywordSearchMethod={keywordSearch}
+            keywordSearchMethod={trashCanSearch}
+            className="rounded-md rounded-t-none border-t-0"
           />
         </form>
         <div className="flex flex-col items-center justify-around">

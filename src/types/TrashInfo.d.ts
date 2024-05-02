@@ -1,6 +1,6 @@
 interface DetailedTrashCanInfo {
   id: string;
-  status: "added" | "waiting" | "removed";
+  status: "added" | "registered" | "removed" | "suggested";
 }
 
 interface OptionalTrashCanInfo {
@@ -10,11 +10,18 @@ interface OptionalTrashCanInfo {
   category?: string;
 }
 
-export interface Location {
-  lat: number;
-  lng: number;
-  address: string;
-  address_detail?: string;
+interface Radius {
+  radius: number;
+}
+
+interface Coordinate {
+  latitude: number;
+  longitude: number;
+}
+
+export interface Location extends Coordinate {
+  address?: string;
+  addressDetail?: string;
   distance?: number;
 }
 
@@ -23,3 +30,8 @@ export type TrashCanInfo = Location &
   OptionalTrashCanInfo;
 
 export type LocationInfo = Location & OptionalTrashCanInfo;
+export type TrashCanRequest = Coordinate &
+  Radius &
+  Partial<DetailedTrashCanInfo>;
+
+export type TrashCanStatus = DetailedTrashCanInfo["status"];
