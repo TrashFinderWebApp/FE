@@ -6,15 +6,30 @@ import Navigation from "../_components/navigation/navigation";
 import Home from "../_components/home/home";
 import Ranking from "../_components/ranking/ranking";
 
-const selectedAccordion = (accordion: string) => {
-  const lowerAccordion = accordion.toLowerCase();
+const selectedAccordion = (accordion: string[]) => {
+  const lowerAccordion = accordion.length > 0 ? accordion[0].toLowerCase() : "";
   switch (lowerAccordion) {
     case "findlocation":
       return <FindTrashCan />;
     case "addlocation":
       return <RegisterTrashCan />;
-    case "getdirection":
+    case "getdirection": {
+      const lat = accordion[1];
+      const lng = accordion[2];
+
+      if (lat && lng) {
+        return (
+          <Navigation
+            end={{
+              lat: Number(lat),
+              lng: Number(lng),
+            }}
+          />
+        );
+      }
+
       return <Navigation />;
+    }
     case "ranking":
       return <Ranking />;
     default:
@@ -23,5 +38,5 @@ const selectedAccordion = (accordion: string) => {
 };
 
 export default function Main({ params }: { params: { accordion: string[] } }) {
-  return selectedAccordion(params.accordion?.[0] || "");
+  return selectedAccordion(params.accordion ?? []);
 }

@@ -2,26 +2,27 @@ import { TrashCanInfo } from "@/types/TrashInfo";
 
 export default function createMarker(
   {
-    lat,
-    lng,
+    latitude,
+    longitude,
     status,
     markerIcon,
     size = 30,
-  }: Partial<Pick<TrashCanInfo, "lat" | "lng" | "status">> & {
+  }: Partial<Pick<TrashCanInfo, "latitude" | "longitude" | "status" | "id">> & {
     markerIcon?: string;
     size?: number;
   },
-  callback?: () => void,
+  // eslint-disable-next-line no-unused-vars
+  callback?: (marker: any) => void,
 ) {
   if (!window.kakao) return null;
   const icon =
     markerIcon ??
     (status === "added"
-      ? "/img/TrashcanIconIMG.png"
-      : "/img/TrashcanIconIMG.png");
+      ? "/svg/trashcanicongreen.svg"
+      : "/svg/trashcanicon.svg");
 
   const marker = new window.kakao.maps.Marker({
-    position: new window.kakao.maps.LatLng(lat, lng),
+    position: new window.kakao.maps.LatLng(latitude, longitude),
   });
 
   if (markerIcon) {
@@ -36,6 +37,6 @@ export default function createMarker(
     marker.setImage(markerImage);
   }
 
-  callback?.();
+  callback?.(marker);
   return marker;
 }

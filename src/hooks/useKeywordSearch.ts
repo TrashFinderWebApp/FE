@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import debounce from "@/components/util/debounce";
+import debounce from "@/util/debounce";
 import { useCallback, useEffect, useState } from "react";
 
 export default function useKeywordSearch(

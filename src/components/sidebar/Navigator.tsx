@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 
-import { usePathname } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 import HomeSVG from "../svg/HomeSVG";
 import AddLocationSVG from "../svg/AddLocationSVG";
 import RankingSVG from "../svg/RankingSVG";
@@ -57,19 +57,15 @@ const menuItems: MenuItemType[] = [
 ];
 
 export default function Navigator() {
-  const pathName = usePathname();
-  const [clicked, setClicked] = useState<NavigatorBarType>(
-    pathName.slice(1) as NavigatorBarType,
-  );
+  const pathName = useSelectedLayoutSegment();
+  const clicked = (pathName?.split("/")[0] as NavigatorBarType) ?? "";
+
   const session = useSession();
-  const handleOnClick = (props: NavigatorBarType) => {
-    setClicked(props);
-  };
 
   return (
     <header className="flex flex-col w-[4.25rem] h-lvh bg-dark-blue border-2 border-r-dark-blue z-50">
       <h1 className="aspect-[3/5] w-full flex flex-col items-center justify-center text-white text-sm font-bold">
-        <img src="img/TFinderCharacter.webp" alt="" />
+        <img src="/img/TFinderCharacter.webp" alt="" />
         <p>TFINDER</p>
       </h1>
       <nav className="w-full h-screen flex flex-col justify-between flex-grow rounded-tr-lg bg-white">
@@ -82,7 +78,6 @@ export default function Navigator() {
                 style={{
                   backgroundColor: clicked === item.id ? "#02C39A" : "#FFFFFF",
                 }}
-                onClick={() => handleOnClick(item.id)}
               >
                 {item.icon({
                   color: clicked === item.id ? "#FFFFFF" : "#184E77",

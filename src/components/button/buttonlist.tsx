@@ -8,6 +8,7 @@ interface ButtonListProps<T extends unknown> {
     status: T,
   ) => void | React.Dispatch<React.SetStateAction<T>>;
   buttonInfo: ButtonProps<T>[];
+  className?: string;
 }
 
 const buttontTailwindConfig = {
@@ -23,9 +24,10 @@ export default function ButtonList<T>({
   selectedStatus,
   setselectedStatus,
   buttonInfo,
+  className,
 }: ButtonListProps<T>) {
   return (
-    <div className="flex flex-row">
+    <div className={`flex flex-row${className ? ` ${className}` : ""}`}>
       {buttonInfo.map((item, idx) => (
         <Button
           key={item.content}

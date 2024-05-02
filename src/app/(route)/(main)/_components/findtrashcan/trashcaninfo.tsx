@@ -1,14 +1,26 @@
 import Button from "@/components/button/button";
 import { TrashCanInfo } from "@/types/TrashInfo";
 import Image from "next/image";
+import { useKakaoStore } from "@/stores/useKakaoStore";
+import { useRouter } from "next/navigation";
 
 export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
-  const { name, address, distance, imageList } = info;
+  const {
+    addressDetail = "",
+    address = "",
+    distance = 0,
+    imageList = [],
+    latitude,
+    longitude,
+  } = info || {};
+
+  const { kakaoRoadView, roadViewClient, setIsMapOpened } = useKakaoStore();
+  const route = useRouter();
   return (
     <article className="w-full border-2 border-light-green rounded-md shadow-sm py-4">
       <div className="flex items-center justify-between px-3 pb-4">
-        <h3 className="font-bold text-[1.125rem]">{name ?? ""}</h3>
-        <img src="svg/AlertIcon.svg" alt="쓰레기통 사진" />
+        <h3 className="font-bold text-[1.125rem]">{addressDetail ?? ""}</h3>
+        <img src="//svg/AlertIcon.svg" alt="쓰레기통 사진" />
       </div>
       <div className="flex items-center justify-between">
         {imageList?.slice(0, 2).map((img, idx) => (
@@ -29,21 +41,27 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
           />
         ))}
       </div>
-      <div className="flex items-center justify-center py-3 gap-3">
+      <div className="flex items-center justify-center p-3 gap-3">
         <Button
-          onClick={() => {}}
-          icon="svg/ShareIcon.svg"
-          className="px-1 py-1 aspect-square"
-        />
-        <Button
-          onClick={() => {}}
-          icon="svg/NavigationIcon.svg"
+          onClick={() => {
+            route.push(`/GetDirection/${latitude}/${longitude}`);
+          }}
+          icon="/svg/NavigationIcon.svg"
           content="길찾기"
+          className="flex-grow"
         />
         <Button
-          onClick={() => {}}
-          icon="svg/RoadViewIcon.svg"
+          onClick={() => {
+            roadViewClient.getNearestPanoId(
+              new window.kakao.maps.LatLng(latitude, longitude),
+              50,
+              (panoId: any) => kakaoRoadView.setPanoId(panoId),
+            );
+            setIsMapOpened(false);
+          }}
+          icon="/svg/RoadViewIcon.svg"
           content="로드뷰"
+          className="flex-grow"
         />
       </div>
       <div className="px-3 text-sm flex items-center gap-1">

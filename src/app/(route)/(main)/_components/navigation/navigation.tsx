@@ -17,6 +17,7 @@ import { useEffect, useReducer, useRef } from "react";
 import useNavigation from "@/hooks/useNavigation";
 import { useKakaoStore } from "@/stores/useKakaoStore";
 import SearchBar from "@/components/searchbar/searchbar";
+import { useTrashCanStore } from "@/stores/useTrashCanStore";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 import { initialNavigationState, navigationReducer } from "./navigationReducer";
@@ -45,7 +46,11 @@ const checkNavigationCoordinate = (coordinate: NavigationCoordinate) => {
   );
 };
 
-export default function Navigation() {
+interface NavigationProps {
+  end?: { lat: number; lng: number; name?: string };
+}
+
+export default function Navigation({ end }: NavigationProps) {
   const [
     {
       selectedTransport,
@@ -56,7 +61,18 @@ export default function Navigation() {
       marker,
     },
     dispatch,
-  ] = useReducer(navigationReducer, initialNavigationState);
+  ] = useReducer(navigationReducer, initialNavigationState, () =>
+    end
+      ? {
+          ...initialNavigationState,
+          navigateCoordinate: {
+            end: { x: end.lng, y: end.lat, name: end.name },
+          },
+        }
+      : initialNavigationState,
+  );
+
+  const { keywordSearch: trashCanSearch } = useTrashCanStore();
 
   const markerRef = useRef<MarkerType>(marker);
 
@@ -64,8 +80,6 @@ export default function Navigation() {
   const erase = useRef<() => void>();
 
   const { kakaoMap, geoCoder, keywordSearch } = useKakaoStore();
-
-  console.log(kakaoMap, "navigate");
 
   useEffect(() => {
     if (kakaoMap) {
@@ -188,8 +202,8 @@ export default function Navigation() {
               dispatch({
                 type: "SET_DEPARTURE",
                 payload: {
-                  x: location.lng,
-                  y: location.lat,
+                  x: location.longitude,
+                  y: location.latitude,
                   name: location.address,
                 },
               });
@@ -205,13 +219,13 @@ export default function Navigation() {
               dispatch({
                 type: "SET_ARRIVAL",
                 payload: {
-                  x: location.lng,
-                  y: location.lat,
+                  x: location.longitude,
+                  y: location.latitude,
                   name: location.address,
                 },
               });
             }}
-            keywordSearchMethod={keywordSearch}
+            keywordSearchMethod={trashCanSearch}
             className="rounded-md rounded-t-none border-t-0"
           />
         </form>

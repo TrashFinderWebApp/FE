@@ -6,6 +6,7 @@ import NaverProvider from "next-auth/providers/naver";
 import AppleProvider from "next-auth/providers/apple";
 import InstagramProvider from "next-auth/providers/instagram";
 import Credentials from "next-auth/providers/credentials";
+import { APIURL } from "@/util/const";
 import refreshAccessToken from "./refreshAccessToken";
 
 const handler = NextAuth({
@@ -38,24 +39,21 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         try {
-          const res = await fetch(
-            "http://35.216.97.185:8080/api/members/signin",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(credentials),
+          const res = await fetch(`${APIURL}/api/members/signin`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
             },
-          );
+            body: JSON.stringify(credentials),
+          });
 
-          const data = await res.json();
+          const result = await res.json();
 
-          if (res.ok && data) {
-            return data;
+          if (res.ok && result) {
+            return result;
           }
         } catch (e) {
-          console.error(e);
+          console.error("credentialsAuthorizeError", e);
         }
 
         return null;
@@ -67,18 +65,21 @@ const handler = NextAuth({
     signIn: async ({ account, user }) => {
       if (!account) return false;
       if (account.provider === "credentials") return true;
+
       try {
-        const res = await fetch("http://35.216.97.185:8080/api/oauth2/login", {
+        const res = await fetch(`${APIURL}/api/oauth2/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
           },
+
           body: JSON.stringify({
-            code: account.refresh_token,
-            SocialType: account.provider.toUpperCase(),
+            socialAccessToken: account.access_token,
+            socialType: account.provider.toUpperCase(),
           }),
         });
+
         if (res.ok) {
           const data = await res.json();
           if (data) {
@@ -92,10 +93,11 @@ const handler = NextAuth({
 
       return false;
     },
+
     jwt: async ({ token, user, account }) => {
       if (account && user && user.accessToken) {
         token.accessToken = user.accessToken;
-        token.accessTokenExpires = Date.now() + 10000;
+        token.accessTokenExpires = Date.now() + 10000000;
         return token;
       }
 
@@ -108,6 +110,7 @@ const handler = NextAuth({
 
       return refreshAccessToken(token);
     },
+
     session: async ({ token, session }) => {
       if (
         typeof token.accessToken === "string" &&

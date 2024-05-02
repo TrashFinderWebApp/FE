@@ -25,6 +25,7 @@ export default function RootLayout({
     <html lang="ko">
       <head />
       <body className="flex flex-row w-screen h-v font-pretendard">
+        <div id="modal-root" />
         <AuthProvider>
           <Providers>{children}</Providers>
         </AuthProvider>

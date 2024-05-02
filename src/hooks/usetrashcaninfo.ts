@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function useGetTrashCanLocation(info: TrashCanRequest | null) {
   if (!info) return { data: null, isLoading: false, error: null };
-  const { lat, lng, radius, status, id } = info;
+  const { latitude: lat, longitude: lng, radius, status, id } = info;
 
   const result = useQuery({
     queryKey: [lat, lng, radius, status ?? "added", id ?? ""],

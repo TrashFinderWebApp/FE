@@ -1,3 +1,5 @@
+"use client";
+
 const rankColor = (rank: number) => {
   switch (rank) {
     case 1:
@@ -32,7 +34,7 @@ function UserRanking({
         </span>
       ) : (
         <img
-          src={`svg/rank${rank}icon.svg`}
+          src={`/svg/rank${rank}icon.svg`}
           alt="랭킹 아이콘"
           className="w-8"
         />
@@ -44,7 +46,7 @@ function UserRanking({
       >
         <div className="flex items-center gap-2">
           <div className="w-16 h-16 rounded-full overflow-hidden">
-            <img src={icon ?? "img/TEST.jpg"} alt="사용자 아이콘" />
+            <img src={icon ?? "/img/TEST.jpg"} alt="사용자 아이콘" />
           </div>
           <div className={`text-lg${rank < 4 ? " font-bold" : ""}`}>{name}</div>
         </div>
