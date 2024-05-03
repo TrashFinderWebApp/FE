@@ -25,7 +25,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full bg-white">
+    <div className="flex flex-col items-center justify-center w-full h-full bg-white">
       <div className="items-center justify-center bg-white shadow-lg p-8 w-[20rem] md:w-[33.5rem]">
         <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">
           로그인

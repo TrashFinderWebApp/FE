@@ -4,13 +4,13 @@ import useMap from "@/hooks/useMap";
 import { useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { isMobile } from "react-device-detect";
-import Navigator from "@/components/sidebar/Navigator";
 import Header from "@/components/header/header";
 import { useKakaoStore } from "@/stores/useKakaoStore";
 import distanceBetweenLatLng from "@/util/distance";
 import { useTrashCanStore } from "@/stores/useTrashCanStore";
 import ButtonList from "@/components/button/buttonlist";
 import { ButtonProps } from "@/types/button";
+import Navigator from "@/components/sidebar/Navigator";
 import createMarker from "./_components/createmarker";
 
 interface MainLayoutProps {
@@ -127,7 +127,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
         selectedStatus={isMapOpened}
         setselectedStatus={setIsMapOpened}
         buttonInfo={buttonProps}
-        className="absolute top-4 right-4 z-50 w-40"
+        className={`absolute right-4 z-30 w-40${
+          deviceType === "mobile" ? " top-36" : " top-4"
+        }`}
       />
       <div
         ref={mapRef}

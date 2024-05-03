@@ -1,5 +1,10 @@
 "use client";
 
+import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import { APIURL } from "@/util/const";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { forwardRef } from "react";
+
 const rankColor = (rank: number) => {
   switch (rank) {
     case 1:
@@ -13,19 +18,23 @@ const rankColor = (rank: number) => {
   }
 };
 
-function UserRanking({
-  rank,
-  name,
-  score,
-  icon,
-}: {
-  rank: number;
-  name: string;
-  score: number;
-  icon?: string;
-}) {
+const UserRanking = forwardRef(function UserRanking(
+  {
+    rank,
+    name,
+    score,
+    icon,
+  }: {
+    rank: number;
+    name: string;
+    score: number;
+    icon?: string;
+  },
+  forwardedRef: React.ForwardedRef<HTMLDivElement>,
+) {
   return (
     <div
+      ref={forwardedRef}
       className={`flex rounded-tr-lg shadow-md px-4 py-2 items-center ${rankColor(rank)}`}
     >
       {rank > 3 ? (
@@ -46,17 +55,55 @@ function UserRanking({
       >
         <div className="flex items-center gap-2">
           <div className="w-16 h-16 rounded-full overflow-hidden">
-            <img src={icon ?? "/img/TEST.jpg"} alt="사용자 아이콘" />
+            <img
+              className=""
+              src={icon ?? "/svg/defaulticon.svg"}
+              alt="사용자 아이콘"
+            />
           </div>
-          <div className={`text-lg${rank < 4 ? " font-bold" : ""}`}>{name}</div>
+          <div className={`text-lg${rank < 4 ? " font-bold" : ""}`}>
+            {name ?? "익명"}
+          </div>
         </div>
         <div className="text-sm">{score}pt</div>
       </div>
     </div>
   );
+});
+
+interface UserRankingResponse {
+  memberId: number;
+  memberName: string;
+  totalScore: number;
+  personalRank: number;
 }
 
 export default function Ranking() {
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ["ranking"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await fetch(
+        `${APIURL}/api/rank/list?startIndex=${pageParam}&endIndex=${pageParam + 9}`,
+      );
+      const result = await response.json();
+      return result;
+    },
+    getNextPageParam: (lastPage, allPage) => {
+      if (lastPage?.message || lastPage?.length < 10) {
+        return undefined;
+      }
+      return allPage.length * 10 + 1;
+    },
+    initialPageParam: 1,
+  });
+
+  const { setTarget } = useIntersectionObserver({
+    hasNextPage,
+    fetchNextPage,
+  });
+
+  console.log(data);
+
   return (
     <div className="flex flex-col">
       <h2 className="text-[1.25rem] font-extrabold">랭킹</h2>
@@ -68,15 +115,20 @@ export default function Ranking() {
         <div className="text-sm text-[#666666]">오후 00시 00분 기준</div>
         <button type="button">reload</button>
       </div>
+
       <div className="flex flex-col gap-4 my-8">
-        {Array.from({ length: 10 }, (_, i) => (
-          <UserRanking
-            key={i}
-            rank={i + 1}
-            name={`사용자${i + 1}`}
-            score={1000 - i * 100}
-          />
-        ))}
+        {data?.pages
+          .flat()
+          .sort((a, b) => a.personalRank - b.personalRank)
+          .map((item: UserRankingResponse, idx, org) => (
+            <UserRanking
+              ref={idx === org.length - 1 ? setTarget : null}
+              key={item.memberId}
+              rank={item.personalRank}
+              name={item.memberName}
+              score={item.totalScore}
+            />
+          ))}
       </div>
     </div>
   );

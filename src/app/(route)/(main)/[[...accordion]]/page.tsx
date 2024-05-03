@@ -5,6 +5,7 @@ import RegisterTrashCan from "../_components/registertrashcan/registertrashcan";
 import Navigation from "../_components/navigation/navigation";
 import Home from "../_components/home/home";
 import Ranking from "../_components/ranking/ranking";
+import Notice from "../_components/notice/notice";
 
 const selectedAccordion = (accordion: string[]) => {
   const lowerAccordion = accordion.length > 0 ? accordion[0].toLowerCase() : "";
@@ -32,6 +33,8 @@ const selectedAccordion = (accordion: string[]) => {
     }
     case "ranking":
       return <Ranking />;
+    case "notice":
+      return <Notice />;
     default:
       return <Home />;
   }

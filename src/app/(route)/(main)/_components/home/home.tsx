@@ -1,11 +1,46 @@
 import SearchBar from "@/components/searchbar/searchbar";
 import { useKakaoStore } from "@/stores/useKakaoStore";
+import { APIURL } from "@/util/const";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function Home() {
   const { keywordSearch } = useKakaoStore();
+
   const session = useSession();
+
+  const { data: rank } = useQuery({
+    queryKey: ["rank"],
+    queryFn: async () => {
+      const res = await fetch(`${APIURL}/api/rank/me`, {
+        headers: {
+          Authorization: `Bearer ${session.data?.accessToken}`,
+        },
+      });
+      if (!res.ok) {
+        throw new Error("랭킹 정보를 불러오는데 실패했습니다.");
+      }
+      return res.json();
+    },
+  });
+
+  const { data: myTrashcan, status } = useQuery({
+    queryKey: ["myTrashcan"],
+    queryFn: async () => {
+      const res = await fetch(`${APIURL}/api/trashcan/member/me`, {
+        headers: {
+          Authorization: `Bearer ${session.data?.accessToken}`,
+        },
+      });
+      if (!res.ok) {
+        throw new Error("쓰레기통 정보를 불러오는데 실패했습니다.");
+      }
+      return res.json();
+    },
+  });
+
+  console.log(myTrashcan);
 
   return (
     <div className="flex flex-col gap-2">
@@ -46,11 +81,13 @@ export default function Home() {
             <div className="border-2 border-light-green shadow-md rounded-md font-bold px-8 py-4 flex flex-col gap-4">
               <div className="flex items-end justify-between">
                 <div className="flex items-end">
-                  <p className="text-[1.5rem] mr-1">00등</p>/
-                  <p className="text-[0.875rem]">000명</p>
+                  <p className="text-[1.5rem] mr-1">
+                    {rank?.personalRank ?? 0}등
+                  </p>
+                  /<p className="text-[0.875rem]">{rank?.totalPeople ?? 0}명</p>
                 </div>
                 <div className="text-[0.875rem] text-light-green">
-                  000 point
+                  {rank?.personalPoint ?? 0} point
                 </div>
               </div>
               <div className="relative flex justify-between rounded-md bg-[#eeeeee] h-8">
@@ -61,44 +98,53 @@ export default function Home() {
                   }}
                 />
                 <div className="text-sm absolute right-2 top-[50%] -translate-y-[50%]">
-                  상위 0%
+                  상위
+                  {(
+                    ((rank?.personalRank ?? 0) / (rank?.totalPeople ?? 1)) *
+                    100
+                  ).toFixed(1)}
+                  %
                 </div>
               </div>
             </div>
           </div>
           <div className="border w-full my-4" />
-          <div className="RecordByMe">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h3 className="text-[1.25rem] font-bold">내가 등록한 장소</h3>
               <button type="button" className="text-sm text-[#666666]">
                 최근 등록 순
               </button>
             </div>
-            <div className="shadow-md rounded-md border-2 border-[#aaaaaa] p-3 flex text-sm">
-              <img
-                src="img/TEST.jpg"
-                alt=""
-                className="w-[30%] aspect-[5/3] object-cover rounded-sm"
-              />
-              <div className="ml-2 flex flex-col">
-                <p className="text-[0.875rem] font-semibold">
-                  로데오거리 쓰레기통
-                </p>
-                <p className="truncate w-36">
-                  부산광역시 동구 중앙대로 200222222
-                </p>
-                <p className="mt-6">0000년 00월 00일</p>
-              </div>
-              <div className="flex-grow" />
-              <div className="flex flex-col items-end justify-between">
-                <div className="px-2 bg-[#E74A62] text-white rounded-md">
-                  등록성공
+            {status === "success" &&
+              myTrashcan?.map((trashcan: any) => (
+                <div
+                  key={trashcan?.trashcanId}
+                  className="shadow-md rounded-md border-2 border-[#aaaaaa] p-3 flex text-sm"
+                >
+                  <img
+                    src={trashcan?.imageUrls[0] ?? "/img/TEST.jpg"}
+                    alt=""
+                    className="w-[30%] aspect-[5/3] object-cover rounded-sm"
+                  />
+                  <div className="ml-2 flex flex-col">
+                    <p className="text-[0.875rem] font-semibold" />
+                    <p className="truncate w-36">
+                      {trashcan?.address ?? "주소를 불러오는 중입니다."}
+                    </p>
+                    <p className="mt-6">0000년 00월 00일</p>
+                  </div>
+                  <div className="flex-grow" />
+                  <div className="flex flex-col items-end justify-between">
+                    <div className="px-2 bg-[#E74A62] text-white rounded-md">
+                      {trashcan?.status === "added" ? "등록완료" : "대기중"}
+                    </div>
+                    <div className="font-bold text-[0.875rem] text-light-green">
+                      + 5 Point
+                    </div>
+                  </div>
                 </div>
-                <div className="font-bold text-[0.875rem] text-light-green">
-                  + 5 Point
-                </div>
-              </div>
-            </div>
+              ))}
           </div>
         </>
       ) : (

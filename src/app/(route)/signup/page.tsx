@@ -49,8 +49,8 @@ function SignUpForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full bg-white">
-      <div className="items-center justify-center space-y-4 bg-white shadow-lg p-8 w-[20rem] md:w-[33.5rem]">
+    <div className="flex flex-col items-center justify-center w-full h-full bg-white">
+      <div className="items-center justify-center space-y-4 bg-white shadow-lg p-8 w-[20rem] md:w-[33.5rem] min-w-[80%]">
         <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">
           회원가입
         </h1>
