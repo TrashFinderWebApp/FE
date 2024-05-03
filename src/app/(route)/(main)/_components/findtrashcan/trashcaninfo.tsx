@@ -9,7 +9,7 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
     addressDetail = "",
     address = "",
     distance = 0,
-    imageList = [],
+    imageUrls: imageList = [],
     latitude,
     longitude,
   } = info || {};
@@ -20,7 +20,7 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
     <article className="w-full border-2 border-light-green rounded-md shadow-sm py-4">
       <div className="flex items-center justify-between px-3 pb-4">
         <h3 className="font-bold text-[1.125rem]">{addressDetail ?? ""}</h3>
-        <img src="//svg/AlertIcon.svg" alt="쓰레기통 사진" />
+        <img src="/svg/AlertIcon.svg" alt="쓰레기통 사진" />
       </div>
       <div className="flex items-center justify-between">
         {imageList?.slice(0, 2).map((img, idx) => (

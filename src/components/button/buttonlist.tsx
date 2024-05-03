@@ -17,7 +17,7 @@ const buttontTailwindConfig = {
   unselected:
     "w-full flex-grow rounded-none border-2 border-[#aaaaaa] bg-white text-[#0a0a0a] border-l-0",
   startIcon: "rounded-l-md border-l-2",
-  endIcon: "rounded-r-md ",
+  endIcon: "rounded-r-md",
 };
 
 export default function ButtonList<T>({
@@ -39,7 +39,7 @@ export default function ButtonList<T>({
             item.type === selectedStatus
               ? buttontTailwindConfig.selected
               : buttontTailwindConfig.unselected
-          } ${idx === 0 ? buttontTailwindConfig.startIcon : ""} ${idx === buttonInfo.length - 1 ? buttontTailwindConfig.endIcon : ""}`}
+          }${idx === 0 ? ` ${buttontTailwindConfig.startIcon}` : ""}${idx === buttonInfo.length - 1 ? ` ${buttontTailwindConfig.endIcon}` : ""}`}
           icon={item.icon}
           iconComponent={item.iconComponent?.({
             fill: item.type === selectedStatus ? "white" : "black",

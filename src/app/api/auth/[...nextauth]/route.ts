@@ -84,6 +84,7 @@ const handler = NextAuth({
           const data = await res.json();
           if (data) {
             user.accessToken = data.accessToken;
+            user.jwtExpiredTime = data.jwtExpiredTime;
           }
           return true;
         }
@@ -97,7 +98,7 @@ const handler = NextAuth({
     jwt: async ({ token, user, account }) => {
       if (account && user && user.accessToken) {
         token.accessToken = user.accessToken;
-        token.accessTokenExpires = Date.now() + 10000000;
+        token.accessTokenExpires = user.jwtExpiredTime;
         return token;
       }
 

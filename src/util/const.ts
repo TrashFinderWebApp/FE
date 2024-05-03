@@ -1,1 +1,1 @@
-export const APIURL = "http://34.64.155.181:8080";
+export const APIURL = "https://tfinder.store";

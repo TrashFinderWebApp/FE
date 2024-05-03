@@ -11,5 +11,6 @@ declare module "next-auth" {
 
   interface User extends DefaultUser {
     accessToken: string;
+    jwtExpiredTime: number;
   }
 }

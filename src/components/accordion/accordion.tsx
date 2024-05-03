@@ -38,8 +38,8 @@ export default function Accordion({
     <div
       className={
         animation
-          ? "relative z-40 flex flex-row w-fit items-center h-screen duration-300 -translate-x-1 pointer-events-none"
-          : "relative z-40 flex flex-row w-fit items-center h-screen duration-300 -translate-x-[24.5rem] pointer-events-none"
+          ? "relative z-30 flex flex-row w-fit items-center h-screen duration-300 -translate-x-1 pointer-events-none"
+          : "relative z-30 flex flex-row w-fit items-center h-screen duration-300 -translate-x-[24.5rem] pointer-events-none"
       }
       onTransitionEnd={handleAnimationEnd}
     >

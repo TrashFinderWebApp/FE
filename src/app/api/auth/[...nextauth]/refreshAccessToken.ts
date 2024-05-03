@@ -6,7 +6,6 @@ const refreshAccessToken = async (token: JWT) => {
     const res = await fetch(`${APIURL}/api/auth/reissue`);
 
     const refreshToken = await res.json();
-
     if (res.ok && refreshToken && refreshToken?.accessToken) {
       return {
         ...token,

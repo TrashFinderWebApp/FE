@@ -4,7 +4,7 @@ interface DetailedTrashCanInfo {
 }
 
 interface OptionalTrashCanInfo {
-  imageList?: string[];
+  imageUrls?: string[];
   description?: string;
   name?: string;
   category?: string;

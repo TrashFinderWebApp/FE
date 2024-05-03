@@ -4,14 +4,13 @@ import React from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 
-import { useSelectedLayoutSegment } from "next/navigation";
+import { usePathname } from "next/navigation";
 import HomeSVG from "../svg/HomeSVG";
 import AddLocationSVG from "../svg/AddLocationSVG";
 import RankingSVG from "../svg/RankingSVG";
 import AnnouncementSVG from "../svg/AnnouncementSVG";
 import FindLocationSVG from "../svg/FindLocationSVG";
 import GetDirectionSVG from "../svg/GetDirectionSVG";
-import ConfigSVG from "../svg/ConfigSVG";
 import LogoutSVG from "../svg/LogoutSVG";
 import LoginSVG from "../svg/LoginSVG";
 
@@ -20,7 +19,7 @@ type NavigatorBarType =
   | "FindLocation"
   | "AddLocation"
   | "Ranking"
-  | "Announcement"
+  | "Notice"
   | "GetDirection";
 
 interface MenuItemType {
@@ -51,19 +50,18 @@ const menuItems: MenuItemType[] = [
     icon: RankingSVG,
   },
   {
-    id: "Announcement",
+    id: "Notice",
     icon: AnnouncementSVG,
   },
 ];
 
 export default function Navigator() {
-  const pathName = useSelectedLayoutSegment();
-  const clicked = (pathName?.split("/")[0] as NavigatorBarType) ?? "";
-
+  const pathName = usePathname();
+  const clicked = (pathName?.split("/")[1] as NavigatorBarType) ?? "";
   const session = useSession();
 
   return (
-    <header className="flex flex-col w-[4.25rem] h-lvh bg-dark-blue border-2 border-r-dark-blue z-50">
+    <header className="flex flex-col w-[4.25rem] h-lvh bg-dark-blue border-2 border-r-dark-blue z-40">
       <h1 className="aspect-[3/5] w-full flex flex-col items-center justify-center text-white text-sm font-bold">
         <img src="/img/TFinderCharacter.webp" alt="" />
         <p>TFINDER</p>
@@ -87,9 +85,6 @@ export default function Navigator() {
           ))}
         </ul>
         <ul className="flex flex-col items-center space-y-2 py-2">
-          <li>
-            <ConfigSVG />
-          </li>
           <li>
             {session.status === "authenticated" ? (
               <Link href="/">
