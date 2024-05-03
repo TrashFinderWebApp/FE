@@ -11,7 +11,6 @@ import RankingSVG from "../svg/RankingSVG";
 import AnnouncementSVG from "../svg/AnnouncementSVG";
 import FindLocationSVG from "../svg/FindLocationSVG";
 import GetDirectionSVG from "../svg/GetDirectionSVG";
-import ConfigSVG from "../svg/ConfigSVG";
 import LogoutSVG from "../svg/LogoutSVG";
 import LoginSVG from "../svg/LoginSVG";
 
@@ -86,9 +85,6 @@ export default function Navigator() {
           ))}
         </ul>
         <ul className="flex flex-col items-center space-y-2 py-2">
-          <li>
-            <ConfigSVG />
-          </li>
           <li>
             {session.status === "authenticated" ? (
               <Link href="/">
