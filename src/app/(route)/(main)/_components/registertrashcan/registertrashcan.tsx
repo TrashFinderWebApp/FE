@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import distanceBetweenLatLng from "@/util/distance";
 import { TrashCanInfo } from "@/types/TrashInfo";
 import Modal from "@/components/modal/modal";
-import createMarker from "../createmarker";
+import createMarker from "../../../../../util/createmarker";
 
 type RegisterType = "new" | "recommend";
 

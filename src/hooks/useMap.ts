@@ -13,7 +13,7 @@ export interface mapResult {
 
 export default function useMap(
   mapRef: React.RefObject<HTMLDivElement>,
-  roadViewRef: React.RefObject<HTMLDivElement>,
+  roadViewRef?: React.RefObject<HTMLDivElement>,
 ) {
   const {
     kakaoMap,
@@ -33,22 +33,11 @@ export default function useMap(
       };
 
       const map = new window.kakao.maps.Map(mapRef.current, options);
-      const roadView = new window.kakao.maps.Roadview(roadViewRef.current);
-      const roadViewClient = new window.kakao.maps.RoadviewClient();
 
       map.setCopyrightPosition(
         window.kakao.maps.CopyrightPosition.BOTTOMRIGHT,
         true,
       );
-
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        const pos = new window.kakao.maps.LatLng(latitude, longitude);
-        map.setCenter(pos);
-        roadViewClient.getNearestPanoId(pos, 50, (panoId: any) =>
-          roadView.setPanoId(panoId, pos),
-        );
-      });
 
       const clusterer = new window.kakao.maps.MarkerClusterer({
         map,
@@ -59,12 +48,30 @@ export default function useMap(
       const placeSearch = new window.kakao.maps.services.Places();
       const geocoder = new window.kakao.maps.services.Geocoder();
 
-      setKakaoMap(map);
-      setKakaoClusterer(clusterer);
-      setKeywordSearch(placeSearch.keywordSearch);
-      setGeoCoder(geocoder);
-      setKakakoRoadView(roadView);
-      setRoadViewClient(roadViewClient);
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        const pos = new window.kakao.maps.LatLng(latitude, longitude);
+        map.setCenter(pos);
+        setKakaoMap(map);
+        setKakaoClusterer(clusterer);
+        setKeywordSearch(placeSearch.keywordSearch);
+        setGeoCoder(geocoder);
+      });
+
+      if (roadViewRef) {
+        const roadView = new window.kakao.maps.Roadview(roadViewRef.current);
+        const roadViewClient = new window.kakao.maps.RoadviewClient();
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          const pos = new window.kakao.maps.LatLng(latitude, longitude);
+
+          roadViewClient.getNearestPanoId(pos, 50, (panoId: any) =>
+            roadView.setPanoId(panoId, pos),
+          );
+          setKakakoRoadView(roadView);
+          setRoadViewClient(roadViewClient);
+        });
+      }
     };
     const onLoadKakaoMap = () => {
       if (window.kakao) {
@@ -80,6 +87,8 @@ export default function useMap(
 
       document.head.appendChild(script);
       script.addEventListener("load", onLoadKakaoMap);
+    } else {
+      onLoadKakaoMap();
     }
   }, []);
 }

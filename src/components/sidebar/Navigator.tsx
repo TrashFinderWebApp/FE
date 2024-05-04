@@ -61,12 +61,12 @@ export default function Navigator() {
   const session = useSession();
 
   return (
-    <header className="flex flex-col w-[4.25rem] h-lvh bg-dark-blue border-2 border-r-dark-blue z-40">
+    <header className="flex flex-col w-[4.25rem] h-svh bg-dark-blue border-2 border-r-dark-blue z-40">
       <h1 className="aspect-[3/5] w-full flex flex-col items-center justify-center text-white text-sm font-bold">
         <img src="/img/TFinderCharacter.webp" alt="" />
         <p>TFINDER</p>
       </h1>
-      <nav className="w-full h-screen flex flex-col justify-between flex-grow rounded-tr-lg bg-white">
+      <nav className="w-full h-svh flex flex-col justify-between flex-grow rounded-tr-lg bg-white">
         <ul className="flex flex-col items-center space-y-2 py-2">
           {menuItems.map((item) => (
             <li key={item.id} className="w-full">

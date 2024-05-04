@@ -11,7 +11,7 @@ import { useTrashCanStore } from "@/stores/useTrashCanStore";
 import ButtonList from "@/components/button/buttonlist";
 import { ButtonProps } from "@/types/button";
 import Navigator from "@/components/sidebar/Navigator";
-import createMarker from "./_components/createmarker";
+import createMarker from "../../../util/createmarker";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -103,7 +103,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     <>
       {deviceType === "mobile" ? (
         <Header>
-          <section className="my-5 w-full">{children}</section>
+          <section className="w-full">{children}</section>
         </Header>
       ) : (
         <>
@@ -136,8 +136,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
         style={{ zIndex: isMapOpened ? "10" : "0" }}
         className={
           isAccordionOpen
-            ? "absolute top-0 h-screen duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"
-            : "absolute top-0 h-screen duration-300 w-full box-content"
+            ? "absolute top-0 h-svh duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"
+            : "absolute top-0 h-svh duration-300 w-full box-content"
         }
       />
       <div
@@ -147,8 +147,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
         }}
         className={
           isAccordionOpen
-            ? "absolute top-0 left-0 h-screen duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"
-            : "absolute top-0 left-0 h-screen duration-300 w-full box-content"
+            ? "absolute top-0 left-0 h-svh duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"
+            : "absolute top-0 left-0 h-svh duration-300 w-full box-content"
         }
       />
     </>

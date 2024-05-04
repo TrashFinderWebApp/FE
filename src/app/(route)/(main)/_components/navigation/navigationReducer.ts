@@ -8,7 +8,7 @@ import {
   RouteSection,
   Transportation,
 } from "@/types/navigate";
-import createMarker from "../createmarker";
+import createMarker from "../../../../../util/createmarker";
 
 interface NavigationState {
   selectedTransport: Transportation;

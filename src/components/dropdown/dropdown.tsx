@@ -1,5 +1,5 @@
 import { LocationInfo } from "@/types/TrashInfo";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type LocationIdType = LocationInfo & { id: string };
 
@@ -8,30 +8,27 @@ interface DropDownProps {
   highlight?: string;
   // eslint-disable-next-line no-unused-vars
   onClick: (location: LocationIdType) => void;
+  selectedIdx: number;
 }
 
 export default function DropDown({
   locationList,
   highlight = "",
   onClick,
+  selectedIdx,
 }: DropDownProps) {
-  const dropDownRef = useRef<HTMLUListElement>(null);
   const [isOpened, setIsOpened] = useState(false);
+
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropDownRef.current &&
-        !dropDownRef.current.contains(e.target as Node)
-      ) {
-        setIsOpened(false);
-      }
+    const handleClickOutside = () => {
+      setIsOpened(false);
     };
 
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [dropDownRef]);
+  }, []);
 
   useEffect(() => {
     if (locationList.length > 0) {
@@ -42,15 +39,12 @@ export default function DropDown({
   return (
     <div>
       {locationList.length > 0 && isOpened && (
-        <ul
-          ref={dropDownRef}
-          className="absolute flex flex-col text-[0.875rem] whitespace-pre p-4 gap-1 rounded-md max-h-80 bg-white z-50 shadow-lg w-full overflow-y-scroll cursor-pointer [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
-        >
-          {locationList.map((location) => (
+        <ul className="absolute flex flex-col text-[0.875rem] whitespace-pre p-4 gap-1 rounded-md max-h-80 bg-white z-50 shadow-lg w-full overflow-y-scroll cursor-pointer [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]">
+          {locationList.map((location, idx) => (
             <li
               role="presentation"
               key={location.id}
-              className="flex justify-between"
+              className={`flex justify-between${selectedIdx === idx ? " bg-[#F0F0F0]" : ""}`}
               onClick={() => {
                 onClick?.(location);
                 setIsOpened(false);

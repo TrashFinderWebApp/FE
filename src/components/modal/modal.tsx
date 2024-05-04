@@ -18,7 +18,7 @@ export default function Modal({
   return isOpen
     ? createPortal(
         <>
-          <div className="w-screen h-screen absolute z-30 bg-transparent backdrop-blur" />
+          <div className="w-screen h-svh absolute z-30 bg-transparent backdrop-blur" />
           <aside
             className={`absolute top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%] bg-white z-50 rounded-lg p-4 flex flex-col gap-4 items-center shadow-md drop-shadow-sm${className?.length ? ` ${className}` : ""}`}
           >

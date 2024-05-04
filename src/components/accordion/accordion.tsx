@@ -38,14 +38,14 @@ export default function Accordion({
     <div
       className={
         animation
-          ? "relative z-30 flex flex-row w-fit items-center h-screen duration-300 -translate-x-1 pointer-events-none"
-          : "relative z-30 flex flex-row w-fit items-center h-screen duration-300 -translate-x-[24.5rem] pointer-events-none"
+          ? "relative z-30 flex flex-row w-fit items-center h-svh duration-300 -translate-x-1 pointer-events-none"
+          : "relative z-30 flex flex-row w-fit items-center h-svh duration-300 -translate-x-[24.5rem] pointer-events-none"
       }
       onTransitionEnd={handleAnimationEnd}
     >
       <section
         ref={scrollRef}
-        className="relative w-[24.5rem] px-6 py-[4rem] h-screen pointer-events-auto bg-white border-2 border-dark-blue shadow-lg drop-shadow-lg overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
+        className="relative w-[24.5rem] px-6 py-[4rem] h-svh pointer-events-auto bg-white border-x-2 border-dark-blue shadow-lg drop-shadow-lg overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
       >
         {children}
       </section>
