@@ -102,8 +102,6 @@ export default function Ranking() {
     fetchNextPage,
   });
 
-  console.log(data);
-
   return (
     <div className="flex flex-col">
       <h2 className="text-[1.25rem] font-extrabold">랭킹</h2>

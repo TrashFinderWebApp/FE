@@ -194,7 +194,7 @@ export default function RegisterTrashCan() {
             const content = `<div class="bg-dark-blue text-white p-3 rounded-md">
             <div class="flex justify-between">
               <h2 class="font-bold text-lg">${trashcan.addressDetail ?? "쓰레기통"}</h2>
-              <button onclick="()=>{console.log('tq')}">X</button>
+              <button>X</button>
             </div>
             <p>${trashcan?.count}번 추천됨.</p>
             </div>`;

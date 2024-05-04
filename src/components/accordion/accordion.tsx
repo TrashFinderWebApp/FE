@@ -1,7 +1,7 @@
 import useAnimation from "@/hooks/useAnimation";
 import Image from "next/image";
-import LeftArrowSvg from "public/svg/LeftArrow.svg";
-import ScrollToTopSvg from "public/svg/ScrollToTop.svg";
+import LeftArrowSvg from "public/svg/leftarrow.svg";
+import ScrollToTopSvg from "public/svg/scrolltotop.svg";
 import { useEffect, useRef, useState } from "react";
 
 export default function Accordion({
