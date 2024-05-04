@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import SearchBar from "@/components/searchbar/searchbar";
 import useMap from "@/hooks/map/useMap";
@@ -14,21 +14,14 @@ export default function MapLayout({ children }: { children: React.ReactNode }) {
   const [needRefresh, setNeedRefresh] = useState(false);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
-  const context = useMemo(() => ({ setRefreshCallback }), [setRefreshCallback]);
+  console.log(refreshCallback);
+
+  const context = useMemo(
+    () => ({ setRefreshCallback, setNeedRefresh }),
+    [setRefreshCallback, setNeedRefresh],
+  );
 
   useMap(mapRef);
-
-  useEffect(() => {
-    if (kakaoMap && window.kakao) {
-      window.kakao.maps.event.addListener(kakaoMap, "dragend", () => {
-        setNeedRefresh(true);
-      });
-
-      window.kakao.maps.event.addListener(kakaoMap, "zoom_changed", () => {
-        setNeedRefresh(true);
-      });
-    }
-  }, [kakaoMap]);
 
   return (
     <>
