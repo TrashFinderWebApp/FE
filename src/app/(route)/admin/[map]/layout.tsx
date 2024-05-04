@@ -4,14 +4,7 @@ import { createContext, useEffect, useRef, useState } from "react";
 
 export const mapContext = createContext<any>(null);
 
-export default function mapLayout({
-  children,
-}: {
-  children: React.ReactNode;
-  params: {
-    map: any;
-  };
-}) {
+export default function mapLayout({ children }: { children: React.ReactNode }) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [map, setMap] = useState<any>(null);
   useEffect(() => {
