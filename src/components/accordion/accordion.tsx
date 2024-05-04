@@ -1,4 +1,4 @@
-import useAnimation from "@/hooks/useAnimation";
+import useAnimation from "@/hooks/animation/useAnimation";
 import Image from "next/image";
 import LeftArrowSvg from "public/svg/leftarrow.svg";
 import ScrollToTopSvg from "public/svg/scrolltotop.svg";
@@ -38,8 +38,8 @@ export default function Accordion({
     <div
       className={
         animation
-          ? "relative z-30 flex flex-row w-fit items-center h-svh duration-300 -translate-x-1 pointer-events-none"
-          : "relative z-30 flex flex-row w-fit items-center h-svh duration-300 -translate-x-[24.5rem] pointer-events-none"
+          ? "z-30 flex flex-row w-fit items-center h-svh duration-300 -translate-x-1 pointer-events-none"
+          : "z-30 flex flex-row w-fit items-center h-svh duration-300 -translate-x-[24.5rem] pointer-events-none"
       }
       onTransitionEnd={handleAnimationEnd}
     >

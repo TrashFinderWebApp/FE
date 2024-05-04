@@ -2,8 +2,8 @@ import { TrashCanInfo, TrashCanRequest } from "@/types/TrashInfo";
 import { APIURL } from "@/util/const";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useGetTrashCanInfo(info: TrashCanRequest | null) {
-  const result = useQuery<TrashCanInfo[]>({
+export default function useTrashCanInfoQuery(info: TrashCanRequest | null) {
+  return useQuery<TrashCanInfo[]>({
     queryKey: [
       info?.latitude ?? 0,
       info?.longitude ?? 0,
@@ -36,6 +36,4 @@ export default function useGetTrashCanInfo(info: TrashCanRequest | null) {
       return data;
     },
   });
-
-  return result;
 }

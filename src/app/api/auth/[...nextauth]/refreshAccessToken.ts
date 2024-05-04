@@ -10,7 +10,14 @@ const refreshAccessToken = async (token: JWT) => {
       return {
         ...token,
         accessToken: refreshToken.accessToken,
-        accessTokenExpires: Date.now() + 10000,
+        accessTokenExpires: refreshToken.jwtExpiredTime,
+      };
+    }
+
+    if (refreshToken?.message) {
+      return {
+        ...token,
+        error: refreshToken.message,
       };
     }
   } catch (e) {

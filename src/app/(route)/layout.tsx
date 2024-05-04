@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Providers from "@/hooks/useReactQuery";
+import Providers from "@/hooks/query/useReactQuery";
 import AuthProvider from "@/components/auth/authprovider";
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head />
-      <body className="flex flex-row w-screen h-svh font-pretendard">
+      <body className="relative flex flex-row w-screen h-svh font-pretendard">
         <div id="modal-root" />
         <AuthProvider>
           <Providers>{children}</Providers>

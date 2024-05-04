@@ -8,7 +8,6 @@ export default function AdminLayout({
   return (
     <div className="w-screen h-screen flex">
       <Sidebar />
-
       {children}
     </div>
   );

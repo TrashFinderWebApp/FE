@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import KakaoProvider from "next-auth/providers/kakao";
 import GoogleProvider from "next-auth/providers/google";
 import NaverProvider from "next-auth/providers/naver";
@@ -9,7 +9,7 @@ import Credentials from "next-auth/providers/credentials";
 import { APIURL } from "@/util/const";
 import refreshAccessToken from "./refreshAccessToken";
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     KakaoProvider({
       clientId: process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY || "",
@@ -109,7 +109,8 @@ const handler = NextAuth({
         return token;
       }
 
-      return refreshAccessToken(token);
+      const newToken = await refreshAccessToken(token);
+      return newToken;
     },
 
     session: async ({ token, session }) => {
@@ -119,9 +120,13 @@ const handler = NextAuth({
       ) {
         session.accessToken = token.accessToken;
       }
+      if (token?.error) {
+        session.error = token.error as string;
+      }
       return session;
     },
   },
-});
+};
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <div className="w-60 z-50 bg-white">
+    <div className="w-60 z-50 bg-white flex-shrink-0">
       <div className="bg-gray-100 p-4 text-center font-bold text-[1.25rem] flex flex-col items-center">
         <img src="/img/tfindercharacter.webp" alt="" className="w-20" />
         쓰파인더

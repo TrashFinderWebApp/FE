@@ -3,7 +3,6 @@
 "use client";
 
 import { memo, useContext, useEffect, useRef, useState } from "react";
-import useGetTrashCanInfo from "@/hooks/usetrashcaninfo";
 import {
   TrashCanInfo,
   TrashCanRequest,
@@ -14,12 +13,13 @@ import createMarker from "@/util/createmarker";
 import distanceBetweenLatLng from "@/util/distance";
 import { useKakaoStore } from "@/stores/useKakaoStore";
 import Modal from "@/components/modal/modal";
+import useTrashCanInfoQuery from "@/hooks/query/useTrashcanInfo";
 import MapContext from "./mapContext";
 
 function RegisterationPage({ params }: { params: { status: string } }) {
   const { setRefreshCallback } = useContext(MapContext);
   const [reqInfo, setReqInfo] = useState<TrashCanRequest | null>(null);
-  const { data: trashcanList } = useGetTrashCanInfo(reqInfo);
+  const { data: trashcanList } = useTrashCanInfoQuery(reqInfo);
   const { kakaoMap } = useKakaoStore();
 
   const [selectedTrashcan, setSelectedTrashcan] = useState<TrashCanInfo | null>(
