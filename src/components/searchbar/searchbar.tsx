@@ -33,7 +33,7 @@ export default function SearchBar({
   const [_placeName, setPlaceName] = useState<string>(placeName || "");
   const [selected, setSelected] = useState<boolean>(true);
   const searchResult = useKeywordSearch(keyword, keywordSearchMethod);
-
+  const [selectedIdx, setSelectedIdx] = useState<number>(0);
   const locationList = useMemo(
     () => searchResult.map(resolveResult),
     [searchResult],
@@ -52,17 +52,37 @@ export default function SearchBar({
         }}
         onClick={(e) => {
           setKeyword("");
-          setSelected(false);
+          setSelected(true);
         }}
         onChange={(e) => {
           setKeyword(e.currentTarget.value);
           setSelected(false);
         }}
-        value={selected ? _placeName : keyword}
+        onKeyDown={(e) => {
+          if (locationList.length === 0) return;
+
+          if (e.key === "ArrowDown") {
+            setSelectedIdx((prev) =>
+              prev === null || prev === locationList.length - 1 ? 0 : prev + 1,
+            );
+          } else if (e.key === "ArrowUp") {
+            setSelectedIdx((prev) =>
+              prev === null || prev === 0 ? locationList.length - 1 : prev - 1,
+            );
+          } else if (e.key === "Enter") {
+            const location = locationList[selectedIdx];
+            setKeyword(location.name || location.address || "");
+            setSelected(true);
+            setPlaceName(location.name || location.address || "");
+            onClick?.(location);
+          }
+        }}
+        defaultValue={selected ? _placeName : keyword}
       />
       <DropDown
         locationList={locationList}
         highlight={keyword}
+        selectedIdx={selectedIdx || 0}
         onClick={(location) => {
           setKeyword(location.name || location.address || "");
           setSelected(true);

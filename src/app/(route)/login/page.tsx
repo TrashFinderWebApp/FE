@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import React, { useRef } from "react";
-import navericon from "public/svg/NaverIcon.svg";
-import kakaoicon from "public/svg/KakaoIcon.svg";
-import googleicon from "public/svg/GoogleIcon.svg";
+import navericon from "public/svg/navericon.svg";
+import kakaoicon from "public/svg/kakaoicon.svg";
+import googleicon from "public/svg/googleicon.svg";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 

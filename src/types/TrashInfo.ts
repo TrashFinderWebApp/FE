@@ -1,6 +1,15 @@
+export const TrashCanStatusList = [
+  "added",
+  "registered",
+  "removed",
+  "suggested",
+] as const;
+
+export type TrashCanStatus = (typeof TrashCanStatusList)[number];
+
 interface DetailedTrashCanInfo {
   id: string;
-  status: "added" | "registered" | "removed" | "suggested";
+  status: TrashCanStatus;
 }
 
 interface OptionalTrashCanInfo {
@@ -33,5 +42,3 @@ export type LocationInfo = Location & OptionalTrashCanInfo;
 export type TrashCanRequest = Coordinate &
   Radius &
   Partial<DetailedTrashCanInfo>;
-
-export type TrashCanStatus = DetailedTrashCanInfo["status"];

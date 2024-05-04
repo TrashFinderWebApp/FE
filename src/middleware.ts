@@ -4,28 +4,24 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
+  const { device } = userAgent(request);
   const token = await getToken({ req: request, secret: process.env.AUTH_KEY });
 
-  switch (pathname) {
-    case "/admin":
-      if (!token) {
-        return NextResponse.redirect(new URL("/login", request.url));
-      }
-
-      return NextResponse.next();
-    default: {
-      const { device } = userAgent(request);
-
-      if (device.type === "mobile") {
-        return NextResponse.rewrite(
-          new URL(`/mobile${request.nextUrl.pathname}`, request.url),
-        );
-      }
-
-      return NextResponse.next();
+  if (pathname.startsWith("/admin") && request.redirect === "manual") {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
+
+    return NextResponse.next();
   }
+
+  if (device.type === "mobile") {
+    return NextResponse.rewrite(
+      new URL(`/mobile${request.nextUrl.pathname}`, request.url),
+    );
+  }
+
+  return NextResponse.next();
 }
 export const config = {
   matcher: [

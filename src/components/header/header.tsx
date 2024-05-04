@@ -2,6 +2,7 @@ import { useKakaoStore } from "@/stores/useKakaoStore";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import SearchBar from "../searchbar/searchbar";
 
 type NavigatorBarType =
@@ -60,9 +61,11 @@ export default function Header({ children }: { children: React.ReactNode }) {
     pathName.slice(1) as NavigatorBarType,
   );
 
+  const { data, status } = useSession();
+
   return (
     <header className="relative z-40 w-full">
-      <div className="flex flex-col p-4 bg-white gap-4 shadow-md">
+      <div className="relative flex flex-col p-4 bg-white gap-4 shadow-md">
         <div className="relative w-full flex items-center justify-between">
           <button
             type="button"
@@ -85,9 +88,8 @@ export default function Header({ children }: { children: React.ReactNode }) {
           logo="/svg/searchicon.svg"
         />
       </div>
-
       <div
-        className="absolute top-0 left-0 w-screen h-screen bg-black bg-opacity-20 duration-300 pointer-events-none"
+        className="absolute top-0 left-0 w-screen h-full bg-black bg-opacity-20 duration-300 pointer-events-none"
         style={{
           backgroundColor: navOpened
             ? "rgba(0, 0, 0, 0.5)"
@@ -101,15 +103,17 @@ export default function Header({ children }: { children: React.ReactNode }) {
           }}
         >
           <div className="flex flex-col items-start p-4 gap-4 justify-between">
-            <div className="flex items-center gap-4">
+            <div className="w-full flex items-center gap-4">
               <img
-                src="img/test.jpg"
+                src={data?.user?.image ?? "/svg/defaulticon.svg"}
                 className="w-[2rem] object-cover rounded-full aspect-square"
                 alt="사용자 프로필"
               />
               <div className="flex flex-col">
-                <p className="text-lg font-bold">이근성</p>
-                <p className="text-sm text-[#777777]">rmstjd333@gmail.com</p>
+                <p className="text-lg font-bold">{data?.user?.name ?? ""}</p>
+                <p className="text-sm text-[#777777]">
+                  {data?.user?.email ?? ""}
+                </p>
               </div>
               <div className="flex-grow" />
               <button
@@ -140,12 +144,26 @@ export default function Header({ children }: { children: React.ReactNode }) {
                   {nav.title}
                 </Link>
               ))}
+
+              {status === "authenticated" ? (
+                <Link
+                  href="/"
+                  onClick={() => signOut()}
+                  className="p-3 font-semibold"
+                >
+                  로그아웃
+                </Link>
+              ) : (
+                <Link href="/login" className="p-3 font-semibold">
+                  로그인
+                </Link>
+              )}
             </div>
           </div>
         </nav>
       </div>
       <div
-        className="h-screen bg-white absolute top-0 right-0 flex flex-col items-end p-8 duration-300"
+        className="absolute min-h-full overflow-y-scroll bg-white top-0 right-0 flex flex-col items-end duration-300"
         style={{
           width: detailOpened ? "100%" : "0px",
           padding: detailOpened ? "2rem" : "0px",
@@ -155,7 +173,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
           className={
             detailOpened
               ? "opacity-100 pointer-events-auto w-full"
-              : "opacity-0 pointer-events-none w-full"
+              : "opacity-0 pointer-events-none"
           }
         >
           <button
