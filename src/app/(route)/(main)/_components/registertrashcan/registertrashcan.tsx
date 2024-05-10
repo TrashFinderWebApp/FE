@@ -4,12 +4,12 @@ import { useKakaoStore } from "@/stores/useKakaoStore";
 import { ButtonProps } from "@/types/button";
 import { Coordinate } from "@/types/navigate";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { APIURL } from "@/util/const";
+import { APIURL, ScrollBarStyle } from "@/util/const";
 import { useSession } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
-import distanceBetweenLatLng from "@/util/distance";
+
 import { TrashCanInfo } from "@/types/TrashInfo";
 import Modal from "@/components/modal/modal";
+import useDrawMarker from "@/hooks/map/useDrawMarker";
 import createMarker from "../../../../../util/createmarker";
 
 type RegisterType = "new" | "recommend";
@@ -59,6 +59,17 @@ export default function RegisterTrashCan() {
   const markerRef = useRef<any[]>([]);
   const customOverlayRef = useRef<any[]>([]);
   const session = useSession();
+
+  const { data, reFresh, needRefresh, setNeedRefresh } = useDrawMarker(
+    selectedMethod === "new" ? "registered" : "suggested",
+  );
+
+  useEffect(() => {
+    if (needRefresh) {
+      reFresh();
+      setNeedRefresh(false);
+    }
+  }, [needRefresh]);
 
   const moveMarker = useCallback(
     (coordinate: Coordinate) => {
@@ -144,35 +155,6 @@ export default function RegisterTrashCan() {
       },
     );
   };
-
-  const { data } = useQuery({
-    queryKey: [selectedMethod, selectedCoordinate],
-    queryFn: async () => {
-      const bound = kakaoMap.getBounds();
-      const center = kakaoMap.getCenter();
-
-      const [NElat, NElng, SWlat, SWlng] = [
-        bound.getNorthEast().getLat(),
-        bound.getNorthEast().getLng(),
-        bound.getSouthWest().getLat(),
-        bound.getSouthWest().getLng(),
-      ];
-
-      const radius =
-        (distanceBetweenLatLng(NElat, NElng, SWlat, SWlng) * 1000) / 2;
-      const res = await fetch(
-        `${APIURL}/api/trashcan/locations?${new URLSearchParams({
-          latitude: center.getLat(),
-          longitude: center.getLng(),
-          radius: radius.toString(),
-          status: selectedMethod === "new" ? "registered" : "suggested",
-        }).toString()}`,
-      );
-
-      const json = await res.json();
-      return json;
-    },
-  });
 
   useEffect(() => {
     if (data && data.length > 0 && kakaoMap) {
@@ -358,7 +340,7 @@ export default function RegisterTrashCan() {
         </div>
       </Modal>
       <h2 className="flex items-center gap-2">
-        <img src="/svg/CameraIcon.svg" alt="카메라아이콘" />
+        <img src="/svg/cameraicon.svg" alt="카메라아이콘" />
         <p className="font-extrabold text-[1.25rem] py-2"> 새로운 장소</p>
       </h2>
       <ButtonList
@@ -447,7 +429,7 @@ export default function RegisterTrashCan() {
       <div className="mt-4 flex flex-col gap-4">
         <p>3. 선택한 위치에 대한 설명을 간단히 작성해 주세요.</p>
         <input
-          className="w-full border-2 border-light-green rounded-md p-2 overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
+          className={`w-full border-2 border-light-green rounded-md p-2 overflow-y-scroll ${ScrollBarStyle}`}
           placeholder={
             selectedMethod === "new"
               ? "예) 스타벅스 정문 앞 오른쪽"
@@ -461,7 +443,7 @@ export default function RegisterTrashCan() {
       <div className="mt-4 flex flex-col gap-4">
         <p>4. 선택한 위치에 대한 설명을 간단히 작성해 주세요.</p>
         <textarea
-          className="w-full aspect-[5/2] border-2 border-light-green rounded-md p-2 overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
+          className={`w-full aspect-[5/2] border-2 border-light-green rounded-md p-2 overflow-y-scroll ${ScrollBarStyle}`}
           placeholder={
             selectedMethod === "new"
               ? "예) 스타벅스 정문 앞 오른쪽에 있어요. 우산꽂이랑 헷갈리지 마세요."

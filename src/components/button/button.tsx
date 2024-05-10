@@ -17,7 +17,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`h-10 flex items-center justify-center p-3 border-2 border-light-green rounded-md text-light-green gap-3${className ? ` ${className}` : ""}`}
+      className={`h-10 flex items-center justify-center p-3 border-2 border-light-green rounded-md whitespace-pre text-light-green gap-3${className ? ` ${className}` : ""}`}
       onClick={onClick}
       type="button"
       style={style}

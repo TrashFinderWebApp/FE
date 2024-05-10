@@ -1,11 +1,9 @@
-/* eslint-disable react/jsx-no-constructed-context-values */
-
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import SearchBar from "@/components/searchbar/searchbar";
-import useMap from "@/hooks/useMap";
+import useMap from "@/hooks/map/useMap";
 import { useKakaoStore } from "@/stores/useKakaoStore";
 import MapContext from "./[...status]/mapContext";
 
@@ -16,19 +14,12 @@ export default function MapLayout({ children }: { children: React.ReactNode }) {
   const [needRefresh, setNeedRefresh] = useState(false);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
+  const context = useMemo(
+    () => ({ setRefreshCallback, setNeedRefresh }),
+    [setRefreshCallback, setNeedRefresh],
+  );
+
   useMap(mapRef);
-
-  useEffect(() => {
-    if (kakaoMap && window.kakao) {
-      window.kakao.maps.event.addListener(kakaoMap, "dragend", () => {
-        setNeedRefresh(true);
-      });
-
-      window.kakao.maps.event.addListener(kakaoMap, "zoom_changed", () => {
-        setNeedRefresh(true);
-      });
-    }
-  }, [kakaoMap]);
 
   return (
     <>
@@ -48,9 +39,7 @@ export default function MapLayout({ children }: { children: React.ReactNode }) {
           keywordSearchMethod={keywordSearch}
           className="border-2 border-light-green rounded-md p-2"
         />
-        <MapContext.Provider value={{ setRefreshCallback }}>
-          {children}
-        </MapContext.Provider>
+        <MapContext.Provider value={context}>{children}</MapContext.Provider>
       </Accordion>
       <button
         className={`absolute duration-300 top-4 left-[50%] -translate-x-[50%] z-50 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}

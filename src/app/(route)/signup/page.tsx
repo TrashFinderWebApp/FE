@@ -1,3 +1,5 @@
+/* eslint-disable no-alert */
+
 "use client";
 
 import { APIURL } from "@/util/const";
@@ -82,6 +84,8 @@ function SignUpForm() {
                     if (res.ok) {
                       setEmailCheckClicked(true);
                       alert("이메일이 발송되었습니다.");
+                    } else {
+                      alert("이메일이 발송되지 않았습니다.");
                     }
                   })
                   .catch((e) => console.error(e));
@@ -116,6 +120,8 @@ function SignUpForm() {
                     .then((res) => {
                       if (res.ok) {
                         alert("인증 되었습니다.");
+                      } else {
+                        alert("인증에 실패했습니다.");
                       }
                     })
                     .catch((e) => console.error(e));

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 export default function Modal({
@@ -15,7 +16,12 @@ export default function Modal({
   className?: string;
   title?: string;
 }) {
-  return isOpen
+  const [element, setElement] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setElement(document.getElementById("modal-root"));
+  }, []);
+
+  return isOpen && element
     ? createPortal(
         <>
           <div className="w-screen h-svh absolute z-30 bg-transparent backdrop-blur" />
@@ -35,7 +41,7 @@ export default function Modal({
             {children}
           </aside>
         </>,
-        document.getElementById("modal-root") as HTMLElement,
+        element,
       )
     : null;
 }

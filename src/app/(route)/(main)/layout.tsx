@@ -1,17 +1,16 @@
 "use client";
 
-import useMap from "@/hooks/useMap";
+import useMap from "@/hooks/map/useMap";
 import { useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { isMobile } from "react-device-detect";
 import Header from "@/components/header/header";
 import { useKakaoStore } from "@/stores/useKakaoStore";
-import distanceBetweenLatLng from "@/util/distance";
-import { useTrashCanStore } from "@/stores/useTrashCanStore";
 import ButtonList from "@/components/button/buttonlist";
 import { ButtonProps } from "@/types/button";
 import Navigator from "@/components/sidebar/Navigator";
-import createMarker from "../../../util/createmarker";
+import useDrawMarker from "@/hooks/map/useDrawMarker";
+import { useTrashCanStore } from "@/stores/useTrashCanStore";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -20,24 +19,43 @@ interface MainLayoutProps {
 const buttonProps: ButtonProps<boolean>[] = [
   {
     content: "지도",
-    type: true,
+    type: false,
   },
   {
     content: "로드뷰",
-    type: false,
+    type: true,
   },
 ];
 
 export default function MainLayout({ children }: MainLayoutProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const roadViewRef = useRef<HTMLDivElement | null>(null);
+
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
-  const { kakaoMap, kakaoClusterer, isMapOpened, setIsMapOpened } =
-    useKakaoStore();
   const [deviceType, setDeviceType] = useState<"mobile" | "desktop">("desktop");
-  const [needRefresh, setNeedRefresh] = useState(false);
-  const { trashCanList, getTrashCanList } = useTrashCanStore();
-  const markerRef = useRef<any[]>([]);
+  const [isRoadView, setIsRoadView] = useState(false);
+  const {
+    kakaoMap,
+    isMapOpened,
+    roadViewClient,
+    kakaoRoadView,
+    setIsMapOpened,
+  } = useKakaoStore();
+
+  useMap(mapRef, roadViewRef);
+  const { data, needRefresh, setNeedRefresh, reFresh } = useDrawMarker(
+    "added",
+    {
+      markerIcon: "/svg/trashcanicongreen.svg",
+    },
+  );
+  const { setTrashCanList } = useTrashCanStore();
+
+  useEffect(() => {
+    if (data) {
+      setTrashCanList(data);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (isMobile) {
@@ -47,57 +65,26 @@ export default function MainLayout({ children }: MainLayoutProps) {
     }
   }, [isMobile]);
 
-  useMap(mapRef, roadViewRef);
-
-  const drawMarker = () => {
-    const bound = kakaoMap.getBounds();
-    const center = kakaoMap.getCenter();
-
-    const [NElat, NElng, SWlat, SWlng] = [
-      bound.getNorthEast().getLat(),
-      bound.getNorthEast().getLng(),
-      bound.getSouthWest().getLat(),
-      bound.getSouthWest().getLng(),
-    ];
-
-    const radius =
-      (distanceBetweenLatLng(NElat, NElng, SWlat, SWlng) * 1000) / 2;
-
-    getTrashCanList(center.getLat(), center.getLng(), radius, "added");
-  };
-
   useEffect(() => {
-    if (kakaoMap && window.kakao) {
-      window.kakao.maps.event.addListener(kakaoMap, "dragend", () => {
-        setNeedRefresh(true);
-      });
-
-      window.kakao.maps.event.addListener(kakaoMap, "zoom_changed", () => {
-        setNeedRefresh(true);
-      });
-    }
-  }, [kakaoMap]);
-
-  useEffect(() => {
-    if (kakaoClusterer && kakaoMap) {
-      kakaoClusterer.clear();
-
-      markerRef.current.length = 0;
-      if (!Array.isArray(trashCanList)) return;
-      trashCanList.forEach((trashcan) => {
-        const marker = createMarker({
-          latitude: trashcan.latitude,
-          longitude: trashcan.longitude,
-          status: trashcan.status,
-          markerIcon: "/svg/trashcanicongreen.svg",
+    if (window.kakao && isRoadView) {
+      kakaoMap.addOverlayMapTypeId(window.kakao.maps.MapTypeId.ROADVIEW);
+      const handleClick = (mouseEvent: any) => {
+        const position = mouseEvent.latLng;
+        roadViewClient.getNearestPanoId(position, 50, (panoId: any) => {
+          setIsMapOpened(false);
+          kakaoRoadView.setPanoId(panoId, position);
         });
 
-        markerRef.current.push(marker);
-
-        kakaoClusterer.addMarker(marker);
-      });
+        window.kakao.maps.event.removeListener(kakaoMap, "click", handleClick);
+      };
+      window.kakao.maps.event.addListener(kakaoMap, "click", handleClick);
     }
-  }, [trashCanList]);
+
+    if (window.kakao && !isRoadView) {
+      kakaoMap.removeOverlayMapTypeId(window.kakao.maps.MapTypeId.ROADVIEW);
+      setIsMapOpened(true);
+    }
+  }, [isRoadView]);
 
   return (
     <>
@@ -113,24 +100,25 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </Accordion>
         </>
       )}
-      <button
-        className={`absolute duration-300 top-4 left-[50%] -translate-x-[50%] z-50 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-        type="button"
-        onClick={() => {
-          setNeedRefresh(false);
-          drawMarker();
-        }}
-      >
-        새로 고침
-      </button>
+
       <ButtonList
-        selectedStatus={isMapOpened}
-        setselectedStatus={setIsMapOpened}
+        selectedStatus={isRoadView}
+        setselectedStatus={setIsRoadView}
         buttonInfo={buttonProps}
         className={`absolute right-4 z-30 w-40${
           deviceType === "mobile" ? " top-36" : " top-4"
         }`}
       />
+      <button
+        className={`absolute duration-300 top-4 left-[50%] -translate-x-[50%] z-50 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        type="button"
+        onClick={() => {
+          setNeedRefresh(false);
+          reFresh();
+        }}
+      >
+        새로 고침
+      </button>
       <div
         ref={mapRef}
         style={{ zIndex: isMapOpened ? "10" : "0" }}

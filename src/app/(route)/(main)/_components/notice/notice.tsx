@@ -1,77 +1,21 @@
 "use client";
 
 import Modal from "@/components/modal/modal";
-import { APIURL } from "@/util/const";
-import { useEffect, useState } from "react";
-
-const NoticeTypeDict = {
-  all: "전체",
-  updated: "업데이트",
-  general: "일반",
-  event: "이벤트",
-};
-
-type NoticeType = keyof typeof NoticeTypeDict;
-
-interface NoticeResponse {
-  title: string;
-  description: string;
-  createdAt: string;
-}
-
-interface NoticeState extends NoticeResponse {
-  type: NoticeType;
-}
+import useNoticeQuery, {
+  NoticeResponse,
+  NoticeType,
+  NoticeTypeDict,
+} from "@/hooks/query/useNoticeQuery";
+import { useState } from "react";
 
 export default function Notice() {
   const [selectedNoticeType, setSelectedNoticeType] =
     useState<NoticeType>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notice, setNotice] = useState<Record<NoticeType, NoticeState[]>>({
-    all: [],
-    updated: [],
-    general: [],
-    event: [],
-  });
-  const [selectedNotice, setSelectedNotice] = useState<NoticeState | null>(
+  const { data: noticeData } = useNoticeQuery();
+  const [selectedNotice, setSelectedNotice] = useState<NoticeResponse | null>(
     null,
   );
-
-  useEffect(() => {
-    const fetchNotice = async (type: NoticeType) => {
-      const res = await fetch(`${APIURL}/api/notification/list/${type}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!res.ok) {
-        throw new Error("공지사항을 불러오는데 실패했습니다.");
-      }
-      const data = await res.json();
-      return data as NoticeResponse[];
-    };
-    const notices = ["updated", "general", "event"] as NoticeType[];
-    Promise.allSettled(
-      notices.map((type) => fetchNotice(type as NoticeType)),
-    ).then((data) => {
-      const noticeData = data.reduce(
-        (acc, cur, idx) => {
-          if (!acc.all) acc.all = [];
-          if (cur.status === "fulfilled") {
-            const curData = cur.value.map((item) => ({
-              ...item,
-              type: notices[idx],
-            }));
-            acc[notices[idx]] = curData;
-            acc.all.push(...curData);
-          }
-          return acc;
-        },
-        {} as Record<NoticeType, NoticeState[]>,
-      );
-      setNotice(noticeData);
-    });
-  }, []);
 
   return (
     <div className="flex flex-col gap-4">
@@ -85,7 +29,10 @@ export default function Notice() {
         <div className="flex flex-col gap-4 p-4 break-all">
           <h3 className="text-lg font-bold flex gap-2">
             <p className="text-light-green whitespace-pre">
-              [{selectedNotice?.type && NoticeTypeDict[selectedNotice?.type]}]
+              [
+              {selectedNotice?.state &&
+                NoticeTypeDict[selectedNotice?.state as NoticeType]}
+              ]
             </p>
             <p className="break-all mr-10">{selectedNotice?.title}</p>
           </h3>
@@ -110,23 +57,24 @@ export default function Notice() {
         ))}
       </div>
 
-      {notice[selectedNoticeType]
-        .sort(
+      {noticeData
+        ?.sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )
-        ?.map((item: NoticeState) => (
+        .filter((item) =>
+          selectedNoticeType === "all"
+            ? true
+            : item.state === NoticeTypeDict[selectedNoticeType],
+        )
+        ?.map((item: NoticeResponse) => (
           <div
             key={item.createdAt}
             className="relative flex flex-col gap-2 border-2 p-4 rounded-md"
           >
             <h3 className="text-lg font-bold flex gap-2">
-              <p className="text-light-green whitespace-pre">
-                [{NoticeTypeDict[item.type]}]
-              </p>
-              <p className="break-all mr-10">
-                {item.title} zzzzzzzzzzzzzzzzzzx
-              </p>
+              <p className="text-light-green whitespace-pre">[{item.state}]</p>
+              <p className="break-all mr-10">{item.title}</p>
               <button
                 className="absolute top-4 right-4 text-2xl text-center"
                 type="button"

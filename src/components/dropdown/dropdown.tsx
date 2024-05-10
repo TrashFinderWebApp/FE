@@ -1,4 +1,5 @@
 import { LocationInfo } from "@/types/TrashInfo";
+import { ScrollBarStyle } from "@/util/const";
 import { useEffect, useState } from "react";
 
 type LocationIdType = LocationInfo & { id: string };
@@ -39,7 +40,9 @@ export default function DropDown({
   return (
     <div>
       {locationList.length > 0 && isOpened && (
-        <ul className="absolute flex flex-col text-[0.875rem] whitespace-pre p-4 gap-1 rounded-md max-h-80 bg-white z-50 shadow-lg w-full overflow-y-scroll cursor-pointer [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]">
+        <ul
+          className={`absolute flex flex-col text-[0.875rem] whitespace-pre p-4 gap-1 rounded-md max-h-80 bg-white z-50 shadow-lg w-full overflow-y-scroll cursor-pointer ${ScrollBarStyle}`}
+        >
           {locationList.map((location, idx) => (
             <li
               role="presentation"

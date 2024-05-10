@@ -14,10 +14,10 @@ import {
   Transportation,
 } from "@/types/navigate";
 import { useEffect, useReducer, useRef } from "react";
-import useNavigation from "@/hooks/useNavigation";
 import { useKakaoStore } from "@/stores/useKakaoStore";
 import SearchBar from "@/components/searchbar/searchbar";
 import { useTrashCanStore } from "@/stores/useTrashCanStore";
+import useNavigationQuery from "@/hooks/query/useNavigationQuery";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 import { initialNavigationState, navigationReducer } from "./navigationReducer";
@@ -76,7 +76,7 @@ export default function Navigation({ end }: NavigationProps) {
 
   const markerRef = useRef<MarkerType>(marker);
 
-  const path = useNavigation(selectedTransport, navigateCoordinate);
+  const path = useNavigationQuery(selectedTransport, navigateCoordinate);
   const erase = useRef<() => void>();
 
   const { kakaoMap, geoCoder, keywordSearch } = useKakaoStore();

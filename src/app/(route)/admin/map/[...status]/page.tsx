@@ -3,23 +3,15 @@
 "use client";
 
 import { memo, useContext, useEffect, useRef, useState } from "react";
-import useGetTrashCanInfo from "@/hooks/usetrashcaninfo";
-import {
-  TrashCanInfo,
-  TrashCanRequest,
-  TrashCanStatus,
-  TrashCanStatusList,
-} from "@/types/TrashInfo";
-import createMarker from "@/util/createmarker";
-import distanceBetweenLatLng from "@/util/distance";
+import { TrashCanInfo, TrashCanStatus } from "@/types/TrashInfo";
 import { useKakaoStore } from "@/stores/useKakaoStore";
 import Modal from "@/components/modal/modal";
+import useDrawMarker from "@/hooks/map/useDrawMarker";
 import MapContext from "./mapContext";
 
 function RegisterationPage({ params }: { params: { status: string } }) {
-  const { setRefreshCallback } = useContext(MapContext);
-  const [reqInfo, setReqInfo] = useState<TrashCanRequest | null>(null);
-  const { data: trashcanList } = useGetTrashCanInfo(reqInfo);
+  const { setRefreshCallback, setNeedRefresh } = useContext(MapContext);
+
   const { kakaoMap } = useKakaoStore();
 
   const [selectedTrashcan, setSelectedTrashcan] = useState<TrashCanInfo | null>(
@@ -37,70 +29,22 @@ function RegisterationPage({ params }: { params: { status: string } }) {
     imageUrls: [],
   });
 
-  const markerRef = useRef<any[]>([]);
+  const {
+    data: trashcanList,
+    needRefresh,
+    reFresh,
+    markerRef,
+  } = useDrawMarker(params.status[0] as TrashCanStatus);
 
-  const handleReqInfo = () => {
-    if (
-      !kakaoMap ||
-      !TrashCanStatusList.includes(params.status[0] as TrashCanStatus)
-    )
-      return;
-
-    const status = params.status[0] as TrashCanStatus;
-    const bound = kakaoMap.getBounds();
-    const center = kakaoMap.getCenter();
-
-    const [NElat, NElng, SWlat, SWlng] = [
-      bound.getNorthEast().getLat(),
-      bound.getNorthEast().getLng(),
-      bound.getSouthWest().getLat(),
-      bound.getSouthWest().getLng(),
-    ];
-
-    const radius =
-      (distanceBetweenLatLng(NElat, NElng, SWlat, SWlng) * 1000) / 2;
-    const info = {
-      latitude: center.getLat(),
-      longitude: center.getLng(),
-      radius,
-      status,
-    };
-    setReqInfo(info);
-  };
+  console.log(trashcanList);
 
   useEffect(() => {
-    handleReqInfo();
-  }, [kakaoMap, params.status[0]]);
+    setNeedRefresh(needRefresh);
+  }, [needRefresh]);
 
   useEffect(() => {
-    markerRef.current.forEach((marker) => {
-      marker.setMap(null);
-    });
-
-    markerRef.current = [];
-
-    trashcanList?.forEach((trashcan) => {
-      const marker = createMarker({
-        latitude: trashcan.latitude,
-        longitude: trashcan.longitude,
-        status: params.status[0] as TrashCanStatus,
-        markerIcon: "/svg/trashcanicon.svg",
-      });
-
-      markerRef.current.push(marker);
-
-      marker.setMap(kakaoMap);
-    });
-  }, [trashcanList]);
-
-  useEffect(() => {
-    setRefreshCallback(() => handleReqInfo);
-    return () => {
-      markerRef.current.forEach((marker) => {
-        marker.setMap(null);
-      });
-    };
-  }, []);
+    setRefreshCallback(() => reFresh);
+  }, [reFresh]);
 
   return (
     <div className="flex flex-col gap-2 mt-4">
