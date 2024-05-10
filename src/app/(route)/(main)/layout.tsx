@@ -14,7 +14,6 @@ import { useTrashCanStore } from "@/stores/useTrashCanStore";
 
 interface MainLayoutProps {
   children: React.ReactNode;
-  test: React.ReactNode;
 }
 
 const buttonProps: ButtonProps<boolean>[] = [
@@ -28,7 +27,7 @@ const buttonProps: ButtonProps<boolean>[] = [
   },
 ];
 
-export default function MainLayout({ children, test }: MainLayoutProps) {
+export default function MainLayout({ children }: MainLayoutProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const roadViewRef = useRef<HTMLDivElement | null>(null);
 
@@ -119,7 +118,6 @@ export default function MainLayout({ children, test }: MainLayoutProps) {
         }}
       >
         새로 고침
-        {test}
       </button>
       <div
         ref={mapRef}
