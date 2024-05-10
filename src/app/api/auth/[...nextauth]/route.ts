@@ -71,7 +71,7 @@ export const authOptions: AuthOptions = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
+            credentials: "include",
           },
 
           body: JSON.stringify({
@@ -79,6 +79,8 @@ export const authOptions: AuthOptions = {
             socialType: account.provider.toUpperCase(),
           }),
         });
+
+        console.log("signin", res.headers);
 
         if (res.ok) {
           const data = await res.json();
@@ -95,7 +97,8 @@ export const authOptions: AuthOptions = {
       return false;
     },
 
-    jwt: async ({ token, user, account }) => {
+    jwt: async ({ token }) => {
+      /*
       if (account && user && user.accessToken) {
         token.accessToken = user.accessToken;
         token.accessTokenExpires = user.jwtExpiredTime;
@@ -108,6 +111,7 @@ export const authOptions: AuthOptions = {
       ) {
         return token;
       }
+      */
 
       const newToken = await refreshAccessToken(token);
       return newToken;

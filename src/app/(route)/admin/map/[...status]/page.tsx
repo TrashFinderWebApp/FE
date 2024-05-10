@@ -36,6 +36,8 @@ function RegisterationPage({ params }: { params: { status: string } }) {
     markerRef,
   } = useDrawMarker(params.status[0] as TrashCanStatus);
 
+  console.log(trashcanList);
+
   useEffect(() => {
     setNeedRefresh(needRefresh);
   }, [needRefresh]);

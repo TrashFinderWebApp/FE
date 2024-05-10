@@ -3,7 +3,7 @@ import distanceBetweenLatLng from "@/util/distance";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import createMarker from "@/util/createmarker";
 import { useKakaoStore } from "@/stores/useKakaoStore";
-import useTrashCanInfoQuery from "../query/useTrashcanInfo";
+import useTrashCanInfoQuery from "@/hooks/query/useTrashcanInfoQuery";
 
 const useDrawMarker = (
   status: TrashCanStatus,

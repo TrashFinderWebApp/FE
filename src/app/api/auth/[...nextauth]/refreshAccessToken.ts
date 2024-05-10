@@ -3,21 +3,24 @@ import { JWT } from "next-auth/jwt";
 
 const refreshAccessToken = async (token: JWT) => {
   try {
-    const res = await fetch(`${APIURL}/api/auth/reissue`);
-
-    const refreshToken = await res.json();
-    if (res.ok && refreshToken && refreshToken?.accessToken) {
+    const res = await fetch(`${APIURL}/api/auth/reissue`, {
+      method: "GET",
+      credentials: "include",
+    });
+    console.log("refresh", res);
+    const accessToken = await res.json();
+    if (res.ok && accessToken && accessToken?.accessToken) {
       return {
         ...token,
-        accessToken: refreshToken.accessToken,
-        accessTokenExpires: refreshToken.jwtExpiredTime,
+        accessToken: accessToken.accessToken,
+        accessTokenExpires: accessToken.jwtExpiredTime,
       };
     }
 
-    if (refreshToken?.message) {
+    if (accessToken?.message) {
       return {
         ...token,
-        error: refreshToken.message,
+        error: accessToken.message,
       };
     }
   } catch (e) {

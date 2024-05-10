@@ -4,7 +4,7 @@ import { useKakaoStore } from "@/stores/useKakaoStore";
 import { ButtonProps } from "@/types/button";
 import { Coordinate } from "@/types/navigate";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { APIURL } from "@/util/const";
+import { APIURL, ScrollBarStyle } from "@/util/const";
 import { useSession } from "next-auth/react";
 
 import { TrashCanInfo } from "@/types/TrashInfo";
@@ -429,7 +429,7 @@ export default function RegisterTrashCan() {
       <div className="mt-4 flex flex-col gap-4">
         <p>3. 선택한 위치에 대한 설명을 간단히 작성해 주세요.</p>
         <input
-          className="w-full border-2 border-light-green rounded-md p-2 overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
+          className={`w-full border-2 border-light-green rounded-md p-2 overflow-y-scroll ${ScrollBarStyle}`}
           placeholder={
             selectedMethod === "new"
               ? "예) 스타벅스 정문 앞 오른쪽"
@@ -443,7 +443,7 @@ export default function RegisterTrashCan() {
       <div className="mt-4 flex flex-col gap-4">
         <p>4. 선택한 위치에 대한 설명을 간단히 작성해 주세요.</p>
         <textarea
-          className="w-full aspect-[5/2] border-2 border-light-green rounded-md p-2 overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]"
+          className={`w-full aspect-[5/2] border-2 border-light-green rounded-md p-2 overflow-y-scroll ${ScrollBarStyle}`}
           placeholder={
             selectedMethod === "new"
               ? "예) 스타벅스 정문 앞 오른쪽에 있어요. 우산꽂이랑 헷갈리지 마세요."

@@ -14,8 +14,6 @@ export default function MapLayout({ children }: { children: React.ReactNode }) {
   const [needRefresh, setNeedRefresh] = useState(false);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
-  console.log(refreshCallback);
-
   const context = useMemo(
     () => ({ setRefreshCallback, setNeedRefresh }),
     [setRefreshCallback, setNeedRefresh],

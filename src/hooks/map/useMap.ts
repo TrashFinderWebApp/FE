@@ -61,16 +61,8 @@ export default function useMap(
       if (roadViewRef) {
         const roadView = new window.kakao.maps.Roadview(roadViewRef.current);
         const roadViewClient = new window.kakao.maps.RoadviewClient();
-        navigator.geolocation.getCurrentPosition((position) => {
-          const { latitude, longitude } = position.coords;
-          const pos = new window.kakao.maps.LatLng(latitude, longitude);
-
-          roadViewClient.getNearestPanoId(pos, 50, (panoId: any) =>
-            roadView.setPanoId(panoId, pos),
-          );
-          setKakakoRoadView(roadView);
-          setRoadViewClient(roadViewClient);
-        });
+        setKakakoRoadView(roadView);
+        setRoadViewClient(roadViewClient);
       }
     };
     const onLoadKakaoMap = () => {

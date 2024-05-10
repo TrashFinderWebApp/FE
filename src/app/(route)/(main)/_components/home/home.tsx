@@ -1,44 +1,16 @@
 import SearchBar from "@/components/searchbar/searchbar";
+import useMyRankingQuery from "@/hooks/query/useMyRankingQuery";
+import useMyTrashcanQuery from "@/hooks/query/useMyTrashcanQuery";
 import { useKakaoStore } from "@/stores/useKakaoStore";
-import { APIURL } from "@/util/const";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function Home() {
   const { keywordSearch } = useKakaoStore();
-
   const session = useSession();
 
-  const { data: rank } = useQuery({
-    queryKey: ["rank"],
-    queryFn: async () => {
-      const res = await fetch(`${APIURL}/api/rank/me`, {
-        headers: {
-          Authorization: `Bearer ${session.data?.accessToken}`,
-        },
-      });
-      if (!res.ok) {
-        throw new Error("랭킹 정보를 불러오는데 실패했습니다.");
-      }
-      return res.json();
-    },
-  });
-
-  const { data: myTrashcan, status } = useQuery({
-    queryKey: ["myTrashcan"],
-    queryFn: async () => {
-      const res = await fetch(`${APIURL}/api/trashcan/member/me`, {
-        headers: {
-          Authorization: `Bearer ${session.data?.accessToken}`,
-        },
-      });
-      if (!res.ok) {
-        throw new Error("쓰레기통 정보를 불러오는데 실패했습니다.");
-      }
-      return res.json();
-    },
-  });
+  const { data: rank, status } = useMyRankingQuery(session.data?.accessToken);
+  const { data: myTrashcan } = useMyTrashcanQuery(session.data?.accessToken);
 
   return (
     <div className="flex flex-col gap-2">
@@ -59,9 +31,7 @@ export default function Home() {
             <img src="/svg/megaphone.svg" alt="" />
             <div className="flex text-[0.875rem] gap-2">
               <p className="font-bold">[업데이트]</p>
-              <p className="truncate w-[9rem]">
-                테스트 zzzzzzzzzzzzzzzzzzxxxxxxxxxxxxxxx
-              </p>
+              <p className="truncate w-[9rem]">테스트</p>
             </div>
             <div className="flex-grow" />
             <Link href="/Notice" className="text-sm text-[#666666]">
