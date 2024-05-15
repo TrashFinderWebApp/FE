@@ -2,9 +2,9 @@
 /* eslint-disable camelcase */
 
 import ButtonList from "@/components/button/buttonlist";
-import CarIconSVG from "@/components/svg/CarIconSVG";
-import NavigationIconSVG from "@/components/svg/NavigationIconSVG";
-import WalkerIconSVG from "@/components/svg/WalkerIconSVG";
+import CarIconSVG from "@/components/svg/cariconsvg";
+import NavigationIconSVG from "@/components/svg/navigationiconsvg";
+import WalkerIconSVG from "@/components/svg/walkericonsvg";
 import { ButtonProps } from "@/types/button";
 import {
   MarkerType,
@@ -14,10 +14,10 @@ import {
   Transportation,
 } from "@/types/navigate";
 import { useEffect, useReducer, useRef } from "react";
-import { useKakaoStore } from "@/stores/useKakaoStore";
+import { useKakaoStore } from "@/stores/usekakaostore";
 import SearchBar from "@/components/searchbar/searchbar";
-import { useTrashCanStore } from "@/stores/useTrashCanStore";
-import useNavigationQuery from "@/hooks/query/useNavigationQuery";
+import { useTrashCanStore } from "@/stores/usetrashcanstore";
+import useNavigationQuery from "@/hooks/query/usenavigationquery";
 import { drawKakaoNavigation, drawSKNavigation } from "./drawnavigation";
 import NavigationDetail from "./navigationdetail";
 import { initialNavigationState, navigationReducer } from "./navigationReducer";

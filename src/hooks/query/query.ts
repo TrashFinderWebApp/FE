@@ -1,5 +1,6 @@
-import { TrashCanRequest } from "@/types/TrashInfo";
+import { TrashCanRequest, TrashCanStatus } from "@/types/trashinfo";
 import { APIURL } from "@/util/const";
+import { getSession } from "next-auth/react";
 
 export const queryInfo = {
   notice: {
@@ -39,8 +40,8 @@ export const queryInfo = {
       const { latitude: lat, longitude: lng, radius, status, id } = info;
 
       const reqURL = id
-        ? `${APIURL}/api/trashcan/locations/details/${id}`
-        : `${APIURL}/api/trashcan/locations?${new URLSearchParams({
+        ? `${APIURL}/api/trashcans/locations/details/${id}`
+        : `${APIURL}/api/trashcans/locations?${new URLSearchParams({
             latitude: lat.toString(),
             longitude: lng.toString(),
             radius: radius.toString(),
@@ -59,34 +60,72 @@ export const queryInfo = {
       return data;
     },
   }),
-  mytrashcan: (accessToken?: string) => ({
-    queryKey: ["myTrashcan"],
-    queryFn: async () => {
-      if (!accessToken) throw new Error("로그인이 필요합니다.");
-      const res = await fetch(`${APIURL}/api/trashcan/member/me`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      if (!res.ok) {
-        throw new Error("쓰레기통 정보를 불러오는데 실패했습니다.");
-      }
-      return res.json();
-    },
-  }),
-  myranking: (accessToken?: string) => ({
+
+  myranking: {
     queryKey: ["rank"],
     queryFn: async () => {
-      if (!accessToken) throw new Error("로그인이 필요합니다.");
+      const session = await getSession();
+      if (!session?.accessToken) throw new Error("로그인이 필요합니다.");
       const res = await fetch(`${APIURL}/api/rank/me`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${session?.accessToken}`,
         },
       });
       if (!res.ok) {
         throw new Error("랭킹 정보를 불러오는데 실패했습니다.");
       }
       return res.json();
+    },
+  },
+  memberList: (page: number, memberName?: string) => ({
+    queryKey: ["members", memberName, page],
+    queryFn: async () => {
+      const session = await getSession();
+      const response = await fetch(
+        `${APIURL}/api/admin/members?page=${page}${memberName?.length ? `&memberName=${memberName}` : ``}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        },
+      );
+      const result = await response.json();
+      return result;
+    },
+  }),
+
+  trashcanList: (
+    page: number,
+    status: TrashCanStatus,
+    sort: "ASC" | "DESC" = "ASC",
+  ) => ({
+    queryKey: ["trashcanList", status, page],
+    queryFn: async () => {
+      const session = await getSession();
+      const response = await fetch(
+        `${APIURL}/api/admin/trashcans?page=${page}&status=${status}${sort?.length ? `&sort=${sort}` : ``}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        },
+      );
+      const result = await response.json();
+      return result;
+    },
+  }),
+
+  reportList: (page: number) => ({
+    queryKey: ["reportList", page],
+    queryFn: async () => {
+      const session = await getSession();
+      const response = await fetch(`${APIURL}/api/admin/reports?page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+      });
+      const result = await response.json();
+      return result;
     },
   }),
 };
@@ -110,4 +149,31 @@ export const infiniteQueryInfo = {
     },
     initialPageParam: 1,
   },
+  mytrashcan: (type: "REGISTRATION" | "SUGGESTION") => ({
+    queryKey: ["myTrashcan", type],
+    queryFn: async ({ pageParam = 0 }) => {
+      const session = await getSession();
+      if (!session?.accessToken) throw new Error("로그인이 필요합니다.");
+      const res = await fetch(
+        `${APIURL}/api/trashcans/members/me?page=${pageParam}&type=${type}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        },
+      );
+
+      const data = await res.json();
+      if (data?.message) return [];
+      return data;
+    },
+    getNextPageParam: (lastPage: any, allPage: any) => {
+      if (lastPage?.message || lastPage?.length < 10) {
+        return undefined;
+      }
+      return allPage.length * 10 + 1;
+    },
+
+    initialPageParam: 0,
+  }),
 };

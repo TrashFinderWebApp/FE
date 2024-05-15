@@ -1,4 +1,4 @@
-import { useKakaoStore } from "@/stores/useKakaoStore";
+import { useKakaoStore } from "@/stores/usekakaostore";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -52,7 +52,7 @@ const navList: MenuItemType[] = [
   },
 ];
 export default function Header({ children }: { children: React.ReactNode }) {
-  const { keywordSearch } = useKakaoStore();
+  const { keywordSearch, kakaoMap } = useKakaoStore();
   const [navOpened, setNavOpened] = useState(false);
   const [detailOpened, setDetailOpened] = useState(false);
   const pathName = usePathname();
@@ -64,7 +64,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
   const { data, status } = useSession();
 
   return (
-    <header className="relative z-40 w-full">
+    <header className="relative z-40 w-full h-min">
       <div className="relative flex flex-col p-4 bg-white gap-4 shadow-md">
         <div className="relative w-full flex items-center justify-between">
           <button
@@ -86,6 +86,14 @@ export default function Header({ children }: { children: React.ReactNode }) {
           keywordSearchMethod={keywordSearch}
           className="w-full border-2 border-light-green rounded-md"
           logo="/svg/searchicon.svg"
+          onClick={(location) => {
+            kakaoMap?.panTo(
+              new window.kakao.maps.LatLng(
+                location.latitude,
+                location.longitude,
+              ),
+            );
+          }}
         />
       </div>
       <div

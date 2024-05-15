@@ -1,16 +1,16 @@
 "use client";
 
-import useMap from "@/hooks/map/useMap";
+import useMap from "@/hooks/map/usemap";
 import { useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { isMobile } from "react-device-detect";
 import Header from "@/components/header/header";
-import { useKakaoStore } from "@/stores/useKakaoStore";
+import { useKakaoStore } from "@/stores/usekakaostore";
 import ButtonList from "@/components/button/buttonlist";
 import { ButtonProps } from "@/types/button";
-import Navigator from "@/components/sidebar/Navigator";
-import useDrawMarker from "@/hooks/map/useDrawMarker";
-import { useTrashCanStore } from "@/stores/useTrashCanStore";
+import Navigator from "@/components/sidebar/navigator";
+import useDrawMarker from "@/hooks/map/usedrawmarker";
+import { useTrashCanStore } from "@/stores/usetrashcanstore";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -31,7 +31,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const roadViewRef = useRef<HTMLDivElement | null>(null);
 
-  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+  const [isAccordionOpen, setIsAccordionOpen] = useState(true);
   const [deviceType, setDeviceType] = useState<"mobile" | "desktop">("desktop");
   const [isRoadView, setIsRoadView] = useState(false);
   const {
@@ -44,7 +44,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   useMap(mapRef, roadViewRef);
   const { data, needRefresh, setNeedRefresh, reFresh } = useDrawMarker(
-    "added",
+    "ADDED",
     {
       markerIcon: "/svg/trashcanicongreen.svg",
     },
@@ -110,7 +110,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         }`}
       />
       <button
-        className={`absolute duration-300 top-4 left-[50%] -translate-x-[50%] z-50 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`absolute duration-300 ${isMobile ? "top-36" : "top-4"} left-[50%] -translate-x-[50%] z-50 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}
         type="button"
         onClick={() => {
           setNeedRefresh(false);

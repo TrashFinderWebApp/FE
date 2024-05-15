@@ -1,7 +1,7 @@
 import { APIURL } from "@/util/const";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { NoticeResponse } from "../query/useNoticeQuery";
+import { NoticeResponse } from "../query/usenoticequery";
 
 const useNoticeMutation = ({
   id,

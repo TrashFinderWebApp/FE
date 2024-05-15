@@ -1,4 +1,4 @@
-import { TrashCanInfo } from "@/types/TrashInfo";
+import { TrashCanInfo } from "@/types/trashinfo";
 
 export default function createMarker(
   {
@@ -17,7 +17,7 @@ export default function createMarker(
   if (!window.kakao) return null;
   const icon =
     markerIcon ??
-    (status === "added"
+    (status === "ADDED"
       ? "/svg/trashcanicongreen.svg"
       : "/svg/trashcanicon.svg");
 

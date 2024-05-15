@@ -8,7 +8,7 @@ import {
   RouteSection,
   Transportation,
 } from "@/types/navigate";
-import createMarker from "../../../../../util/createmarker";
+import createMarker from "../../../../../util/kakaomap/createmarker";
 
 interface NavigationState {
   selectedTransport: Transportation;
@@ -127,8 +127,8 @@ export const navigationReducer = (
         ...action.payload,
       };
     case "SET_MAP": {
-      const startImageSrc = "/svg/departure.svg"; // 마커이미지의 주소입니다
-      const endImageSrc = "/svg/arrival.svg"; // 마커이미지의 주소입니다
+      const startImageSrc = "/svg/departure.svg";
+      const endImageSrc = "/svg/arrival.svg";
       const startMarker = createMarker({ markerIcon: startImageSrc });
       const endMarker = createMarker({ markerIcon: endImageSrc });
 

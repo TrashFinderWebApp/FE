@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { LocationInfo } from "@/types/TrashInfo";
+import { LocationInfo } from "@/types/trashinfo";
 import { Place } from "@/types/navigate";
 
 export const resolveKakaoResult = (

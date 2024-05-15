@@ -1,8 +1,8 @@
 export const TrashCanStatusList = [
-  "added",
-  "registered",
-  "removed",
-  "suggested",
+  "ADDED",
+  "REGISTERED",
+  "REMOVED",
+  "SUGGESTED",
 ] as const;
 
 export type TrashCanStatus = (typeof TrashCanStatusList)[number];

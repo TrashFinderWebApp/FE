@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import useIntersectionObserver from "../animation/useIntersectionObserver";
+import useIntersectionObserver from "../animation/useintersectionobserver";
 import { infiniteQueryInfo } from "./query";
 
 const useRankingQuery = () => {

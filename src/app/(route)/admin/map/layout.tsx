@@ -3,8 +3,8 @@
 import { useMemo, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import SearchBar from "@/components/searchbar/searchbar";
-import useMap from "@/hooks/map/useMap";
-import { useKakaoStore } from "@/stores/useKakaoStore";
+import useMap from "@/hooks/map/usemap";
+import { useKakaoStore } from "@/stores/usekakaostore";
 import MapContext from "./[...status]/mapContext";
 
 export default function MapLayout({ children }: { children: React.ReactNode }) {

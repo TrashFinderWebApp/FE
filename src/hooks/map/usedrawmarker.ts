@@ -1,9 +1,15 @@
-import { TrashCanRequest, TrashCanStatus } from "@/types/TrashInfo";
+import {
+  TrashCanInfo,
+  TrashCanRequest,
+  TrashCanStatus,
+} from "@/types/trashinfo";
 import distanceBetweenLatLng from "@/util/distance";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import createMarker from "@/util/createmarker";
-import { useKakaoStore } from "@/stores/useKakaoStore";
-import useTrashCanInfoQuery from "@/hooks/query/useTrashcanInfoQuery";
+import createMarker from "@/util/kakaomap/createmarker";
+import { useKakaoStore } from "@/stores/usekakaostore";
+import useTrashCanInfoQuery from "@/hooks/query/usetrashcaninfoquery";
+import createCustomOverlay from "@/util/kakaomap/createcustomoverlay";
+import { useRouter } from "next/navigation";
 
 const useDrawMarker = (
   status: TrashCanStatus,
@@ -17,11 +23,12 @@ const useDrawMarker = (
   } = {},
 ) => {
   const markerRef = useRef<any[]>([]);
+  const overlayRef = useRef<any[]>([]);
   const [_, updateState] = useState({});
   const [needRefresh, setNeedRefresh] = useState(false);
   const reFresh = useCallback(() => updateState({}), []);
   const { kakaoClusterer, kakaoMap } = useKakaoStore();
-
+  const router = useRouter();
   const queryInfo = useMemo(() => {
     if (!kakaoMap) return null;
     const bound = kakaoMap.getBounds();
@@ -52,28 +59,38 @@ const useDrawMarker = (
   useEffect(() => {
     if (!kakaoMap || !isDrawMarker) return;
 
-    kakaoClusterer?.clear();
-    markerRef.current.forEach((marker) => {
-      marker.setMap(null);
-    });
+    kakaoClusterer?.removeMarkers(markerRef.current);
+    kakaoClusterer?.removeMarkers(overlayRef.current);
+
     markerRef.current = [];
-    data?.forEach((trashcan) => {
+    overlayRef.current = [];
+
+    data?.forEach((trashcan: TrashCanInfo) => {
       const marker = createMarker({
         latitude: trashcan.latitude,
         longitude: trashcan.longitude,
         status: trashcan.status,
         markerIcon:
           markerIcon ??
-          (status === "added"
+          (status === "ADDED"
             ? "/svg/trashcangreenicon.svg"
             : "/svg/trashcanicon.svg"),
       });
 
+      const overlay = createCustomOverlay(
+        trashcan,
+        marker,
+        kakaoClusterer,
+        router,
+        status,
+      );
+
       markerRef.current.push(marker);
-      marker.setMap(kakaoMap);
-      kakaoClusterer?.addMarker(marker);
+      overlayRef.current.push(overlay);
     });
-  }, [data, kakaoMap]);
+
+    kakaoClusterer?.addMarkers(markerRef.current);
+  }, [data]);
 
   useEffect(() => {
     if (kakaoMap && window.kakao) {
@@ -89,13 +106,12 @@ const useDrawMarker = (
 
   useEffect(() => {
     return () => {
-      markerRef.current.forEach((marker) => {
-        marker.setMap(null);
-      });
+      kakaoClusterer?.removeMarkers(markerRef.current);
+      kakaoClusterer?.removeMarkers(overlayRef.current);
     };
   }, []);
 
-  return { markerRef, data, reFresh, needRefresh, setNeedRefresh };
+  return { markerRef, overlayRef, data, reFresh, needRefresh, setNeedRefresh };
 };
 
 export default useDrawMarker;

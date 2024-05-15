@@ -1,4 +1,4 @@
-import { LocationInfo } from "@/types/TrashInfo";
+import { LocationInfo } from "@/types/trashinfo";
 import { ScrollBarStyle } from "@/util/const";
 import { useEffect, useState } from "react";
 

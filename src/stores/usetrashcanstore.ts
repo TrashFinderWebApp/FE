@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { TrashCanInfo, TrashCanStatus } from "@/types/TrashInfo";
+import { TrashCanInfo, TrashCanStatus } from "@/types/trashinfo";
 import { APIURL } from "@/util/const";
 import { create } from "zustand";
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Providers from "@/hooks/query/useReactQuery";
+import Providers from "@/hooks/query/usereactquery";
 import AuthProvider from "@/components/auth/authprovider";
 
 export const metadata: Metadata = {
