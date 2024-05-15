@@ -7,7 +7,8 @@ import InstagramProvider from "next-auth/providers/instagram";
 import Credentials from "next-auth/providers/credentials";
 import { APIURL } from "@/util/const";
 import { AuthOptions } from "next-auth";
-import refreshAccessToken from "./refreshAccessToken";
+import refreshAccessToken from "./refreshaccesstoken";
+import setRefreshTokenCookie from "./setrtcookie";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -50,6 +51,7 @@ export const authOptions: AuthOptions = {
           const result = await res.json();
 
           if (res.ok && result) {
+            await setRefreshTokenCookie(res);
             return result;
           }
         } catch (e) {
@@ -80,12 +82,13 @@ export const authOptions: AuthOptions = {
           }),
         });
 
-        console.log("signin", res.headers);
         if (res.ok) {
+          await setRefreshTokenCookie(res);
           const data = await res.json();
           if (data) {
             user.accessToken = data.accessToken;
             user.jwtExpiredTime = data.jwtExpiredTime;
+            user.memberRole = data.memberRole;
           }
           return true;
         }
@@ -96,21 +99,20 @@ export const authOptions: AuthOptions = {
       return false;
     },
 
-    jwt: async ({ token }) => {
-      /*
-        if (account && user && user.accessToken) {
-          token.accessToken = user.accessToken;
-          token.accessTokenExpires = user.jwtExpiredTime;
-          return token;
-        }
-  
-        if (
-          token?.accessTokenExpires &&
-          Date.now() < (token.accessTokenExpires as number)
-        ) {
-          return token;
-        }
-        */
+    jwt: async ({ account, user, token }) => {
+      if (account && user && user.accessToken) {
+        token.accessToken = user.accessToken;
+        token.accessTokenExpires = user.jwtExpiredTime;
+        token.memberRole = user.memberRole;
+        return token;
+      }
+
+      if (
+        token?.accessTokenExpires &&
+        Date.now() < (token.accessTokenExpires as number)
+      ) {
+        return token;
+      }
 
       const newToken = await refreshAccessToken(token);
       return newToken;

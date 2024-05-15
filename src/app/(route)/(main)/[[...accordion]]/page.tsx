@@ -40,6 +40,10 @@ const selectedAccordion = (accordion: string[]) => {
   }
 };
 
-export default function Main({ params }: { params: { accordion: string[] } }) {
+export default function MainPage({
+  params,
+}: {
+  params: { accordion: string[] };
+}) {
   return selectedAccordion(params.accordion ?? []);
 }

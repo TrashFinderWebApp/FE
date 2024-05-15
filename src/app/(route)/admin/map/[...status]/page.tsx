@@ -3,10 +3,10 @@
 "use client";
 
 import { memo, useContext, useEffect, useRef, useState } from "react";
-import { TrashCanInfo, TrashCanStatus } from "@/types/TrashInfo";
-import { useKakaoStore } from "@/stores/useKakaoStore";
+import { TrashCanInfo, TrashCanStatus } from "@/types/trashinfo";
+import { useKakaoStore } from "@/stores/usekakaostore";
 import Modal from "@/components/modal/modal";
-import useDrawMarker from "@/hooks/map/useDrawMarker";
+import useDrawMarker from "@/hooks/map/usedrawmarker";
 import MapContext from "./mapContext";
 
 function RegisterationPage({ params }: { params: { status: string } }) {
@@ -24,7 +24,7 @@ function RegisterationPage({ params }: { params: { status: string } }) {
     addressDetail: "",
     latitude: 0,
     longitude: 0,
-    status: "added",
+    status: "ADDED",
     description: "",
     imageUrls: [],
   });
@@ -35,8 +35,6 @@ function RegisterationPage({ params }: { params: { status: string } }) {
     reFresh,
     markerRef,
   } = useDrawMarker(params.status[0] as TrashCanStatus);
-
-  console.log(trashcanList);
 
   useEffect(() => {
     setNeedRefresh(needRefresh);

@@ -5,14 +5,14 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 
 import { usePathname } from "next/navigation";
-import HomeSVG from "../svg/HomeSVG";
-import AddLocationSVG from "../svg/AddLocationSVG";
-import RankingSVG from "../svg/RankingSVG";
-import AnnouncementSVG from "../svg/AnnouncementSVG";
-import FindLocationSVG from "../svg/FindLocationSVG";
-import GetDirectionSVG from "../svg/GetDirectionSVG";
-import LogoutSVG from "../svg/LogoutSVG";
-import LoginSVG from "../svg/LoginSVG";
+import HomeSVG from "../svg/homesvg";
+import AddLocationSVG from "../svg/addLocationsvg";
+import RankingSVG from "../svg/rankingsvg";
+import AnnouncementSVG from "../svg/announcementsvg";
+import FindLocationSVG from "../svg/findlocationsvg";
+import GetDirectionSVG from "../svg/getdirectionsvg";
+import LogoutSVG from "../svg/logoutsvg";
+import LoginSVG from "../svg/loginsvg";
 
 type NavigatorBarType =
   | ""

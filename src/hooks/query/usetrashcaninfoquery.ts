@@ -1,4 +1,4 @@
-import { TrashCanInfo, TrashCanRequest } from "@/types/TrashInfo";
+import { TrashCanInfo, TrashCanRequest } from "@/types/trashinfo";
 import { useQuery } from "@tanstack/react-query";
 import { queryInfo } from "./query";
 

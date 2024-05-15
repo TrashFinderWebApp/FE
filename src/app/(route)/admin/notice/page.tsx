@@ -2,12 +2,12 @@
 
 import ButtonList from "@/components/button/buttonlist";
 import Modal from "@/components/modal/modal";
-import useNoticeMutation from "@/hooks/mutation/useNoticeMutation";
+import useNoticeMutation from "@/hooks/mutation/usenoticemutation";
 import useNoticeQuery, {
   NoticeResponse,
   NoticeType,
   NoticeTypeDict,
-} from "@/hooks/query/useNoticeQuery";
+} from "@/hooks/query/usenoticequery";
 import { ButtonProps } from "@/types/button";
 import { useRef, useState } from "react";
 

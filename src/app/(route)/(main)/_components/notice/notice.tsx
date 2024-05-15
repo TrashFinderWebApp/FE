@@ -5,7 +5,7 @@ import useNoticeQuery, {
   NoticeResponse,
   NoticeType,
   NoticeTypeDict,
-} from "@/hooks/query/useNoticeQuery";
+} from "@/hooks/query/usenoticequery";
 import { useState } from "react";
 
 export default function Notice() {
@@ -39,7 +39,7 @@ export default function Notice() {
           <p>{selectedNotice?.description}</p>
         </div>
       </Modal>
-      <h2 className="text-[1.25rem] font-extrabold">랭킹</h2>
+      <h2 className="text-[1.25rem] font-extrabold">공지사항</h2>
       <div className="grid w-full grid-cols-4">
         {Object.entries(NoticeTypeDict).map((type) => (
           <button

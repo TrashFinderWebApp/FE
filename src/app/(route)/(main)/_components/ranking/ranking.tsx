@@ -1,6 +1,6 @@
 "use client";
 
-import useRankingQuery from "@/hooks/query/useRankingQuery";
+import useRankingQuery from "@/hooks/query/userankingquery";
 import { forwardRef } from "react";
 
 const rankColor = (rank: number) => {
@@ -78,7 +78,7 @@ interface UserRankingResponse {
 
 export default function Ranking() {
   const { data, setTarget } = useRankingQuery();
-  console.log(data);
+
   return (
     <div className="flex flex-col">
       <h2 className="text-[1.25rem] font-extrabold">랭킹</h2>
@@ -86,10 +86,6 @@ export default function Ranking() {
         * 해당 랭킹은 사용자들이 쓰레기통 위치를 성공적으로 등록함에 따라 얻은
         점수를 기반으로 한 순위입니다.
       </p>
-      <div className="relative flex justify-end items-center gap-2 right-5 w-[calc(100%+3rem-4px)] py-2 px-4 border-y-2 bg-[#F5F5F5]">
-        <div className="text-sm text-[#666666]">오후 00시 00분 기준</div>
-        <button type="button">reload</button>
-      </div>
 
       <div className="flex flex-col gap-4 my-8">
         {data?.pages

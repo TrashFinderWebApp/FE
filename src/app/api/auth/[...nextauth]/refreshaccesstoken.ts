@@ -1,14 +1,19 @@
 import { APIURL } from "@/util/const";
 import { JWT } from "next-auth/jwt";
+import { cookies } from "next/headers";
+import setRefreshTokenCookie from "./setrtcookie";
 
 const refreshAccessToken = async (token: JWT) => {
   try {
     const res = await fetch(`${APIURL}/api/auth/reissue`, {
       method: "GET",
       credentials: "include",
+      headers: {
+        Cookie: cookies().toString(),
+      },
     });
-    console.log("refresh", res);
     const accessToken = await res.json();
+    await setRefreshTokenCookie(res);
     if (res.ok && accessToken && accessToken?.accessToken) {
       return {
         ...token,

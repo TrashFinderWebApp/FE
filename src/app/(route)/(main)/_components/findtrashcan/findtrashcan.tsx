@@ -1,8 +1,8 @@
 "use client";
 
 import SearchBar from "@/components/searchbar/searchbar";
-import { useKakaoStore } from "@/stores/useKakaoStore";
-import { useTrashCanStore } from "@/stores/useTrashCanStore";
+import { useKakaoStore } from "@/stores/usekakaostore";
+import { useTrashCanStore } from "@/stores/usetrashcanstore";
 import TrashCanDetail from "./trashcaninfo";
 
 export default function FindTrashCan() {

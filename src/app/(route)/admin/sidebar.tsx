@@ -17,6 +17,9 @@ export default function Sidebar() {
         <Link href="/admin/map/suggested" className="hover:bg-gray-100 p-2">
           위치 제안
         </Link>
+        <Link href="/admin/trashcans" className="hover:bg-gray-100 p-2">
+          쓰레기통 리스트
+        </Link>
         <Link href="/admin/users" className="hover:bg-gray-100 p-2">
           사용자
         </Link>

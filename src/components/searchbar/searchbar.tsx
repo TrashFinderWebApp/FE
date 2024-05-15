@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { resolveKakaoResult } from "@/app/(route)/(main)/_components/navigation/resolveresult";
 import DropDown from "@/components/dropdown/dropdown";
-import useKeywordSearch from "@/hooks/optimization/useKeywordSearch";
-import { LocationInfo } from "@/types/TrashInfo";
+import useKeywordSearch from "@/hooks/optimization/usekeywordsearch";
+import { LocationInfo } from "@/types/trashinfo";
 import { useMemo, useState } from "react";
 
 type SearchLocation = LocationInfo & { id: string };

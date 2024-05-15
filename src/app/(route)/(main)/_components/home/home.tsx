@@ -1,7 +1,7 @@
 import SearchBar from "@/components/searchbar/searchbar";
-import useMyRankingQuery from "@/hooks/query/useMyRankingQuery";
-import useMyTrashcanQuery from "@/hooks/query/useMyTrashcanQuery";
-import { useKakaoStore } from "@/stores/useKakaoStore";
+import useMyRankingQuery from "@/hooks/query/usemyrankingquery";
+import useMyTrashcanQuery from "@/hooks/query/usemytrashcanquery";
+import { useKakaoStore } from "@/stores/usekakaostore";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -9,8 +9,9 @@ export default function Home() {
   const { keywordSearch } = useKakaoStore();
   const session = useSession();
 
-  const { data: rank, status } = useMyRankingQuery(session.data?.accessToken);
-  const { data: myTrashcan } = useMyTrashcanQuery(session.data?.accessToken);
+  const { data: rank } = useMyRankingQuery();
+  const { data: myTrashcan, status: trashcanStatus } =
+    useMyTrashcanQuery("SUGGESTION");
 
   return (
     <div className="flex flex-col gap-2">
@@ -84,8 +85,8 @@ export default function Home() {
                 최근 등록 순
               </button>
             </div>
-            {status === "success" &&
-              myTrashcan?.map((trashcan: any) => (
+            {trashcanStatus === "success" &&
+              myTrashcan?.pages.flat().map((trashcan: any) => (
                 <div
                   key={trashcan?.trashcanId}
                   className="shadow-md rounded-md border-2 border-[#aaaaaa] p-3 flex text-sm"

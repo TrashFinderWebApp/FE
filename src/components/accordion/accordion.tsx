@@ -1,4 +1,4 @@
-import useAnimation from "@/hooks/animation/useAnimation";
+import useAnimation from "@/hooks/animation/useanimation";
 import { ScrollBarStyle } from "@/util/const";
 import Image from "next/image";
 import LeftArrowSvg from "public/svg/leftarrow.svg";

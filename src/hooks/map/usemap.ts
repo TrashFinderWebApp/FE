@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useKakaoStore } from "@/stores/useKakaoStore";
+import { useKakaoStore } from "@/stores/usekakaostore";
 import { useEffect } from "react";
 
 export interface mapResult {

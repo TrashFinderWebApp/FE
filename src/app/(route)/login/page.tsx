@@ -8,7 +8,7 @@ import googleicon from "public/svg/googleicon.svg";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 
-export default function LoginForm() {
+export default function LoginPage() {
   const inputRef = useRef<{
     email: string;
     password: string;

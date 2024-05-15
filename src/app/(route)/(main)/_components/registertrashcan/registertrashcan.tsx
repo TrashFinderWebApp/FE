@@ -1,16 +1,13 @@
 import ButtonList from "@/components/button/buttonlist";
 import SearchBar from "@/components/searchbar/searchbar";
-import { useKakaoStore } from "@/stores/useKakaoStore";
+import { useKakaoStore } from "@/stores/usekakaostore";
 import { ButtonProps } from "@/types/button";
 import { Coordinate } from "@/types/navigate";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { APIURL, ScrollBarStyle } from "@/util/const";
 import { useSession } from "next-auth/react";
-
-import { TrashCanInfo } from "@/types/TrashInfo";
-import Modal from "@/components/modal/modal";
-import useDrawMarker from "@/hooks/map/useDrawMarker";
-import createMarker from "../../../../../util/createmarker";
+import useDrawMarker from "@/hooks/map/usedrawmarker";
+import createMarker from "@/util/kakaomap/createmarker";
 
 type RegisterType = "new" | "recommend";
 
@@ -45,23 +42,17 @@ export default function RegisterTrashCan() {
   const [selectedCoordinate, setSelectedCoordinate] =
     useState<Coordinate | null>(null);
   const [selectedImage, setSelectedImage] = useState<File[]>([]);
-  const [selectedTrashcanId, setSelectedTrashcanId] = useState<
-    string | undefined
-  >(undefined);
   const description = useRef<string>("");
   const addressDetail = useRef<string>("");
   const marker = useRef<Marker>({
     marker: null,
     info: null,
   });
-  const [isModalOpened, setIsModalOpened] = useState(false);
   const { kakaoMap, keywordSearch, geoCoder } = useKakaoStore();
-  const markerRef = useRef<any[]>([]);
-  const customOverlayRef = useRef<any[]>([]);
   const session = useSession();
 
-  const { data, reFresh, needRefresh, setNeedRefresh } = useDrawMarker(
-    selectedMethod === "new" ? "registered" : "suggested",
+  const { reFresh, needRefresh, setNeedRefresh } = useDrawMarker(
+    selectedMethod === "new" ? "REGISTERED" : "SUGGESTED",
   );
 
   useEffect(() => {
@@ -75,46 +66,16 @@ export default function RegisterTrashCan() {
     (coordinate: Coordinate) => {
       const pos = new window.kakao.maps.LatLng(coordinate.y, coordinate.x);
 
-      marker.current?.marker.setPosition(pos);
-      marker.current?.info.setPosition(pos);
+      marker.current?.marker?.setPosition(pos);
+      marker.current?.info?.setPosition(pos);
 
       kakaoMap?.setCenter(pos);
     },
     [marker, kakaoMap],
   );
 
-  const handleTrashCanPost = (id?: string) => {
+  const handleTrashCanPost = () => {
     if (!selectedCoordinate?.x || !selectedCoordinate?.y) return;
-
-    if (id) {
-      const formData = new FormData();
-      formData.append("id", id);
-
-      fetch(
-        `${APIURL}/api/trashcan/${selectedMethod === "new" ? "registrations" : "suggestions"}/${id}`,
-        {
-          method: "post",
-          headers: {
-            Authorization: `Bearer ${session.data?.accessToken}`,
-          },
-          body: formData,
-        },
-      )
-        .then((res) => {
-          if (res.ok) {
-            alert("성공적으로 등록되었습니다.");
-          } else {
-            res.json().then((json) => {
-              alert(json.message);
-            });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-
-      return;
-    }
 
     geoCoder.coord2Address(
       selectedCoordinate?.x,
@@ -155,79 +116,6 @@ export default function RegisterTrashCan() {
       },
     );
   };
-
-  useEffect(() => {
-    if (data && data.length > 0 && kakaoMap) {
-      markerRef.current.forEach((markerEl) => {
-        markerEl.setMap(null);
-      });
-
-      markerRef.current = [];
-
-      data.forEach((trashcan: TrashCanInfo & { count?: number }) => {
-        const newMarker = createMarker(
-          {
-            latitude: trashcan.latitude,
-            longitude: trashcan.longitude,
-            status: selectedMethod === "new" ? "registered" : "suggested",
-            markerIcon: "/svg/trashcanicon.svg",
-          },
-          (markerEl) => {
-            const content = `<div class="bg-dark-blue text-white p-3 rounded-md">
-            <div class="flex justify-between">
-              <h2 class="font-bold text-lg">${trashcan.addressDetail ?? "쓰레기통"}</h2>
-              <button>X</button>
-            </div>
-            <p>${trashcan?.count}번 추천됨.</p>
-            </div>`;
-
-            const markerPos = new window.kakao.maps.LatLng(
-              trashcan.latitude,
-              trashcan.longitude,
-            );
-
-            const CustomOverlay = new window.kakao.maps.CustomOverlay({
-              position: markerPos,
-              content,
-              yAnchor: 1.5,
-            });
-
-            CustomOverlay.a.addEventListener?.("click", () => {
-              CustomOverlay.setMap(null);
-              setSelectedTrashcanId(trashcan.id);
-              setIsModalOpened(true);
-            });
-            window.kakao.maps.event.addListener(markerEl, "click", () => {
-              CustomOverlay.setMap(kakaoMap);
-            });
-
-            CustomOverlay.a
-              .querySelector("button")
-              .addEventListener("click", (e: any) => {
-                e.stopPropagation();
-                CustomOverlay.setMap(null);
-              });
-
-            customOverlayRef.current.push(CustomOverlay);
-          },
-        );
-
-        markerRef.current.push(newMarker);
-        newMarker.setMap(kakaoMap);
-      });
-    }
-  }, [data]);
-
-  useEffect(() => {
-    return () => {
-      markerRef.current.forEach((markerEl) => {
-        markerEl.setMap(null);
-      });
-      customOverlayRef.current.forEach((overlay) => {
-        overlay.setMap(null);
-      });
-    };
-  }, []);
 
   useEffect(() => {
     if (kakaoMap) {
@@ -305,40 +193,6 @@ export default function RegisterTrashCan() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Modal
-        isOpen={isModalOpened}
-        onClose={() => {
-          setIsModalOpened(false);
-        }}
-      >
-        <div className="flex flex-col gap-4">
-          <p>
-            정말 해당 위치에 {selectedMethod === "new" ? "등록" : "추천"}
-            하시겠습니까?
-          </p>
-          <div className="w-full">
-            <button
-              type="button"
-              className="bg-light-green text-white w-full p-2 rounded-md flex items-center justify-center"
-              onClick={() => {
-                handleTrashCanPost(selectedTrashcanId);
-                setIsModalOpened(false);
-              }}
-            >
-              네
-            </button>
-            <button
-              type="button"
-              className="w-full p-2 rounded-md flex items-center justify-center"
-              onClick={() => {
-                setIsModalOpened(false);
-              }}
-            >
-              아니요
-            </button>
-          </div>
-        </div>
-      </Modal>
       <h2 className="flex items-center gap-2">
         <img src="/svg/cameraicon.svg" alt="카메라아이콘" />
         <p className="font-extrabold text-[1.25rem] py-2"> 새로운 장소</p>

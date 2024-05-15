@@ -1,24 +1,19 @@
 import { getToken } from "next-auth/jwt";
-import { NextResponse, userAgent } from "next/server";
+
+import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const { device } = userAgent(request);
+
   const token = await getToken({ req: request, secret: process.env.AUTH_KEY });
 
-  if (pathname.startsWith("/admin") && request.redirect === "manual") {
-    if (!token) {
+  if (pathname.startsWith("/admin")) {
+    if (!token || token.memberRole !== "ROLE_ADMIN") {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
     return NextResponse.next();
-  }
-
-  if (device.type === "mobile") {
-    return NextResponse.rewrite(
-      new URL(`/mobile${request.nextUrl.pathname}`, request.url),
-    );
   }
 
   return NextResponse.next();
