@@ -64,8 +64,8 @@ export default function Header({ children }: { children: React.ReactNode }) {
   const { data, status } = useSession();
 
   return (
-    <header className="relative z-40 w-full h-min">
-      <div className="relative flex flex-col p-4 bg-white gap-4 shadow-md">
+    <header className="relative z-50 w-full pointer-events-none">
+      <div className="relative flex flex-col p-4 bg-white gap-4 shadow-md pointer-events-auto">
         <div className="relative w-full flex items-center justify-between">
           <button
             type="button"
@@ -97,15 +97,16 @@ export default function Header({ children }: { children: React.ReactNode }) {
         />
       </div>
       <div
-        className="absolute top-0 left-0 w-screen h-full bg-black bg-opacity-20 duration-300 pointer-events-none"
+        className="absolute w-screen top-0 left-0 h-full bg-black bg-opacity-20 duration-300"
         style={{
           backgroundColor: navOpened
             ? "rgba(0, 0, 0, 0.5)"
             : "rgba(0, 0, 0, 0)",
+          pointerEvents: navOpened ? "auto" : "none",
         }}
       >
         <nav
-          className="bg-white pointer-events-auto h-full w-[50%] duration-300"
+          className="bg-white h-full w-[50%] duration-300"
           style={{
             transform: `translateX(${navOpened ? "0" : "-100%"})`,
           }}
@@ -175,6 +176,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
         style={{
           width: detailOpened ? "100%" : "0px",
           padding: detailOpened ? "2rem" : "0px",
+          pointerEvents: detailOpened ? "auto" : "none",
         }}
       >
         <div

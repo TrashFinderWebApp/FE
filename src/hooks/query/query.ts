@@ -3,15 +3,15 @@ import { APIURL } from "@/util/const";
 import { getSession } from "next-auth/react";
 
 export const queryInfo = {
-  notice: {
-    queryKey: ["notice"],
+  notice: (page: number) => ({
+    queryKey: ["notice", page],
     queryFn: async () => {
-      const res = await fetch(`${APIURL}/api/notification`);
+      const res = await fetch(`${APIURL}/api/notification?page=${page}`);
       if (!res.ok) return [];
       const data = await res.json();
       return data;
     },
-  },
+  }),
   user: (searchQuery?: string) => ({
     queryKey: ["user", searchQuery],
     queryFn: async ({ pageParam = 1 }) => {
@@ -164,14 +164,15 @@ export const infiniteQueryInfo = {
       );
 
       const data = await res.json();
+      console.log(data);
       if (data?.message) return [];
       return data;
     },
     getNextPageParam: (lastPage: any, allPage: any) => {
-      if (lastPage?.message || lastPage?.length < 10) {
+      if (lastPage?.message || lastPage?.totalPages > allPage.length) {
         return undefined;
       }
-      return allPage.length * 10 + 1;
+      return allPage.length + 1;
     },
 
     initialPageParam: 0,

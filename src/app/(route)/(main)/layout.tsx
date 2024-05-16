@@ -110,7 +110,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         }`}
       />
       <button
-        className={`absolute duration-300 ${isMobile ? "top-36" : "top-4"} left-[50%] -translate-x-[50%] z-50 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`absolute duration-300 ${deviceType === "mobile" ? "top-36" : "top-4"} left-[50%] -translate-x-[50%] z-40 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}
         type="button"
         onClick={() => {
           setNeedRefresh(false);
@@ -123,7 +123,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         ref={mapRef}
         style={{ zIndex: isMapOpened ? "10" : "0" }}
         className={
-          isAccordionOpen
+          (deviceType === "mobile" ? false : isAccordionOpen)
             ? "absolute top-0 h-svh duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"
             : "absolute top-0 h-svh duration-300 w-full box-content"
         }

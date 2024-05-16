@@ -1,3 +1,5 @@
+"use client";
+
 import SearchBar from "@/components/searchbar/searchbar";
 import useMyRankingQuery from "@/hooks/query/usemyrankingquery";
 import useMyTrashcanQuery from "@/hooks/query/usemytrashcanquery";

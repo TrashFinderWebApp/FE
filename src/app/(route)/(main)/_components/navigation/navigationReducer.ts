@@ -8,7 +8,7 @@ import {
   RouteSection,
   Transportation,
 } from "@/types/navigate";
-import createMarker from "../../../../../util/kakaomap/createmarker";
+import createMarker from "@/util/kakaomap/createmarker";
 
 interface NavigationState {
   selectedTransport: Transportation;

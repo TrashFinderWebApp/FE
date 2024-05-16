@@ -12,7 +12,8 @@ export default function Notice() {
   const [selectedNoticeType, setSelectedNoticeType] =
     useState<NoticeType>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: noticeData } = useNoticeQuery();
+  const [page, setPage] = useState(1);
+  const { data: noticeData } = useNoticeQuery(page);
   const [selectedNotice, setSelectedNotice] = useState<NoticeResponse | null>(
     null,
   );
@@ -57,8 +58,8 @@ export default function Notice() {
         ))}
       </div>
 
-      {noticeData
-        ?.sort(
+      {noticeData?.notificationInfoList
+        .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )
@@ -88,6 +89,14 @@ export default function Notice() {
             </h3>
             <p>{new Date(item.createdAt).toLocaleDateString()}</p>
           </div>
+        ))}
+      {Array(noticeData?.totalPage)
+        .fill(0)
+        .map((_, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <button key={index} type="button" onClick={() => setPage(index + 1)}>
+            {index + 1}
+          </button>
         ))}
     </div>
   );

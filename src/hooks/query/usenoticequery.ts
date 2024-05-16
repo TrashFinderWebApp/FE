@@ -16,8 +16,13 @@ export interface NoticeResponse {
   state: string;
 }
 
-const useNoticeQuery = () => {
-  return useQuery<NoticeResponse[]>(queryInfo.notice);
+export interface NoticePageResponse {
+  notificationInfoList: NoticeResponse[];
+  totalPage: number;
+}
+
+const useNoticeQuery = (page: number) => {
+  return useQuery<NoticePageResponse>(queryInfo.notice(page));
 };
 
 export default useNoticeQuery;
