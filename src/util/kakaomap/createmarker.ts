@@ -7,7 +7,9 @@ export default function createMarker(
     status,
     markerIcon,
     size = 30,
-  }: Partial<Pick<TrashCanInfo, "latitude" | "longitude" | "status" | "id">> & {
+  }: Partial<
+    Pick<TrashCanInfo, "latitude" | "longitude" | "status" | "trashcanId">
+  > & {
     markerIcon?: string;
     size?: number;
   },
