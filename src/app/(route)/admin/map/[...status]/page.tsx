@@ -25,7 +25,7 @@ function RegisterationPage({ params }: { params: { status: string } }) {
     latitude: 0,
     longitude: 0,
     status: "ADDED",
-    description: "",
+    description: [],
     imageUrls: [],
   });
 
@@ -111,13 +111,17 @@ function RegisterationPage({ params }: { params: { status: string } }) {
           </p>
           <p>
             description:
-            <input
-              defaultValue={selectedTrashcan?.description}
-              className="w-full border rounded-md p-1"
-              onChange={(e) => {
-                patchRef.current.description = e.currentTarget.value;
-              }}
-            />
+            {patchRef.current.description?.map((desc, idx) => (
+              <input
+                key={desc}
+                defaultValue={selectedTrashcan?.description}
+                className="w-full border rounded-md p-1"
+                onChange={(e) => {
+                  if (!patchRef.current.description?.[idx]) return;
+                  patchRef.current.description[idx] = e.currentTarget.value;
+                }}
+              />
+            ))}
           </p>
           <p>
             <p>images</p>
