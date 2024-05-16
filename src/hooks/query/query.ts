@@ -1,6 +1,15 @@
-import { TrashCanRequest, TrashCanStatus } from "@/types/trashinfo";
+import {
+  TrashCanInfo,
+  TrashCanRequest,
+  TrashCanStatus,
+} from "@/types/trashinfo";
 import { APIURL } from "@/util/const";
 import { getSession } from "next-auth/react";
+
+interface MyTrashcanResponse {
+  totalPages: number;
+  trashcansResponses: TrashCanInfo[];
+}
 
 export const queryInfo = {
   notice: (page: number) => ({
@@ -33,11 +42,17 @@ export const queryInfo = {
       info?.longitude ?? 0,
       info?.radius ?? 0,
       info?.status ?? "added",
-      info?.id ?? "",
+      info?.trashcanId ?? "",
     ],
     queryFn: async () => {
       if (!info) return [];
-      const { latitude: lat, longitude: lng, radius, status, id } = info;
+      const {
+        latitude: lat,
+        longitude: lng,
+        radius,
+        status,
+        trashcanId: id,
+      } = info;
 
       const reqURL = id
         ? `${APIURL}/api/trashcans/locations/details/${id}`
@@ -164,9 +179,13 @@ export const infiniteQueryInfo = {
       );
 
       const data = await res.json();
-      console.log(data);
-      if (data?.message) return [];
-      return data;
+
+      if (data?.message)
+        return {
+          totalPages: 0,
+          trashcansResponses: [],
+        };
+      return data as MyTrashcanResponse;
     },
     getNextPageParam: (lastPage: any, allPage: any) => {
       if (lastPage?.message || lastPage?.totalPages > allPage.length) {

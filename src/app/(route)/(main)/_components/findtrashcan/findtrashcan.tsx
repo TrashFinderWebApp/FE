@@ -36,7 +36,7 @@ export default function FindTrashCan() {
 
       <div className="flex flex-col space-y-6">
         {trashCanList.slice(1).map((trashcan) => (
-          <TrashCanDetail key={trashcan.id} info={trashcan} />
+          <TrashCanDetail key={trashcan.trashcanId} info={trashcan} />
         ))}
       </div>
     </div>
