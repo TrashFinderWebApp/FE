@@ -59,7 +59,7 @@ export default function createCustomOverlay(
     .addEventListener("click", async () => {
       const session = await getSession();
       const res = await fetch(
-        `${APIURL}/api/trashcans/reports/${trashcanInfo.id}`,
+        `${APIURL}/api/trashcans/reports/${trashcanInfo.trashcanId}`,
         {
           method: "POST",
           headers: {
@@ -78,7 +78,7 @@ export default function createCustomOverlay(
     ?.addEventListener("click", async () => {
       const session = await getSession();
       const res = await fetch(
-        `${APIURL}/api/trashcans/${status === "REGISTERED" ? "registrations" : "suggestions"}/${trashcanInfo.id}`,
+        `${APIURL}/api/trashcans/${status === "REGISTERED" ? "registrations" : "suggestions"}/${trashcanInfo.trashcanId}`,
         {
           method: "POST",
           headers: {

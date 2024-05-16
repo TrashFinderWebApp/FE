@@ -15,7 +15,7 @@ const useNoticeMutation = ({
   return useMutation({
     mutationFn: async (input: NoticeResponse) => {
       const res = await fetch(
-        `${APIURL}/api/notification${id ? `/${id}` : ""}`,
+        `${APIURL}/api/notification${id ? `/${id}` : "/"}`,
         {
           method: id ? "PATCH" : method,
           headers: {
@@ -26,6 +26,7 @@ const useNoticeMutation = ({
         },
       );
       const data = await res.json();
+      console.log(data);
       if (!res.ok) throw new Error(data.error);
       return data;
     },

@@ -8,15 +8,18 @@ export const TrashCanStatusList = [
 export type TrashCanStatus = (typeof TrashCanStatusList)[number];
 
 interface DetailedTrashCanInfo {
-  id: string;
+  trashcanId: string;
   status: TrashCanStatus;
 }
 
 interface OptionalTrashCanInfo {
   imageUrls?: string[];
-  description?: string;
+  description?: string[];
   name?: string;
   category?: string;
+  views?: number;
+  createdAt?: string;
+  count?: number;
 }
 
 interface Radius {

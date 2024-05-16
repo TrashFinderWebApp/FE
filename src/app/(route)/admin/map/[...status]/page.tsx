@@ -19,13 +19,13 @@ function RegisterationPage({ params }: { params: { status: string } }) {
   );
   const [isModalOpened, setIsModalOpened] = useState(false);
   const patchRef = useRef<TrashCanInfo>({
-    id: "",
+    trashcanId: "",
     address: "",
     addressDetail: "",
     latitude: 0,
     longitude: 0,
     status: "ADDED",
-    description: "",
+    description: [],
     imageUrls: [],
   });
 
@@ -51,10 +51,10 @@ function RegisterationPage({ params }: { params: { status: string } }) {
           <p>
             id:
             <input
-              defaultValue={selectedTrashcan?.id}
+              defaultValue={selectedTrashcan?.trashcanId}
               className="w-full border rounded-md p-1"
               onChange={(e) => {
-                patchRef.current.id = e.currentTarget.value;
+                patchRef.current.trashcanId = e.currentTarget.value;
               }}
             />
           </p>
@@ -111,13 +111,17 @@ function RegisterationPage({ params }: { params: { status: string } }) {
           </p>
           <p>
             description:
-            <input
-              defaultValue={selectedTrashcan?.description}
-              className="w-full border rounded-md p-1"
-              onChange={(e) => {
-                patchRef.current.description = e.currentTarget.value;
-              }}
-            />
+            {patchRef.current.description?.map((desc, idx) => (
+              <input
+                key={desc}
+                defaultValue={selectedTrashcan?.description}
+                className="w-full border rounded-md p-1"
+                onChange={(e) => {
+                  if (!patchRef.current.description?.[idx]) return;
+                  patchRef.current.description[idx] = e.currentTarget.value;
+                }}
+              />
+            ))}
           </p>
           <p>
             <p>images</p>
@@ -147,7 +151,7 @@ function RegisterationPage({ params }: { params: { status: string } }) {
 
       {trashcanList?.map((trashcan, idx) => (
         <button
-          key={trashcan.id}
+          key={trashcan.trashcanId}
           type="button"
           className="py-4 border-b-2 flex flex-col"
           onMouseOver={() => {
@@ -182,7 +186,7 @@ function RegisterationPage({ params }: { params: { status: string } }) {
             setIsModalOpened(true);
           }}
         >
-          <p>id: {trashcan.id}</p>
+          <p>id: {trashcan.trashcanId}</p>
           <p>address: {trashcan.address}</p>
           <p>addressDetail: {trashcan.addressDetail}</p>
         </button>

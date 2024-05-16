@@ -38,7 +38,8 @@ const defaultRef = {
 };
 
 export default function NoticePage() {
-  const { data: noticeData } = useNoticeQuery();
+  const [page, setPage] = useState(1);
+  const { data: noticeData } = useNoticeQuery(page);
   const [selectedNoticeType, setSelectedNoticeType] =
     useState<NoticeType>("all");
   const selectedNoticeRef = useRef<NoticeResponse>(defaultRef);
@@ -133,6 +134,7 @@ export default function NoticePage() {
               className="bg-dark-blue text-white text-[1.25rem] font-bold p-2 rounded-md"
               onClick={() => {
                 if (createNotice) {
+                  console.log(selectedNoticeRef.current);
                   mutate(selectedNoticeRef.current);
                 }
               }}
@@ -179,7 +181,7 @@ export default function NoticePage() {
         </div>
       </div>
       <div className="flex flex-col gap-2 h-full mt-8 overflow-y-scroll [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#AAAAAA] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-[#D9D9D9]">
-        {noticeData
+        {noticeData?.notificationInfoList
           ?.sort(
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -216,6 +218,14 @@ export default function NoticePage() {
             </div>
           ))}
       </div>
+      {Array(noticeData?.totalPage)
+        .fill(0)
+        .map((_, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <button key={index} type="button" onClick={() => setPage(index + 1)}>
+            {index + 1}
+          </button>
+        ))}
     </div>
   );
 }

@@ -14,7 +14,7 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
     imageUrls: imageList = [],
     latitude,
     longitude,
-    id,
+    trashcanId: id,
   } = info || {};
 
   const { kakaoRoadView, roadViewClient, setIsMapOpened } = useKakaoStore();

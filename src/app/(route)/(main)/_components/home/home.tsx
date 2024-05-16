@@ -1,3 +1,5 @@
+"use client";
+
 import SearchBar from "@/components/searchbar/searchbar";
 import useMyRankingQuery from "@/hooks/query/usemyrankingquery";
 import useMyTrashcanQuery from "@/hooks/query/usemytrashcanquery";
@@ -86,34 +88,42 @@ export default function Home() {
               </button>
             </div>
             {trashcanStatus === "success" &&
-              myTrashcan?.pages.flat().map((trashcan: any) => (
-                <div
-                  key={trashcan?.trashcanId}
-                  className="shadow-md rounded-md border-2 border-[#aaaaaa] p-3 flex text-sm"
-                >
-                  <img
-                    src={trashcan?.imageUrls[0] ?? "/img/TEST.jpg"}
-                    alt=""
-                    className="w-[30%] aspect-[5/3] object-cover rounded-sm"
-                  />
-                  <div className="ml-2 flex flex-col">
-                    <p className="text-[0.875rem] font-semibold" />
-                    <p className="truncate w-36">
-                      {trashcan?.address ?? "주소를 불러오는 중입니다."}
-                    </p>
-                    <p className="mt-6">0000년 00월 00일</p>
-                  </div>
-                  <div className="flex-grow" />
-                  <div className="flex flex-col items-end justify-between">
-                    <div className="px-2 bg-[#E74A62] text-white rounded-md">
-                      {trashcan?.status === "added" ? "등록완료" : "대기중"}
+              myTrashcan?.pages
+                .flat()
+                .map((res) => res.trashcansResponses)
+                .flat()
+                .map((trashcan) => (
+                  <div
+                    key={trashcan?.trashcanId}
+                    className="shadow-md rounded-md border-2 border-[#aaaaaa] p-3 flex text-sm"
+                  >
+                    <img
+                      src={
+                        trashcan?.imageUrls?.length
+                          ? trashcan.imageUrls[0]
+                          : "/img/TEST.jpg"
+                      }
+                      alt=""
+                      className="w-[30%] aspect-[5/3] object-cover rounded-sm"
+                    />
+                    <div className="ml-2 flex flex-col">
+                      <p className="text-[0.875rem] font-semibold" />
+                      <p className="truncate w-36">
+                        {trashcan?.address ?? "주소를 불러오는 중입니다."}
+                      </p>
+                      <p className="mt-6">0000년 00월 00일</p>
                     </div>
-                    <div className="font-bold text-[0.875rem] text-light-green">
-                      + 5 Point
+                    <div className="flex-grow" />
+                    <div className="flex flex-col items-end justify-between">
+                      <div className="px-2 bg-[#E74A62] text-white rounded-md">
+                        {trashcan?.status === "ADDED" ? "등록완료" : "대기중"}
+                      </div>
+                      <div className="font-bold text-[0.875rem] text-light-green">
+                        + 5 Point
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
           </div>
         </>
       ) : (
