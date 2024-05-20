@@ -33,7 +33,7 @@ export default function MapLayout({ children }: { children: React.ReactNode }) {
                 location.longitude,
               ),
             );
-            refreshCallback();
+            refreshCallback?.();
           }}
           logo="/svg/searchicon.svg"
           keywordSearchMethod={keywordSearch}
@@ -46,7 +46,7 @@ export default function MapLayout({ children }: { children: React.ReactNode }) {
         type="button"
         onClick={() => {
           setNeedRefresh(false);
-          refreshCallback();
+          refreshCallback?.();
         }}
       >
         새로 고침

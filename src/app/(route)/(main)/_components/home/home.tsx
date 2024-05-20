@@ -13,7 +13,7 @@ export default function Home() {
 
   const { data: rank } = useMyRankingQuery();
   const { data: myTrashcan, status: trashcanStatus } =
-    useMyTrashcanQuery("SUGGESTION");
+    useMyTrashcanQuery("REGISTRATION");
 
   return (
     <div className="flex flex-col gap-2">

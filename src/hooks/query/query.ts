@@ -6,17 +6,26 @@ import {
 import { APIURL } from "@/util/const";
 import { getSession } from "next-auth/react";
 
+type NoticeType = "ALL" | "UPDATED" | "EVENT" | "GENERAL";
+
 interface MyTrashcanResponse {
   totalPages: number;
   trashcansResponses: TrashCanInfo[];
 }
 
 export const queryInfo = {
-  notice: (page: number) => ({
-    queryKey: ["notice", page],
+  notice: (page: number, notificationType: NoticeType) => ({
+    queryKey: ["notice", page, notificationType],
     queryFn: async () => {
-      const res = await fetch(`${APIURL}/api/notification?page=${page}`);
-      if (!res.ok) return [];
+      const res = await fetch(
+        `${APIURL}/api/notification?page=${page}&notificationType=${notificationType}`,
+      );
+
+      if (!res.ok)
+        return {
+          notificationInfoList: [],
+          totalPage: 0,
+        };
       const data = await res.json();
       return data;
     },
@@ -41,27 +50,19 @@ export const queryInfo = {
       info?.latitude ?? 0,
       info?.longitude ?? 0,
       info?.radius ?? 0,
-      info?.status ?? "added",
+      info?.status ?? "ADDED",
       info?.trashcanId ?? "",
     ],
     queryFn: async () => {
       if (!info) return [];
-      const {
-        latitude: lat,
-        longitude: lng,
-        radius,
-        status,
-        trashcanId: id,
-      } = info;
+      const { latitude: lat, longitude: lng, radius, status } = info;
 
-      const reqURL = id
-        ? `${APIURL}/api/trashcans/locations/details/${id}`
-        : `${APIURL}/api/trashcans/locations?${new URLSearchParams({
-            latitude: lat.toString(),
-            longitude: lng.toString(),
-            radius: radius.toString(),
-            status: status ?? "added",
-          }).toString()}`;
+      const reqURL = `${APIURL}/api/trashcans/locations?${new URLSearchParams({
+        latitude: lat.toString(),
+        longitude: lng.toString(),
+        radius: radius.toString(),
+        status: status ?? "ADDED",
+      }).toString()}`;
 
       const res = await fetch(reqURL, {
         method: "GET",
@@ -70,9 +71,34 @@ export const queryInfo = {
           "Access-Control-Allow-Origin": "*",
         },
       });
+
       if (!res.ok) return [];
       const data = await res.json();
       return data;
+    },
+  }),
+
+  trashcaninfobyid: (trashcanId: string) => ({
+    queryKey: ["trashcaninfobyid", trashcanId],
+    queryFn: async () => {
+      if (!trashcanId)
+        return {
+          trashcanId: "",
+          status: "ADDED",
+          latitude: 0,
+          longitude: 0,
+          address: "",
+          addressDetail: "",
+          distance: 0,
+        };
+      const res = await fetch(
+        `${APIURL}/api/trashcans/locations/details/${trashcanId}`,
+      );
+      const data = await res.json();
+      return data;
+    },
+    onError: (e: any) => {
+      alert(e);
     },
   }),
 
@@ -118,7 +144,7 @@ export const queryInfo = {
     queryFn: async () => {
       const session = await getSession();
       const response = await fetch(
-        `${APIURL}/api/admin/trashcans?page=${page}&status=${status}${sort?.length ? `&sort=${sort}` : ``}`,
+        `${APIURL}/api/admin/trashcans?size=10&page=${page}&status=${status}${sort?.length ? `&sort=${sort}` : ``}`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -179,7 +205,6 @@ export const infiniteQueryInfo = {
       );
 
       const data = await res.json();
-
       if (data?.message)
         return {
           totalPages: 0,
