@@ -10,10 +10,10 @@ import { useState } from "react";
 
 export default function Notice() {
   const [selectedNoticeType, setSelectedNoticeType] =
-    useState<NoticeType>("all");
+    useState<NoticeType>("ALL");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [page, setPage] = useState(1);
-  const { data: noticeData } = useNoticeQuery(page);
+  const [page, setPage] = useState(0);
+  const { data: noticeData } = useNoticeQuery(page, selectedNoticeType);
   const [selectedNotice, setSelectedNotice] = useState<NoticeResponse | null>(
     null,
   );
@@ -48,7 +48,7 @@ export default function Notice() {
             type="button"
             onClick={() =>
               setSelectedNoticeType(
-                type[0] as "all" | "updated" | "event" | "general",
+                type[0] as "ALL" | "UPDATED" | "EVENT" | "GENERAL",
               )
             }
             className={`${selectedNoticeType === type[0] ? "text-light-green border-b-4 border-light-green font-bold" : "border-b-2 py-2"}`}
@@ -64,7 +64,7 @@ export default function Notice() {
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )
         .filter((item) =>
-          selectedNoticeType === "all"
+          selectedNoticeType === "ALL"
             ? true
             : item.state === NoticeTypeDict[selectedNoticeType],
         )
@@ -94,7 +94,7 @@ export default function Notice() {
         .fill(0)
         .map((_, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <button key={index} type="button" onClick={() => setPage(index + 1)}>
+          <button key={index} type="button" onClick={() => setPage(index)}>
             {index + 1}
           </button>
         ))}

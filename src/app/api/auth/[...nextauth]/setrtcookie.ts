@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 const setRefreshTokenCookie = async (res: Response) => {
   const resCookie = res.headers.getSetCookie();
-  console.log(resCookie);
+
   if (!resCookie || !resCookie.length) return;
   const cookie = resCookie[0]
     .split(";")
@@ -11,6 +11,7 @@ const setRefreshTokenCookie = async (res: Response) => {
       acc[key.trim()] = value;
       return acc;
     }, {} as any);
+  if (cookies().has("RefreshToken")) cookies().delete("RefreshToken");
   cookies().set("RefreshToken", cookie.RefreshToken, { secure: true });
 };
 

@@ -14,19 +14,19 @@ import { useRef, useState } from "react";
 const buttonProps: ButtonProps<NoticeType>[] = [
   {
     content: "전체",
-    type: "all",
+    type: "ALL",
   },
   {
     content: "업데이트",
-    type: "updated",
+    type: "UPDATED",
   },
   {
     content: "이벤트",
-    type: "event",
+    type: "EVENT",
   },
   {
     content: "일반",
-    type: "general",
+    type: "GENERAL",
   },
 ];
 
@@ -38,10 +38,10 @@ const defaultRef = {
 };
 
 export default function NoticePage() {
-  const [page, setPage] = useState(1);
-  const { data: noticeData } = useNoticeQuery(page);
+  const [page, setPage] = useState(0);
   const [selectedNoticeType, setSelectedNoticeType] =
-    useState<NoticeType>("all");
+    useState<NoticeType>("ALL");
+  const { data: noticeData } = useNoticeQuery(page, selectedNoticeType);
   const selectedNoticeRef = useRef<NoticeResponse>(defaultRef);
   const [selectedNoticeId] = useState<string>("");
   const [selectedNoticeRefType, setSelectedNoticeRefType] =
@@ -94,7 +94,7 @@ export default function NoticePage() {
             <fieldset className="flex items-center">
               state:
               <div className="flex gap-2">
-                {["업데이트", "이벤트", "일반"].map((type) => (
+                {["UPDATED", "EVENT", "GENERAL"].map((type) => (
                   <button
                     type="button"
                     key={type}
@@ -134,7 +134,6 @@ export default function NoticePage() {
               className="bg-dark-blue text-white text-[1.25rem] font-bold p-2 rounded-md"
               onClick={() => {
                 if (createNotice) {
-                  console.log(selectedNoticeRef.current);
                   mutate(selectedNoticeRef.current);
                 }
               }}
@@ -187,7 +186,7 @@ export default function NoticePage() {
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
           .filter((item) =>
-            selectedNoticeType === "all"
+            selectedNoticeType === "ALL"
               ? true
               : item.state === NoticeTypeDict[selectedNoticeType],
           )
@@ -206,7 +205,6 @@ export default function NoticePage() {
                   type="button"
                   onClick={() => {
                     selectedNoticeRef.current = { ...item };
-
                     setIsModalOpen(!isModalOpen);
                     setSelectedNoticeRefType(item.state);
                   }}

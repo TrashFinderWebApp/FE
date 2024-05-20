@@ -14,10 +14,11 @@ const useNoticeMutation = ({
 
   return useMutation({
     mutationFn: async (input: NoticeResponse) => {
+      const fetchMethod = id ? "PATCH" : method;
       const res = await fetch(
-        `${APIURL}/api/notification${id ? `/${id}` : "/"}`,
+        `${APIURL}/api/notification${id ? `/${id}` : ""}`,
         {
-          method: id ? "PATCH" : method,
+          method: fetchMethod,
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.data?.accessToken}`,
@@ -26,7 +27,7 @@ const useNoticeMutation = ({
         },
       );
       const data = await res.json();
-      console.log(data);
+
       if (!res.ok) throw new Error(data.error);
       return data;
     },

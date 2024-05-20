@@ -2,10 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { queryInfo } from "./query";
 
 export const NoticeTypeDict = {
-  all: "전체",
-  updated: "업데이트",
-  general: "일반",
-  event: "이벤트",
+  ALL: "전체",
+  UPDATED: "업데이트",
+  GENERAL: "일반",
+  EVENT: "이벤트",
 };
 export type NoticeType = keyof typeof NoticeTypeDict;
 
@@ -21,8 +21,8 @@ export interface NoticePageResponse {
   totalPage: number;
 }
 
-const useNoticeQuery = (page: number) => {
-  return useQuery<NoticePageResponse>(queryInfo.notice(page));
+const useNoticeQuery = (page: number, notificationType: NoticeType) => {
+  return useQuery<NoticePageResponse>(queryInfo.notice(page, notificationType));
 };
 
 export default useNoticeQuery;

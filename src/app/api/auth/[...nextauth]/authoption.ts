@@ -49,7 +49,6 @@ export const authOptions: AuthOptions = {
           });
 
           const result = await res.json();
-
           if (res.ok && result) {
             await setRefreshTokenCookie(res);
             return result;
@@ -85,6 +84,7 @@ export const authOptions: AuthOptions = {
         if (res.ok) {
           await setRefreshTokenCookie(res);
           const data = await res.json();
+
           if (data) {
             user.accessToken = data.accessToken;
             user.jwtExpiredTime = data.jwtExpiredTime;

@@ -34,15 +34,19 @@ function RegisterationPage({ params }: { params: { status: string } }) {
     needRefresh,
     reFresh,
     markerRef,
-  } = useDrawMarker(params.status[0] as TrashCanStatus);
+    setNeedRefresh: setNeedRefreshMarker,
+  } = useDrawMarker(params.status[0].toUpperCase() as TrashCanStatus);
 
   useEffect(() => {
     setNeedRefresh(needRefresh);
   }, [needRefresh]);
 
   useEffect(() => {
-    setRefreshCallback(() => reFresh);
-  }, [reFresh]);
+    setRefreshCallback(() => () => {
+      setNeedRefreshMarker(false);
+      reFresh();
+    });
+  }, [reFresh, setNeedRefreshMarker]);
 
   return (
     <div className="flex flex-col gap-2 mt-4">

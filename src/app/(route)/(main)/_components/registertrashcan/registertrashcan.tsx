@@ -94,7 +94,7 @@ export default function RegisterTrashCan() {
         formData.append("longitude", selectedCoordinate?.x.toString());
 
         fetch(
-          `${APIURL}/api/trashcan/${selectedMethod === "new" ? "registrations" : "suggestions"}`,
+          `${APIURL}/api/trashcans/${selectedMethod === "new" ? "registrations" : "suggestions"}`,
           {
             method: "POST",
             headers: {
@@ -103,9 +103,11 @@ export default function RegisterTrashCan() {
             body: formData,
           },
         )
-          .then((res) => {
+          .then(async (res) => {
+            console.log(await res.json());
             if (res.ok) {
               alert("성공적으로 등록되었습니다.");
+              window.location.reload();
             } else {
               alert("등록에 실패했습니다.");
             }
