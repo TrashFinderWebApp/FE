@@ -33,7 +33,7 @@ export default function useMap(
       };
 
       const map = new window.kakao.maps.Map(mapRef.current, options);
-
+      map.setMaxLevel(3);
       map.setCopyrightPosition(
         window.kakao.maps.CopyrightPosition.BOTTOMRIGHT,
         true,

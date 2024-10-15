@@ -55,8 +55,8 @@ export const queryInfo = {
       } = info;
 
       const reqURL = id
-        ? `${APIURL}/api/trashcans/locations/details/${id}`
-        : `${APIURL}/api/trashcans/locations?${new URLSearchParams({
+        ? `/api/trashcans/locations/details/${id}`
+        : `/api/trashcans/locations?${new URLSearchParams({
             latitude: lat.toString(),
             longitude: lng.toString(),
             radius: radius.toString(),

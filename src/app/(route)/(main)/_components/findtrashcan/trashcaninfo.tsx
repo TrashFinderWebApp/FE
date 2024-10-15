@@ -1,12 +1,13 @@
 import Button from "@/components/button/button";
-import { TrashCanInfo } from "@/types/trashinfo";
+import { TrashCanInfo, TrashCanRequest } from "@/types/trashinfo";
 import Image from "next/image";
 import { useKakaoStore } from "@/stores/usekakaostore";
 import { useRouter } from "next/navigation";
 import { APIURL } from "@/util/const";
 import Modal from "@/components/modal/modal";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import useTrashCanInfoQuery from "@/hooks/query/usetrashcaninfoquery";
 
 export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
   const {
@@ -22,9 +23,16 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
   const route = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  return (
-    <article className="w-full border-2 border-light-green rounded-md shadow-sm py-4">
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+
+  const [modalType, setModalType] = useState<"report" | "detail">("report");
+
+  const { data: trashCanDetail } = useTrashCanInfoQuery({
+    trashcanId: isModalOpen && modalType === "detail" ? id : "",
+  } as TrashCanRequest);
+
+  const modalElement = useMemo(() => {
+    if (modalType === "report") {
+      return (
         <div className="flex flex-col gap-2">
           <p className="font-bold text-[1.25rem]">
             쓰레기통을 신고하는 이유를 작성해주세요.
@@ -57,10 +65,46 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
             className="bg-light-green text-white font-bold"
           />
         </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="font-bold text-[1.25rem]">쓰레기통 정보</p>
+        <p>위치: {addressDetail}</p>
+        <p>쓰레기통 ID: {id}</p>
+        <p>위도: {latitude}</p>
+        <p>경도: {longitude}</p>
+        <div className="flex overflow-scroll h-80 w-[90vw] md:w-fit">
+          {trashCanDetail?.map((detail) => {
+            console.log(detail);
+            return detail?.imageUrls?.map((img) => (
+              <img
+                className="object-cover"
+                key={img}
+                src={img}
+                alt="쓰레기통 사진"
+              />
+            ));
+          })}
+        </div>
+      </div>
+    );
+  }, [modalType, trashCanDetail]);
+  return (
+    <article className="w-full border-2 border-light-green rounded-md shadow-sm py-4">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        {modalElement}
       </Modal>
       <div className="flex items-center justify-between px-3 pb-4">
         <h3 className="font-bold text-[1.125rem]">{addressDetail ?? ""}</h3>
-        <button type="button" onClick={() => setIsModalOpen(true)}>
+        <button
+          type="button"
+          onClick={() => {
+            setIsModalOpen(true);
+            setModalType("report");
+          }}
+        >
           <img src="/svg/alerticon.svg" alt="쓰레기통 사진" />
         </button>
       </div>
@@ -103,6 +147,14 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
           }}
           icon="/svg/roadviewicon.svg"
           content="로드뷰"
+          className="flex-grow"
+        />
+        <Button
+          onClick={() => {
+            setIsModalOpen(true);
+            setModalType("detail");
+          }}
+          content="자세히"
           className="flex-grow"
         />
       </div>

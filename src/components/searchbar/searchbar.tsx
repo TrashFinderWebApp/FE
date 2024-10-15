@@ -2,8 +2,9 @@
 import { resolveKakaoResult } from "@/app/(route)/(main)/_components/navigation/resolveresult";
 import DropDown from "@/components/dropdown/dropdown";
 import useKeywordSearch from "@/hooks/optimization/usekeywordsearch";
-import { LocationInfo } from "@/types/trashinfo";
-import { useMemo, useState } from "react";
+import { useKakaoStore } from "@/stores/usekakaostore";
+import { Location, LocationInfo } from "@/types/trashinfo";
+import { useCallback, useMemo, useState } from "react";
 
 type SearchLocation = LocationInfo & { id: string };
 
@@ -37,6 +38,15 @@ export default function SearchBar({
   const locationList = useMemo(
     () => searchResult.map(resolveResult),
     [searchResult],
+  );
+
+  const { setCenter } = useKakaoStore();
+
+  const handleClick = useCallback(
+    (location: Location) => {
+      setCenter(location.latitude, location.longitude);
+    },
+    [onClick],
   );
 
   return (
@@ -74,7 +84,7 @@ export default function SearchBar({
             setKeyword(location.name || location.address || "");
             setSelected(true);
             setPlaceName(location.name || location.address || "");
-            onClick?.(location);
+            handleClick?.(location);
           }
         }}
         defaultValue={selected ? _placeName : keyword}
@@ -87,7 +97,7 @@ export default function SearchBar({
           setKeyword(location.name || location.address || "");
           setSelected(true);
           setPlaceName(location.name || location.address || "");
-          onClick?.(location);
+          handleClick?.(location);
         }}
       />
     </div>

@@ -64,7 +64,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
   const { data, status } = useSession();
 
   return (
-    <header className="relative z-50 w-full pointer-events-none">
+    <header className="relative z-40 w-full pointer-events-none">
       <div className="relative flex flex-col p-4 bg-white gap-4 shadow-md pointer-events-auto">
         <div className="relative w-full flex items-center justify-between">
           <button

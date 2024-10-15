@@ -23,6 +23,7 @@ interface KakaoActions {
   setGeoCoder: (getCoder: any) => void;
   setKakakoRoadView: (roadView: any) => void;
   setRoadViewClient: (roadViewClient: any) => void;
+  setCenter: (lat: number, lng: number) => void;
 }
 
 export const useKakaoStore = create<KakaoState & KakaoActions>((set) => ({
@@ -41,6 +42,14 @@ export const useKakaoStore = create<KakaoState & KakaoActions>((set) => ({
   setKeywordSearch: (keywordSearch) => set({ keywordSearch }),
   setKakakoRoadView: (roadView) => set({ kakaoRoadView: roadView }),
   setRoadViewClient: (client) => set({ roadViewClient: client }),
+  setCenter: (lat, lng) => {
+    const center = new window.kakao.maps.LatLng(lat, lng);
+    set((state) => {
+      state.kakaoMap.setCenter(center);
+
+      return state;
+    });
+  },
 }));
 
 export default useKakaoStore;

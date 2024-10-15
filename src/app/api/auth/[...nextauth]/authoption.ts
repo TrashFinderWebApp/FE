@@ -13,10 +13,7 @@ export const authOptions: AuthOptions = {
   callbacks: {
     signIn: async ({ user }) => {
       try {
-        console.log("user", user);
-        const res =
-          await sql`INSERT INTO "user" ("user_id") VALUES (${user.id}) ON CONFLICT ("user_id") DO NOTHING`;
-        console.log("res", res);
+        await sql`INSERT INTO user_info ("user_id") VALUES (${user.id}) ON CONFLICT ("user_id") DO NOTHING`;
       } catch (err) {
         console.error(err);
       }
