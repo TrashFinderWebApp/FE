@@ -20,5 +20,15 @@ export const authOptions: AuthOptions = {
       }
       return true;
     },
+    session: async ({ session, token }) => {
+      if (token.sub)
+        session.user = {
+          name: token.name,
+          email: token.email,
+          image: token.picture,
+          id: token.sub,
+        };
+      return session;
+    },
   },
 };

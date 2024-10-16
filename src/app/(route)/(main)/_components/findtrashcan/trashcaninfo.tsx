@@ -3,7 +3,6 @@ import { TrashCanInfo, TrashCanRequest } from "@/types/trashinfo";
 import Image from "next/image";
 import { useKakaoStore } from "@/stores/usekakaostore";
 import { useRouter } from "next/navigation";
-import { APIURL } from "@/util/const";
 import Modal from "@/components/modal/modal";
 import { useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -43,19 +42,16 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
           />
           <Button
             onClick={() => {
-              fetch(
-                `${APIURL}/api/trashcans/reports/${id}?description=${textareaRef.current?.value}`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${session?.data?.accessToken}`,
-                  },
-                  body: JSON.stringify({
-                    description: textareaRef.current?.value,
-                  }),
+              fetch(`/api/trashcans/reports/${id}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${session?.data?.accessToken}`,
                 },
-              )
+                body: JSON.stringify({
+                  description: textareaRef.current?.value,
+                }),
+              })
                 .then((res) => res.json())
                 .then((data) => {
                   alert(data.message);
