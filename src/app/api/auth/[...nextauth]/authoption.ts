@@ -10,6 +10,7 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
+  secret: process.env.AUTH_KEY,
   callbacks: {
     signIn: async ({ user }) => {
       try {
