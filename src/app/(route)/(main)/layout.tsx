@@ -1,7 +1,7 @@
 "use client";
 
 import useMap from "@/hooks/map/usemap";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Accordion from "@/components/accordion/accordion";
 import { isMobile } from "react-device-detect";
 import Header from "@/components/header/header";
@@ -33,13 +33,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   const [isAccordionOpen, setIsAccordionOpen] = useState(true);
   const [deviceType, setDeviceType] = useState<"mobile" | "desktop">("desktop");
-  const [isRoadView, setIsRoadView] = useState(false);
+  const [isRoadViewOpen, setIsRoadViewOpen] = useState(false);
   const {
     kakaoMap,
-    isMapOpened,
+    isRoadView,
     roadViewClient,
     kakaoRoadView,
-    setIsMapOpened,
+    setIsRoadView,
   } = useKakaoStore();
 
   useMap(mapRef, roadViewRef);
@@ -65,24 +65,25 @@ export default function MainLayout({ children }: MainLayoutProps) {
     }
   }, [isMobile]);
 
+  const handleClick = useCallback((mouseEvent: any) => {
+    const position = mouseEvent.latLng;
+    roadViewClient.getNearestPanoId(position, 50, (panoId: any) => {
+      kakaoRoadView.setPanoId(panoId, position);
+    });
+    setIsRoadViewOpen(true)
+    window.kakao.maps.event.removeListener(kakaoMap, "click", handleClick);
+  }, [roadViewClient, kakaoRoadView, kakaoMap])
+
   useEffect(() => {
     if (window.kakao && isRoadView) {
       kakaoMap.addOverlayMapTypeId(window.kakao.maps.MapTypeId.ROADVIEW);
-      const handleClick = (mouseEvent: any) => {
-        const position = mouseEvent.latLng;
-        roadViewClient.getNearestPanoId(position, 50, (panoId: any) => {
-          setIsMapOpened(false);
-          kakaoRoadView.setPanoId(panoId, position);
-        });
-
-        window.kakao.maps.event.removeListener(kakaoMap, "click", handleClick);
-      };
       window.kakao.maps.event.addListener(kakaoMap, "click", handleClick);
     }
 
     if (window.kakao && !isRoadView) {
+      setIsRoadViewOpen(false)
       kakaoMap.removeOverlayMapTypeId(window.kakao.maps.MapTypeId.ROADVIEW);
-      setIsMapOpened(true);
+      window.kakao.maps.event.removeListener(kakaoMap, "click", handleClick);
     }
   }, [isRoadView]);
 
@@ -105,9 +106,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
         selectedStatus={isRoadView}
         setselectedStatus={setIsRoadView}
         buttonInfo={buttonProps}
-        className={`absolute right-4 z-30 w-40${
-          deviceType === "mobile" ? " top-36" : " top-4"
-        }`}
+        className={`absolute right-4 z-30 w-40${deviceType === "mobile" ? " top-36" : " top-4"
+          }`}
       />
       <button
         className={`absolute duration-300 ${deviceType === "mobile" ? "top-36" : "top-4"} left-[50%] -translate-x-[50%] z-40 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}
@@ -121,7 +121,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       </button>
       <div
         ref={mapRef}
-        style={{ zIndex: isMapOpened ? "10" : "0" }}
+        style={{ zIndex: !isRoadViewOpen ? "10" : "0" }}
         className={
           (deviceType === "mobile" ? false : isAccordionOpen)
             ? "absolute top-0 h-svh duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"
@@ -130,9 +130,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       />
       <div
         ref={roadViewRef}
-        style={{
-          zIndex: isMapOpened ? "0" : "10",
-        }}
+        style={{ zIndex: (isRoadView && isRoadViewOpen) ? "10" : "0" }}
         className={
           isAccordionOpen
             ? "absolute top-0 left-0 h-svh duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"

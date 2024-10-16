@@ -18,7 +18,7 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
     trashcanId: id,
   } = info || {};
 
-  const { kakaoRoadView, roadViewClient, setIsMapOpened } = useKakaoStore();
+  const { kakaoRoadView, roadViewClient, setIsRoadView } = useKakaoStore();
   const session = useSession();
   const route = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -143,7 +143,7 @@ export default function TrashCanDetail({ info }: { info: TrashCanInfo }) {
               50,
               (panoId: any) => kakaoRoadView.setPanoId(panoId),
             );
-            setIsMapOpened(false);
+            setIsRoadView(true);
           }}
           icon="/svg/roadviewicon.svg"
           content="로드뷰"

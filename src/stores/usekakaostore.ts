@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 interface KakaoState {
   isLoaded: boolean;
-  isMapOpened: boolean;
+  isRoadView: boolean;
   kakaoMap: any;
   kakaoRoadView: any;
   kakaoClusterer: any;
@@ -16,7 +16,7 @@ interface KakaoState {
 }
 
 interface KakaoActions {
-  setIsMapOpened: (isMapOpened: boolean) => void;
+  setIsRoadView: (isRoadView: boolean) => void;
   setKakaoMap: (map: any) => void;
   setKakaoClusterer: (clusterer: any) => void;
   setKeywordSearch: (keywordSearch: any) => void;
@@ -33,8 +33,8 @@ export const useKakaoStore = create<KakaoState & KakaoActions>((set) => ({
   geoCoder: null,
   kakaoRoadView: null,
   roadViewClient: null,
-  isMapOpened: true,
-  setIsMapOpened: (isMapOpened) => set({ isMapOpened }),
+  isRoadView: false,
+  setIsRoadView: (isRoadView) => set({ isRoadView }),
   setKakaoMap: (map) => set({ kakaoMap: map, isLoaded: true }),
   setGeoCoder: (getCoder) => set({ geoCoder: getCoder }),
   setKakaoClusterer: (clusterer) => set({ kakaoClusterer: clusterer }),
