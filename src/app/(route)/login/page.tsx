@@ -1,16 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import React, { useRef } from "react";
+import React from "react";
 import navericon from "public/svg/navericon.svg";
 import kakaoicon from "public/svg/kakaoicon.svg";
 import googleicon from "public/svg/googleicon.svg";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
 
 export default function LoginPage() {
-
-
   const handleLogin = (provider: string) => async () => {
     await signIn(provider, {
       callbackUrl: "/",

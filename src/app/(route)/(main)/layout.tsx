@@ -34,13 +34,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const [isAccordionOpen, setIsAccordionOpen] = useState(true);
   const [deviceType, setDeviceType] = useState<"mobile" | "desktop">("desktop");
   const [isRoadViewOpen, setIsRoadViewOpen] = useState(false);
-  const {
-    kakaoMap,
-    isRoadView,
-    roadViewClient,
-    kakaoRoadView,
-    setIsRoadView,
-  } = useKakaoStore();
+  const { kakaoMap, isRoadView, roadViewClient, kakaoRoadView, setIsRoadView } =
+    useKakaoStore();
 
   useMap(mapRef, roadViewRef);
   const { data, needRefresh, setNeedRefresh, reFresh } = useDrawMarker(
@@ -65,14 +60,17 @@ export default function MainLayout({ children }: MainLayoutProps) {
     }
   }, [isMobile]);
 
-  const handleClick = useCallback((mouseEvent: any) => {
-    const position = mouseEvent.latLng;
-    roadViewClient.getNearestPanoId(position, 50, (panoId: any) => {
-      kakaoRoadView.setPanoId(panoId, position);
-    });
-    setIsRoadViewOpen(true)
-    window.kakao.maps.event.removeListener(kakaoMap, "click", handleClick);
-  }, [roadViewClient, kakaoRoadView, kakaoMap])
+  const handleClick = useCallback(
+    (mouseEvent: any) => {
+      const position = mouseEvent.latLng;
+      roadViewClient.getNearestPanoId(position, 50, (panoId: any) => {
+        kakaoRoadView.setPanoId(panoId, position);
+      });
+      setIsRoadViewOpen(true);
+      window.kakao.maps.event.removeListener(kakaoMap, "click", handleClick);
+    },
+    [roadViewClient, kakaoRoadView, kakaoMap],
+  );
 
   useEffect(() => {
     if (window.kakao && isRoadView) {
@@ -81,7 +79,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     }
 
     if (window.kakao && !isRoadView) {
-      setIsRoadViewOpen(false)
+      setIsRoadViewOpen(false);
       kakaoMap.removeOverlayMapTypeId(window.kakao.maps.MapTypeId.ROADVIEW);
       window.kakao.maps.event.removeListener(kakaoMap, "click", handleClick);
     }
@@ -106,8 +104,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
         selectedStatus={isRoadView}
         setselectedStatus={setIsRoadView}
         buttonInfo={buttonProps}
-        className={`absolute right-4 z-30 w-40${deviceType === "mobile" ? " top-36" : " top-4"
-          }`}
+        className={`absolute right-4 z-30 w-40${
+          deviceType === "mobile" ? " top-36" : " top-4"
+        }`}
       />
       <button
         className={`absolute duration-300 ${deviceType === "mobile" ? "top-36" : "top-4"} left-[50%] -translate-x-[50%] z-40 bg-white rounded-md shadow-lg p-4 font-bold text-light-blue ${needRefresh ? "bg-white pointer-events-auto" : "opacity-0 pointer-events-none"}`}
@@ -130,7 +129,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       />
       <div
         ref={roadViewRef}
-        style={{ zIndex: (isRoadView && isRoadViewOpen) ? "10" : "0" }}
+        style={{ zIndex: isRoadView && isRoadViewOpen ? "10" : "0" }}
         className={
           isAccordionOpen
             ? "absolute top-0 left-0 h-svh duration-300 w-[calc(100%-20rem)] translate-x-[19.875rem] box-content"
