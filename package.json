@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.26.3",
+    "@vercel/blob": "^0.25.1",
     "@vercel/postgres": "^0.10.0",
     "babel-eslint": "^10.1.0",
     "dotenv": "^16.4.5",

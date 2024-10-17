@@ -4,7 +4,7 @@ import { useKakaoStore } from "@/stores/usekakaostore";
 import { ButtonProps } from "@/types/button";
 import { Coordinate } from "@/types/navigate";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { APIURL, ScrollBarStyle } from "@/util/const";
+import { ScrollBarStyle } from "@/util/const";
 import { useSession } from "next-auth/react";
 import useDrawMarker from "@/hooks/map/usedrawmarker";
 import createMarker from "@/util/kakaomap/createmarker";
@@ -84,17 +84,17 @@ export default function RegisterTrashCan() {
         const address = result[0]?.address;
         const formData = new FormData();
         selectedImage.forEach((image) => {
-          formData.append("image_object", image);
+          formData.append("imageObject", image);
         });
 
         formData.append("address", address?.address_name ?? "");
-        formData.append("address_detail", addressDetail.current);
+        formData.append("addressDetail", addressDetail.current);
         formData.append("description", description.current);
         formData.append("latitude", selectedCoordinate?.y.toString());
         formData.append("longitude", selectedCoordinate?.x.toString());
 
         fetch(
-          `${APIURL}/api/trashcan/${selectedMethod === "new" ? "registrations" : "suggestions"}`,
+          `/api/trashcans/${selectedMethod === "new" ? "registrations" : "suggestions"}`,
           {
             method: "POST",
             headers: {
@@ -107,11 +107,13 @@ export default function RegisterTrashCan() {
             if (res.ok) {
               alert("성공적으로 등록되었습니다.");
             } else {
-              alert("등록에 실패했습니다.");
+              res.json().then((data) => {
+                alert(data.message ?? "등록에 실패했습니다.");
+              });
             }
           })
           .catch((e) => {
-            console.error(e);
+            console.error(e.message);
           });
       },
     );

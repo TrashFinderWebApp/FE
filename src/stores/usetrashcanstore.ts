@@ -27,7 +27,7 @@ const getTrashCanURL = (
   radius: number,
   status: TrashCanStatus,
 ) =>
-  `${APIURL}/api/trashcan/locations?${new URLSearchParams({
+  `${APIURL}/api/trashcans/locations?${new URLSearchParams({
     latitude: latitude.toString(),
     longitude: longitude.toString(),
     radius: radius.toString(),

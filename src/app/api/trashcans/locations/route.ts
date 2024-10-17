@@ -8,6 +8,7 @@ const getTrashcanListByLocation = async (
   latitude: number,
   longitude: number,
   radius: number,
+  status: string,
 ) => {
   try {
     const res =
@@ -20,7 +21,7 @@ const getTrashcanListByLocation = async (
       WHERE earth_distance(
             ll_to_earth(${latitude}, ${longitude}),
             ll_to_earth(latitude, longitude)
-        ) < ${radius}
+        ) < ${radius} AND status = ${status}
         ORDER BY distance ASC
           ;`;
     return res.rows;
@@ -35,10 +36,11 @@ export const GET = async (req: NextRequest) => {
   const latitude = Number(searchParams.get("latitude"));
   const longitude = Number(searchParams.get("longitude"));
   const radius = Number(searchParams.get("radius"));
+  const status = searchParams.get("status") ?? "ADDED";
 
   return new NextResponse(
     JSON.stringify(
-      await getTrashcanListByLocation(latitude, longitude, radius),
+      await getTrashcanListByLocation(latitude, longitude, radius, status),
     ),
   );
 };
